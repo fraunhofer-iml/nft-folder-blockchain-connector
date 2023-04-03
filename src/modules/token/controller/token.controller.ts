@@ -1,40 +1,44 @@
-import {Body, Controller, Get, Post} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post} from '@nestjs/common';
+import {TokenConnectorService} from "../sc-connector/token.connector.service";
+import {TokenMintDto} from "../../../dto/TokenMint.dto";
 
 @Controller('token')
 export class TokenController {
 
+    constructor(private readonly tokenConnectorService: TokenConnectorService) {}
+
+
     @Post("safeMint")
-    public safeMint(@Body() input: any,){
+    public safeMint(@Body() tokenMintDto: TokenMintDto){
+        return this.tokenConnectorService.safeMint(tokenMintDto);
+    }
+
+    @Get("getTokenURI/:tokenId")
+    public getTokenURI(@Param("tokenId") tokenId: number){
+        return this.tokenConnectorService.getTokenURI(tokenId);
+    }
+
+    @Get("getAdditionalInformation/:tokenAddress")
+    public getAdditionalInformation(tokenId: number, @Param("tokenAddress") tokenAddress: string){
+        return this.tokenConnectorService.getAdditionalInformation(tokenId);
 
     }
 
-    @Post("safeMintWithInfo")
-    public safeMintWithInfo(@Body() input: any,){
+    @Get("getAssetHash/:tokenAddress")
+    public getAssetHash(tokenId: number, @Param("tokenAddress") tokenAddress: string){
+        return this.tokenConnectorService.getAssetHash(tokenId);
 
     }
 
-    @Get("getTokenURI")
-    public getTokenURI(tokenId: number){
+    @Get("getMetadataHash/:tokenAddress")
+    public getMetadataHash(tokenId: number, @Param("tokenAddress") tokenAddress: string){
+        return this.tokenConnectorService.getMetadataHash(tokenId);
 
     }
 
-    @Get("getAdditionalInformation")
-    public getAdditionalInformation(tokenId: number){
-
-    }
-
-    @Get("getAssetHash")
-    public getAssetHash(tokenId: number){
-
-    }
-
-    @Get("getMetadataHash")
-    public getMetadataHash(tokenId: number){
-
-    }
-
-    @Post("setMetadata")
-    public setMetadata(tokenId: number, tokenUri: string, metadataHash: string){
+    @Post("setMetadata/:tokenAddress")
+    public setMetadata(tokenId: number, tokenUri: string, metadataHash: string, @Param("tokenAddress") tokenAddress: string){
+        return this.tokenConnectorService.setMetadata(tokenId, tokenUri,metadataHash);
 
     }
 

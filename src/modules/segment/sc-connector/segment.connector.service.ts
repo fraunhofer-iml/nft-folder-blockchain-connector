@@ -1,37 +1,51 @@
+import {BlockchainConnectorService} from "../../blockchain-connector/blockchain-connector.service";
+import {ApiConfigService} from "../../../settings/ApiConfigService";
+import {containerAbi} from "../../container/sc-connector/container.abi";
+import {Injectable} from "@nestjs/common";
+import {SegmentAbi} from "./segment.abi";
+
+@Injectable()
 export class SegmentConnectorService {
 
-    public addToken(token: string, tokenId: number){
-        //const transaction = this.contract.methods.addToken(token, tokenId);
-
+    constructor(
+        private readonly blockchainConnectorService: BlockchainConnectorService,
+        private apiConfigService: ApiConfigService
+    ) {
     }
 
-    public removeToken(token: string, tokenId: number){
-        //const transaction = this.contract.methods.removeToken(name);
-
+    getSegmentContract(segmentAddress: string){
+        return new this.blockchainConnectorService.web3.eth.Contract(
+            SegmentAbi,
+            segmentAddress
+        );
     }
 
-    public getName(){
-        //const transaction = this.contract.methods.getName();
-
+    public addToken(token: string, tokenId: number, segmentAddress: string){
+        return this.blockchainConnectorService.sendTransaction(this.getSegmentContract(segmentAddress).methods.addToken(token, tokenId));
     }
 
-    public getContainer(){
-        //const transaction = this.contract.methods.getContainer();
-
+    public removeToken(token: string, tokenId: number, segmentAddress: string){
+        return this.blockchainConnectorService.sendTransaction(this.getSegmentContract(segmentAddress).methods.removeToken(token, tokenId));
     }
 
-    public getTokenInformation(){
-        //const transaction = this.contract.methods.getTokenInformation();
-
+    public getName(segmentAddress: string){
+        return this.blockchainConnectorService.call(this.getSegmentContract(segmentAddress).methods.getName());
     }
 
-    public getTokenLocationInSegment(){
-        //const transaction = this.contract.methods.getTokenLocationInSegment();
-
+    public getContainer(segmentAddress: string){
+        return this.blockchainConnectorService.call(this.getSegmentContract(segmentAddress).methods.getContainer());
     }
 
-    public isTokenInSegment(token: string, tokenId: number){
-        //const transaction = this.contract.methods.isTokenInSegment(token, tokenId);
+    public getTokenInformation(segmentAddress: string){
+        return this.blockchainConnectorService.call(this.getSegmentContract(segmentAddress).methods.getTokenInformation());
+    }
+
+    public getTokenLocationInSegment(token: string, tokenId: number, segmentAddress: string){
+        return this.blockchainConnectorService.call(this.getSegmentContract(segmentAddress).methods.getTokenLocationInSegment(token, tokenId));
+    }
+
+    public isTokenInSegment(token: string, tokenId: number, segmentAddress: string){
+        return this.blockchainConnectorService.call(this.getSegmentContract(segmentAddress).methods.isTokenInSegment(token, tokenId));
 
     }
 }

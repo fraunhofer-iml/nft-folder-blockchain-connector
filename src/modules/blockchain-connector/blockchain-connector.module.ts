@@ -1,15 +1,19 @@
 import { Module } from '@nestjs/common';
+import {BlockchainConnectorService} from "./blockchain-connector.service";
+import {ApiConfigService} from "../../settings/ApiConfigService";
+import {ConfigService} from "@nestjs/config";
 
-
-const blockchain_url = "";
 const Web3Service = {
     provide: 'Web3Service',
-    useFactory: async () => {
+    useFactory: async (apiConfigService: ConfigService) => {
         const Web3 = require('web3');
-        return new Web3(blockchain_url);
-        //return new Web3(env.get<string>('BLOCKCHAIN_URL'));
-    }
+        console.log(apiConfigService)
+        return new Web3(apiConfigService.get<string>('BLOCKCHAIN_URL'));
+    }, inject: [ConfigService]
 }
 
-@Module({})
+@Module({
+    providers: [BlockchainConnectorService, Web3Service, ApiConfigService],
+    exports: [BlockchainConnectorService, Web3Service]
+})
 export class BlockchainConnectorModule {}

@@ -1,5 +1,6 @@
-import {Controller, Delete, Get, Post} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
 import {SegmentConnectorService} from "../sc-connector/segment.connector.service";
+import {AddTokenDto} from "../../../dto/AddToken.dto";
 
 @Controller('segment')
 export class SegmentController {
@@ -7,44 +8,43 @@ export class SegmentController {
     constructor(private readonly segmentConnectorService: SegmentConnectorService) {}
 
 
-    @Post("addToken")
-    public addToken(token: string, tokenId: number){
-        this.segmentConnectorService.addToken(token, tokenId);
+    @Put("addToken")
+    public addToken(@Body() tokenInput: AddTokenDto,){
+        return this.segmentConnectorService.addToken(tokenInput.token, tokenInput.tokenId, tokenInput.segmentAddress);
     }
 
-    @Delete("removeToken")
-    public removeToken(token: string, tokenId: number){
-        this.segmentConnectorService.removeToken(token, tokenId);
-
+    @Put("removeToken")
+    public removeToken(@Body() tokenInput: AddTokenDto){
+        return this.segmentConnectorService.removeToken(tokenInput.token, tokenInput.tokenId, tokenInput.segmentAddress);
     }
 
-    @Get("getName")
-    public getName(){
-        this.segmentConnectorService.getName();
-
-    }
-
-    @Get("getContainer")
-    public getContainer(){
-        this.segmentConnectorService.getContainer();
+    @Get("getName/:segmentAddress")
+    public getName(@Param("segmentAddress") segmentAddress: string){
+        return this.segmentConnectorService.getName(segmentAddress);
 
     }
 
-    @Get("getTokenInformation")
-    public getTokenInformation(){
-        this.segmentConnectorService.getTokenInformation();
+    @Get("getContainer/:segmentAddress")
+    public getContainer(@Param("segmentAddress") segmentAddress: string){
+        return this.segmentConnectorService.getContainer(segmentAddress);
 
     }
 
-    @Get("getTokenLocationInSegment")
-    public getTokenLocationInSegment(){
-        this.segmentConnectorService.getTokenLocationInSegment();
+    @Get("getTokenInformation/:segmentAddress")
+    public getTokenInformation(@Param("segmentAddress") segmentAddress: string){
+        return this.segmentConnectorService.getTokenInformation(segmentAddress);
 
     }
 
-    @Get("isTokenInSegment")
-    public isTokenInSegment(token: string, tokenId: number){
-        this.segmentConnectorService.isTokenInSegment(token, tokenId);
+    @Get("getTokenLocationInSegment/:token/:tokenId/:segmentAddress")
+    public getTokenLocationInSegment(@Param("token") token: string, @Param("tokenId") tokenId: number,@Param("segmentAddress") segmentAddress: string){
+        return this.segmentConnectorService.getTokenLocationInSegment(token, tokenId,segmentAddress);
+
+    }
+
+    @Get("isTokenInSegment/:token/:tokenId/:segmentAddress")
+    public isTokenInSegment( @Param("token") token: string, @Param("tokenId") tokenId: number, @Param("segmentAddress") segmentAddress: string){
+        return this.segmentConnectorService.isTokenInSegment(token, tokenId, segmentAddress);
 
     }
 }
