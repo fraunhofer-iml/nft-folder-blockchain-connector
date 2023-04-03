@@ -1,0 +1,9 @@
+import { Controller } from '@nestjs/common';
+
+@Controller('migration')
+export class MigrationController {
+
+    public setCompleted(completed: number){
+
+    }
+}
