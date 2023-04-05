@@ -10,22 +10,6 @@ export class TokenController {
 
     constructor(private readonly tokenConnectorService: TokenConnectorService) {}
 
-    @Post("addTokenToSegment/:tokenId/:segmentAddress")
-    @ApiQuery({ name: "tokenId", type: Number })
-    @ApiQuery({ name: "segmentAddress", type: String })
-    @ApiOperation({ summary: "Add a token to a segment" })
-    public addTokenToSegment(
-        @Param("tokenId") tokenId: number,
-        @Param("segmentAddress") segmentAddress: string){
-        return this.tokenConnectorService.addTokenToSegment(tokenId, segmentAddress)
-            .pipe(map(res => {
-                if(res.errorCode){
-                    throw new BadRequestException(res.errorMessage);
-                }
-                return res;
-            }));
-    }
-
     @Post("approve/:to/:tokenId")
     @ApiQuery({ name: "to", type: String })
     @ApiQuery({ name: "tokenId", type: Number })
@@ -33,6 +17,9 @@ export class TokenController {
     public approve(
         @Param("to") to: string,
         @Param("tokenId") tokenId: number){
+        if(!to || !tokenId){
+            throw new BadRequestException();
+        }
         return this.tokenConnectorService.approve(to, tokenId)
             .pipe(map(res => {
                 if(res.errorCode){

@@ -14,7 +14,7 @@ export class MigrationController {
     @ApiQuery({ name: "completed", type: Number })
     @ApiOperation({ summary: "Set the last completed migration number" })
     public setCompleted(@Param("completed") completed: number){
-        this.migrationsConnectorService.setCompleted(completed)
+        return this.migrationsConnectorService.setCompleted(completed)
             .pipe(map(res => {
                 if(res.errorCode){
                     throw new BadRequestException(res.errorMessage);

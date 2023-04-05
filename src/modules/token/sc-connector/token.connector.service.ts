@@ -15,11 +15,6 @@ export class TokenConnectorService {
         this.contract = new this.blockchainConnectorService.web3.eth.Contract(TokenAbi, apiConfigService.TOKEN_SC_ADDRESS);
     }
 
-    public addTokenToSegment(tokenId: number, segmentAddress: string): Observable<any | ErrorDto>{
-        return this.blockchainConnectorService.sendTransaction(this.contract.methods.addTokenToSegment(tokenId, segmentAddress));
-
-    }
-
     public approve(to: string, tokenId: number): Observable<any | ErrorDto>{
         return this.blockchainConnectorService.sendTransaction(this.contract.methods.approve(to, tokenId));
 

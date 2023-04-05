@@ -1,4 +1,4 @@
-import {BadRequestException, Controller, Delete, Get, Param, Post} from '@nestjs/common';
+import {BadRequestException, Controller, Delete, Get, Param,} from '@nestjs/common';
 import {SegmentAllocationConnectorService} from "../sc-connector/segment-allocation.connector.service";
 import {ApiOperation, ApiQuery, ApiTags} from "@nestjs/swagger";
 import {map} from "rxjs";
@@ -8,23 +8,6 @@ import {map} from "rxjs";
 export class SegmentAllocationController {
 
     constructor(private readonly segmentAllocationConnectorService: SegmentAllocationConnectorService) {}
-
-    @Post("addTokenToSegment/:tokenId/:segmentAddress")
-    @ApiQuery({ name: "tokenId", type: Number })
-    @ApiQuery({ name: "segmentAddress", type: String })
-    @ApiOperation({ summary: "Add a token to the segment" })
-    public addTokenToSegment(
-        @Param("tokenId")tokenId: number,
-        @Param("segmentAddress")segmentAddress: string,){
-        return this.segmentAllocationConnectorService.addTokenToSegment(tokenId, segmentAddress)
-            .pipe(map(res => {
-                if(res.errorCode){
-                    throw new BadRequestException(res.errorMessage);
-                }
-                return res;
-            }));
-    }
-
 
     @Delete("removeTokenFromSegment/:tokenId/:segmentAddress")
     @ApiQuery({ name: "tokenId", type: Number })

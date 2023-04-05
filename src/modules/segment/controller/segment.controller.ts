@@ -20,6 +20,7 @@ export class SegmentController {
                 if(res.errorCode){
                     throw new BadRequestException(res.errorMessage);
                 }
+                return res;
             }));
     }
 
@@ -32,6 +33,7 @@ export class SegmentController {
                 if(res.errorCode){
                     throw new BadRequestException(res.errorMessage);
                 }
+                return res;
             }));
     }
 
@@ -44,6 +46,7 @@ export class SegmentController {
                 if(res.errorCode){
                     throw new BadRequestException(res.errorMessage);
                 }
+                return res;
             }));
 
     }
@@ -57,19 +60,22 @@ export class SegmentController {
                 if(res.errorCode){
                     throw new BadRequestException(res.errorMessage);
                 }
+                return res;
             }));
 
     }
 
-    @Get("getTokenInformation/:segmentAddress")
+    @Get("getTokenInformation/:segmentAddress/:index")
     @ApiQuery({ name: "segmentAddress", type: String })
+    @ApiQuery({ name: "index", type: Number })
     @ApiOperation({ summary: "Returns the token info of the segment address" })
-    public getTokenInformation(@Param("segmentAddress") segmentAddress: string){
-        return this.segmentConnectorService.getTokenInformation(segmentAddress)
+    public getTokenInformation(@Param("segmentAddress") segmentAddress: string, @Param("index") index: number){
+        return this.segmentConnectorService.getTokenInformation(segmentAddress, index)
             .pipe(map(res => {
                 if(res.errorCode){
                     throw new BadRequestException(res.errorMessage);
                 }
+                return res;
             }));
 
     }
@@ -88,6 +94,7 @@ export class SegmentController {
                 if(res.errorCode){
                     throw new BadRequestException(res.errorMessage);
                 }
+                return res;
             }));
 
     }
@@ -106,6 +113,7 @@ export class SegmentController {
                 if(res.errorCode){
                     throw new BadRequestException(res.errorMessage);
                 }
+                return res;
             }));
 
     }

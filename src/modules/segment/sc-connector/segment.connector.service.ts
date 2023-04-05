@@ -32,8 +32,8 @@ export class SegmentConnectorService {
         return this.blockchainConnectorService.call(this.getSegmentContract(segmentAddress).methods.getContainer());
     }
 
-    public getTokenInformation(segmentAddress: string): Observable<any | ErrorDto>{
-        return this.blockchainConnectorService.call(this.getSegmentContract(segmentAddress).methods.getTokenInformation());
+    public getTokenInformation(segmentAddress: string, index: number): Observable<any | ErrorDto>{
+        return this.blockchainConnectorService.call(this.getSegmentContract(segmentAddress).methods.getTokenInformation(index));
     }
 
     public getTokenLocationInSegment(token: string, tokenId: number, segmentAddress: string): Observable<any | ErrorDto>{

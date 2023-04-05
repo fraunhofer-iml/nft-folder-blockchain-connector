@@ -14,10 +14,6 @@ export class SegmentAllocationConnectorService {
         this.contract = new this.blockchainConnectorService.web3.eth.Contract(TokenAbi,apiConfigService.TOKEN_SC_ADDRESS);
     }
 
-    public addTokenToSegment(tokenId: number, segmentAddress: string): Observable<any | ErrorDto>{
-        return this.blockchainConnectorService.sendTransaction(this.contract.methods.addTokenToSegment(tokenId, segmentAddress));
-    }
-
     public removeTokenFromSegment(tokenId: number, segmentAddress: string): Observable<any | ErrorDto>{
         return this.blockchainConnectorService.sendTransaction(this.contract.methods.removeTokenFromSegment(tokenId, segmentAddress));
     }
