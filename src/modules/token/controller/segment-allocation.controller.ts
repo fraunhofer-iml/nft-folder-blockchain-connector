@@ -1,50 +1,109 @@
-import {Controller, Delete, Get, Param, Post} from '@nestjs/common';
+import {BadRequestException, Controller, Delete, Get, Param, Post} from '@nestjs/common';
 import {SegmentAllocationConnectorService} from "../sc-connector/segment-allocation.connector.service";
+import {ApiOperation, ApiQuery, ApiTags} from "@nestjs/swagger";
+import {map} from "rxjs";
 
+@ApiTags("NFT Segment Allocation")
 @Controller('segment-allocation')
 export class SegmentAllocationController {
 
     constructor(private readonly segmentAllocationConnectorService: SegmentAllocationConnectorService) {}
 
     @Post("addTokenToSegment/:tokenId/:segmentAddress")
+    @ApiQuery({ name: "tokenId", type: Number })
+    @ApiQuery({ name: "segmentAddress", type: String })
+    @ApiOperation({ summary: "Add a token to the segment" })
     public addTokenToSegment(
         @Param("tokenId")tokenId: number,
         @Param("segmentAddress")segmentAddress: string,){
-        this.segmentAllocationConnectorService.addTokenToSegment(tokenId, segmentAddress);
+        return this.segmentAllocationConnectorService.addTokenToSegment(tokenId, segmentAddress)
+            .pipe(map(res => {
+                if(res.errorCode){
+                    throw new BadRequestException(res.errorMessage);
+                }
+                return res;
+            }));
     }
 
 
-    @Delete("removeSegment/:tokenId/:segmentAddress/:tokenAddress")
-    public removeSegment(@Param("tokenId")tokenId: number,
-                         @Param("segmentAddress")segmentAddress: string,){
-        this.segmentAllocationConnectorService.removeSegment(tokenId, segmentAddress);
+    @Delete("removeTokenFromSegment/:tokenId/:segmentAddress")
+    @ApiQuery({ name: "tokenId", type: Number })
+    @ApiQuery({ name: "segmentAddress", type: String })
+    @ApiOperation({ summary: "Remove a token from the segment" })
+    public removeTokenFromSegment(
+        @Param("tokenId")tokenId: number,
+        @Param("segmentAddress")segmentAddress: string,){
+        return this.segmentAllocationConnectorService.removeTokenFromSegment(tokenId, segmentAddress)
+            .pipe(map(res => {
+                if(res.errorCode){
+                    throw new BadRequestException(res.errorMessage);
+                }
+                return res;
+            }));
     }
 
-    @Get("getSegmentCount/:tokenId")
-    public getSegmentCount(@Param("tokenId")tokenId: number,){
-        this.segmentAllocationConnectorService.getSegmentCount(tokenId);
+    @Get("getSegmentCountByToken/:tokenId")
+    @ApiQuery({ name: "tokenId", type: Number })
+    @ApiOperation({ summary: "Returns the segment count" })
+    public getSegmentCountByToken(
+        @Param("tokenId")tokenId: number,){
+        return this.segmentAllocationConnectorService.getSegmentCountByToken(tokenId)
+            .pipe(map(res => {
+                if(res.errorCode){
+                    throw new BadRequestException(res.errorMessage);
+                }
+                return res;
+            }));
 
     }
 
-    @Get("getSegmentAtIndex/:tokenId/:segmentIndex")
-    public getSegmentAtIndex(
+    @Get("getSegmentForTokenAtSegmentIndex/:tokenId/:segmentIndex")
+    @ApiQuery({ name: "tokenId", type: Number })
+    @ApiQuery({ name: "segmentAddress", type: String })
+    @ApiOperation({ summary: "Returns the segment for a token" })
+    public getSegmentForTokenAtSegmentIndex(
         @Param("tokenId")tokenId: number,
         @Param("segmentIndex")segmentIndex: number){
-        this.segmentAllocationConnectorService.getSegmentAtIndex(tokenId, segmentIndex);
+        return this.segmentAllocationConnectorService.getSegmentForTokenAtSegmentIndex(tokenId, segmentIndex)
+            .pipe(map(res => {
+                if(res.errorCode){
+                    throw new BadRequestException(res.errorMessage);
+                }
+                return res;
+            }));
 
     }
 
-    @Get("getIndexForSegment/:tokenId/:segmentAddress")
-    public getIndexForSegment(@Param("tokenId")tokenId: number,
-                              @Param("segmentAddress")segmentAddress: string,){
-        this.segmentAllocationConnectorService.getIndexForSegment(tokenId, segmentAddress);
+    @Get("getIndexForTokenAtSegment/:tokenId/:segmentAddress")
+    @ApiQuery({ name: "tokenId", type: Number })
+    @ApiQuery({ name: "segmentAddress", type: String })
+    @ApiOperation({ summary: "Returns the index for a token" })
+    public getIndexForTokenAtSegment(
+        @Param("tokenId")tokenId: number,
+        @Param("segmentAddress")segmentAddress: string,){
+        return this.segmentAllocationConnectorService.getIndexForTokenAtSegment(tokenId, segmentAddress)
+            .pipe(map(res => {
+                if(res.errorCode){
+                    throw new BadRequestException(res.errorMessage);
+                }
+                return res;
+            }));
 
     }
 
-    @Get("isTokenInSegment/:tokenId/:segmentAddress/:tokenAddress")
+    @Get("isTokenInSegment/:tokenId/:segmentAddress")
+    @ApiQuery({ name: "tokenId", type: Number })
+    @ApiQuery({ name: "segmentAddress", type: String })
+    @ApiOperation({ summary: "Returns if the token is in the segment" })
     public isTokenInSegment(@Param("tokenId")tokenId: number,
                             @Param("segmentAddress")segmentAddress: string){
-        this.segmentAllocationConnectorService.isTokenInSegment(tokenId, segmentAddress);
+        return this.segmentAllocationConnectorService.isTokenInSegment(tokenId, segmentAddress)
+            .pipe(map(res => {
+                if(res.errorCode){
+                    throw new BadRequestException(res.errorMessage);
+                }
+                return res;
+            }));
 
     }
 

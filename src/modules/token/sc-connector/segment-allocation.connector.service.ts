@@ -1,51 +1,41 @@
 import {BlockchainConnectorService} from "../../blockchain-connector/blockchain-connector.service";
 import {ApiConfigService} from "../../../settings/ApiConfigService";
 import {Injectable} from "@nestjs/common";
-import {containerAbi} from "../../container/sc-connector/container.abi";
 import {TokenAbi} from "./token.abi";
+import {Observable} from "rxjs";
+import {ErrorDto} from "../../../dto/Error.dto";
 
 @Injectable()
 export class SegmentAllocationConnectorService {
 
     private contract: any;
 
-    constructor(
-        private readonly blockchainConnectorService: BlockchainConnectorService,
-        private apiConfigService: ApiConfigService
-    ) {
-        this.contract = new this.blockchainConnectorService.web3.eth.Contract(
-            TokenAbi,
-            apiConfigService.TOKEN_SC_ADDRESS
-        );
+    constructor(private readonly blockchainConnectorService: BlockchainConnectorService, private apiConfigService: ApiConfigService) {
+        this.contract = new this.blockchainConnectorService.web3.eth.Contract(TokenAbi,apiConfigService.TOKEN_SC_ADDRESS);
     }
 
-
-    public addTokenToSegment(tokenId: number, segmentAddress: string){
+    public addTokenToSegment(tokenId: number, segmentAddress: string): Observable<any | ErrorDto>{
         return this.blockchainConnectorService.sendTransaction(this.contract.methods.addTokenToSegment(tokenId, segmentAddress));
     }
 
-    public removeSegment(tokenId: number, segmentAddress: string){
-        return this.blockchainConnectorService.sendTransaction(this.contract.methods.removeSegment(tokenId, segmentAddress));
+    public removeTokenFromSegment(tokenId: number, segmentAddress: string): Observable<any | ErrorDto>{
+        return this.blockchainConnectorService.sendTransaction(this.contract.methods.removeTokenFromSegment(tokenId, segmentAddress));
     }
 
-    public getSegmentCount(tokenId: number){
-        return this.blockchainConnectorService.call(this.contract.methods.getSegmentCount(tokenId));
+    public getSegmentCountByToken(tokenId: number): Observable<any | ErrorDto>{
+        return this.blockchainConnectorService.call(this.contract.methods.getSegmentCountByToken(tokenId));
     }
 
-    public getSegmentAtIndex(tokenId: number, segmentIndex: number){
-        return this.blockchainConnectorService.call(this.contract.methods.addTokenToSegment(tokenId, segmentIndex));
-
+    public getSegmentForTokenAtSegmentIndex(tokenId: number, segmentIndex: number): Observable<any | ErrorDto>{
+        return this.blockchainConnectorService.call(this.contract.methods.getSegmentForTokenAtSegmentIndex(tokenId, segmentIndex));
     }
 
-    public getIndexForSegment(tokenId: number, segmentAddress: string){
-        return this.blockchainConnectorService.call(this.contract.methods.addTokenToSegment(tokenId, segmentAddress));
-
+    public getIndexForTokenAtSegment(tokenId: number, segmentAddress: string): Observable<any | ErrorDto>{
+        return this.blockchainConnectorService.call(this.contract.methods.getIndexForTokenAtSegment(tokenId, segmentAddress));
     }
 
-    public isTokenInSegment(tokenId: number, segmentAddress: string){
-        return this.blockchainConnectorService.call(this.contract.methods.addTokenToSegment(tokenId, segmentAddress));
-
+    public isTokenInSegment(tokenId: number, segmentAddress: string): Observable<any | ErrorDto>{
+        return this.blockchainConnectorService.call(this.contract.methods.isTokenInSegment(tokenId, segmentAddress));
     }
-
 
 }

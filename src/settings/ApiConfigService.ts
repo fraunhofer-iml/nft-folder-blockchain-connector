@@ -13,6 +13,10 @@ export class ApiConfigService {
         return this.getConfig<string>('PRIVATE_KEY', '');
     }
 
+    get MNEMONIC_PASS_PHRASE(): string {
+        return this.getConfig<string>('MNEMONIC_PASS_PHRASE', '');
+    }
+
     get BLOCKCHAIN_URL(): string {
         return this.getConfig<string>('BLOCKCHAIN_URL', '');
     }

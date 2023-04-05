@@ -1,50 +1,65 @@
 import {Inject, Injectable, Logger} from "@nestjs/common";
-import {catchError, defer, from, of, tap} from "rxjs";
+import {catchError, defer, from, Observable, of, switchMap, tap} from "rxjs";
+import {ErrorDto} from "../../dto/Error.dto";
 import {ApiConfigService} from "../../settings/ApiConfigService";
+
 
 @Injectable()
 export class BlockchainConnectorService{
 
     private logger = new Logger(BlockchainConnectorService.name);
+    private accounts = [];
 
-    constructor(
-        @Inject("Web3Service") public readonly web3: any,
-        private apiConfigService: ApiConfigService) {
-        }
+    constructor(@Inject("Web3Service") public readonly web3: any, private apiConfigService: ApiConfigService) {
+            this.fillAccountListFromWallet();
+    }
 
-    private convertWalletKey(walletKey: string) {
-        try {
-            return this.web3.eth.accounts.privateKeyToAccount("0x" + walletKey);
-        } catch (e) {
-            this.logger.error(e);
-            return undefined;
+    private fillAccountListFromWallet(): void{
+        const wallets = this.web3._provider.wallets;
+        for (const wallet in wallets) {
+            let account = wallets[wallet];
+            this.accounts.push({
+                privateKey: "0x" + account._privKey.toString("hex"),
+                publicKey: account._pubKey.toString("hex"),
+                publicAddress: wallet,
+            });
         }
     }
 
-    public sendTransaction(transaction){
-        console.log(transaction)
-        const ownAccount = this.convertWalletKey(this.apiConfigService.PRIVATE_KEY);
+    public sendTransaction(transaction): Observable<any | ErrorDto>{
+        let account = this.web3.eth.accounts.privateKeyToAccount(this.apiConfigService.PRIVATE_KEY)
+        this.web3.eth.handleRevert = true
         const transactionParameters = {
             gas: 6721975,
             gasPrice: 0,
             to: transaction._parent._address,
-            from: ownAccount.address,
+            from: account.address,
             data: transaction.encodeABI(),
         }
-        return defer(() => from(this.web3.eth.sendTransaction(transactionParameters
-        ))).pipe(catchError(err => {
-            this.logger.log(err, "sendSigned@send");
-            return of(err)
-        }), tap((res) => {
-            this.logger.log("after send ... ", res)
-            return res;
-        }))
+        return defer(() =>from(this.web3.eth.accounts.signTransaction(transactionParameters, this.apiConfigService.PRIVATE_KEY)))
+            .pipe(
+                catchError((err) => {
+                    this.logger.error(err);
+                    return of(new ErrorDto(400, err));
+                }),
+                switchMap((signed: any) => {
+                    return defer(() =>from(this.web3.eth.sendSignedTransaction(signed.rawTransaction)))
+                        .pipe(
+                        catchError((err) => {
+                            this.logger.error(err);
+                            return (err.reason) ? of(new ErrorDto(400, err.reason)) : of(new ErrorDto(400, err.message));
+                        })
+                    );
+                })
+            );
+
     }
 
-    public call(transaction){
+    public call(transaction): Observable<any | ErrorDto>{
         return defer(() => from(transaction.call()))
             .pipe(catchError(err => {
-            return of(err)
+                this.logger.error(err);
+                return of(new ErrorDto(400, err));
         }), tap((res) => {
             return res;
         }))
