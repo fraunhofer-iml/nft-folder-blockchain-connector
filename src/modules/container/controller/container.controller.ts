@@ -6,9 +6,10 @@
  */
 
 import { BadRequestException, Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ContainerService } from '../service/container.service';
-import { map } from 'rxjs';
+import { map, Observable } from 'rxjs';
+import { SegmentDto } from '../../../dto/segment.dto';
 
 @ApiTags('NFT Container')
 @Controller('container')
@@ -16,9 +17,9 @@ export class ContainerController {
   constructor(private readonly containerConnectorService: ContainerService) {}
 
   @Post('createSegment')
-  @ApiQuery({ name: 'nameInput', type: String })
+  @ApiBody({ description: 'Contains the name of the new segment', type: SegmentDto })
   @ApiOperation({ summary: 'Creates a new segment for the container' })
-  public createSegment(@Body() nameInput: any) {
+  public createSegment(@Body() nameInput: SegmentDto): Observable<any> {
     return this.containerConnectorService.createSegment(nameInput.name).pipe(
       map((res) => {
         if (res.errorCode) {
@@ -56,7 +57,7 @@ export class ContainerController {
   }
 
   @Get('getSegmentAtIndex/:index')
-  @ApiQuery({ name: 'index', type: Number })
+  @ApiQuery({ name: 'index', type: Number, description: 'Index of the segment' })
   @ApiOperation({ summary: 'Returns the segment at the given index' })
   public getSegmentAtIndex(@Param('index') index: number) {
     return this.containerConnectorService.getSegmentAtIndex(index).pipe(
@@ -70,7 +71,7 @@ export class ContainerController {
   }
 
   @Get('isSegmentInContainer/:segment')
-  @ApiQuery({ name: 'segment', type: String })
+  @ApiQuery({ name: 'segment', type: String, description: 'Address of the segment' })
   @ApiOperation({ summary: 'Checks if the segment exists in the container' })
   public isSegmentInContainer(@Param('segment') segment: string) {
     return this.containerConnectorService.isSegmentInContainer(segment).pipe(

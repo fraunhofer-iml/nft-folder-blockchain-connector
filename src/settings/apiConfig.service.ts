@@ -35,6 +35,18 @@ export class ApiConfigService {
     return this.getConfig<string>('TOKEN_ADDRESS', '');
   }
 
+  get USE_AMQP(): boolean {
+    return this.configService.get<string>('USE_AMQP', 'true').toLocaleLowerCase() === 'true';
+  }
+
+  get AMQP_URL(): string {
+    return this.getConfig<string>('AMQP_URL', '');
+  }
+
+  get AMQP_BASE_QUEUE(): string {
+    return this.getConfig<string>('AMQP_BASE_QUEUE', '');
+  }
+
   private getConfig<T>(tag: string, alternative: T): T {
     let config: any = this.configurationOverwrite.find((el) => el.name === tag);
     if (!config) {

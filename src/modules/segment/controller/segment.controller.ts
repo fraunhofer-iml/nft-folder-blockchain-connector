@@ -5,10 +5,10 @@
  * For details on the licensing terms, see the LICENSE file.
  */
 
-import { BadRequestException, Body, Controller, Get, Param, Put } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { SegmentService } from '../service/segment.service';
 import { TokenDto } from '../../../dto/token.dto';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { map } from 'rxjs';
 
 @ApiTags('NFT Segment')
@@ -16,9 +16,9 @@ import { map } from 'rxjs';
 export class SegmentController {
   constructor(private readonly segmentConnectorService: SegmentService) {}
 
-  @Put('addToken')
-  @ApiQuery({ name: 'tokenInput', type: TokenDto })
-  @ApiOperation({ summary: 'Adds a token to the segment' })
+  @Post('addToken')
+  @ApiBody({ type: TokenDto, description: 'Contains the attributes of a token and the segment address' })
+  @ApiOperation({ summary: 'Adds a token to a segment' })
   public addToken(@Body() tokenInput: TokenDto) {
     return this.segmentConnectorService
       .addToken(tokenInput.tokenAddress, tokenInput.tokenId, tokenInput.segmentIndex)
@@ -32,8 +32,8 @@ export class SegmentController {
       );
   }
 
-  @Put('removeToken')
-  @ApiQuery({ name: 'tokenInput', type: TokenDto })
+  @Delete('removeToken')
+  @ApiBody({ type: TokenDto, description: 'Contains the attributes of a token and the segment address' })
   @ApiOperation({ summary: 'Removes a token from the segment' })
   public removeToken(@Body() tokenInput: TokenDto) {
     return this.segmentConnectorService

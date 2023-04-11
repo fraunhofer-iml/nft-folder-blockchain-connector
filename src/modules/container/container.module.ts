@@ -11,9 +11,10 @@ import { BlockchainConnectorModule } from '../blockchain-connector/blockchain-co
 import { ContainerService } from './service/container.service';
 import { ConfigModule } from '@nestjs/config';
 import { ApiConfigService } from '../../settings/apiConfig.service';
+import { ContainerAMQPController } from './controller/container.amqp.controller';
 
 @Module({
-  controllers: [ContainerController],
+  controllers: [ContainerController, ContainerAMQPController],
   providers: [ContainerService, ApiConfigService],
   imports: [BlockchainConnectorModule, ConfigModule],
 })

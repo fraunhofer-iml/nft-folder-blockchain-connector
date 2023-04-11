@@ -7,17 +7,17 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 
-export class TokenDto {
+export class TransferDto {
   @ApiProperty()
-  public tokenAddress: string;
+  public from: string;
+  @ApiProperty()
+  public to: string;
   @ApiProperty()
   public tokenId: number;
-  @ApiProperty()
-  public segmentIndex: string;
 
-  constructor(token: string, tokenId: number, segmentAddress: string) {
-    this.tokenAddress = token;
+  constructor(from: string, to: string, tokenId: number) {
+    this.from = from;
+    this.to = to;
     this.tokenId = tokenId;
-    this.segmentIndex = segmentAddress;
   }
 }

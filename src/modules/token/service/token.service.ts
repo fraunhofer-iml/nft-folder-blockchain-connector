@@ -64,7 +64,7 @@ export class TokenService {
     return this.blockchainConnectorService.sendTransaction(this.contract.methods.setApprovalForAll(operator, approved));
   }
 
-  public transferFrom(from: string, to: string, tokenId: boolean): Observable<any | ErrorDto> {
+  public transferFrom(from: string, to: string, tokenId: number): Observable<any | ErrorDto> {
     return this.blockchainConnectorService.sendTransaction(this.contract.methods.transferFrom(from, to, tokenId));
   }
 

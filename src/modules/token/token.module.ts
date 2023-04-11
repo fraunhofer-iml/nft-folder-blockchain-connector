@@ -13,9 +13,11 @@ import { ApiConfigService } from '../../settings/apiConfig.service';
 import { SegmentAllocationService } from './service/segment-allocation.service';
 import { SegmentAllocationController } from './controller/segment-allocation.controller';
 import { ConfigModule } from '@nestjs/config';
+import { TokenAMQPController } from './controller/token.amqp.controller';
+import { SegmentAllocationAMQPController } from './controller/segment-allocation.amqp.controller';
 
 @Module({
-  controllers: [TokenController, SegmentAllocationController],
+  controllers: [TokenController, SegmentAllocationController, TokenAMQPController, SegmentAllocationAMQPController],
   providers: [TokenService, SegmentAllocationService, ApiConfigService],
   imports: [BlockchainConnectorModule, ConfigModule],
 })
