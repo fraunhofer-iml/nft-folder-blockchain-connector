@@ -1,18 +1,26 @@
+/**
+ * Copyright 2023 Open Logistics Foundation
+ *
+ * Licensed under the Open Logistics License 1.0.
+ * For details on the licensing terms, see the LICENSE file.
+ */
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-      .setTitle('Blockchain Connector')
-      .setDescription('How to manage Token, Segment and Container')
-      .setVersion('1.0')
-      .build();
+    .setTitle('Blockchain Connector')
+    .setDescription('How to manage Token, Segment and Container')
+    .setVersion('1.0')
+    .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
   await app.listen(3000);
 }
+
 bootstrap();
