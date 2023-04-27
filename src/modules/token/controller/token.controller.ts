@@ -5,26 +5,27 @@
  * For details on the licensing terms, see the LICENSE file.
  */
 
-import { BadRequestException, Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { TokenService } from '../service/token.service';
 import { TokenMintDto } from '../../../dto/tokenMint.dto';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { map } from 'rxjs';
+import { ApprovalDto } from '../../../dto/approval.dto';
+import { TransferDto } from '../../../dto/transfer.dto';
 
 @ApiTags('NFT Token Controller')
 @Controller('token')
 export class TokenController {
   constructor(private readonly tokenConnectorService: TokenService) {}
 
-  @Post('approve/:to/:tokenId')
-  @ApiQuery({ name: 'to', type: String })
-  @ApiQuery({ name: 'tokenId', type: Number })
+  @Put('approve')
+  @ApiBody({ type: ApprovalDto, description: 'Contains the information for a token approval' })
   @ApiOperation({ summary: 'Approve a token' })
-  public approve(@Param('to') to: string, @Param('tokenId') tokenId: number) {
-    if (!to || !tokenId) {
+  public approve(@Body() approvalDto: ApprovalDto) {
+    if (!approvalDto.to || !approvalDto.tokenId) {
       throw new BadRequestException();
     }
-    return this.tokenConnectorService.approve(to, tokenId).pipe(
+    return this.tokenConnectorService.approve(approvalDto.to, approvalDto.tokenId).pipe(
       map((res) => {
         if (res.errorCode) {
           throw new BadRequestException(res.errorMessage);
@@ -34,7 +35,7 @@ export class TokenController {
     );
   }
 
-  @Post('burn/:tokenId')
+  @Delete('burn/:tokenId')
   @ApiQuery({ name: 'tokenId', type: Number })
   @ApiOperation({ summary: 'Burn a token' })
   public burn(@Param('tokenId') tokenId: number) {
@@ -48,7 +49,7 @@ export class TokenController {
     );
   }
 
-  @Post('renounceOwnership')
+  @Put('renounceOwnership')
   @ApiOperation({ summary: 'Renounce ownership' })
   public renounceOwnership() {
     return this.tokenConnectorService.renounceOwnership().pipe(
@@ -75,13 +76,11 @@ export class TokenController {
     );
   }
 
-  @Post('safeTransferFrom/:from/:to/:tokenId')
-  @ApiQuery({ name: 'from', type: String })
-  @ApiQuery({ name: 'to', type: String })
-  @ApiQuery({ name: 'tokenId', type: Number })
+  @Put('safeTransferFrom')
+  @ApiBody({ type: TransferDto, description: 'contains the necessary information about a token transfer' })
   @ApiOperation({ summary: '(Safe) Transfer token' })
-  public safeTransferFrom(@Param('from') from: string, @Param('to') to: string, @Param('tokenId') tokenId: number) {
-    return this.tokenConnectorService.safeTransferFrom(from, to, tokenId).pipe(
+  public safeTransferFrom(@Body() transferDto: TransferDto) {
+    return this.tokenConnectorService.safeTransferFrom(transferDto.from, transferDto.from, transferDto.tokenId).pipe(
       map((res) => {
         if (res.errorCode) {
           throw new BadRequestException(res.errorMessage);
@@ -91,7 +90,7 @@ export class TokenController {
     );
   }
 
-  @Post('setApprovalForAll/:operator/:approved')
+  @Put('setApprovalForAll/:operator/:approved')
   @ApiQuery({ name: 'operator', type: String })
   @ApiQuery({ name: 'approved', type: Boolean })
   @ApiOperation({ summary: 'Set Approval' })
@@ -106,13 +105,11 @@ export class TokenController {
     );
   }
 
-  @Post('transferFrom/:from/:to/:tokenId')
-  @ApiQuery({ name: 'from', type: String })
-  @ApiQuery({ name: 'to', type: String })
-  @ApiQuery({ name: 'tokenId', type: Boolean })
+  @Put('transferFrom')
+  @ApiBody({ type: TransferDto, description: 'contains the necessary information about a token transfer' })
   @ApiOperation({ summary: 'Transfer token' })
-  public transferFrom(@Param('from') from: string, @Param('to') to: string, @Param('tokenId') tokenId: boolean) {
-    return this.tokenConnectorService.transferFrom(from, to, tokenId).pipe(
+  public transferFrom(@Body() transferDto: TransferDto) {
+    return this.tokenConnectorService.transferFrom(transferDto.from, transferDto.to, transferDto.tokenId).pipe(
       map((res) => {
         if (res.errorCode) {
           throw new BadRequestException(res.errorMessage);
@@ -122,7 +119,7 @@ export class TokenController {
     );
   }
 
-  @Post('transferOwnership/:newOwner')
+  @Put('transferOwnership/:newOwner')
   @ApiQuery({ name: 'newOwner', type: String })
   @ApiOperation({ summary: 'Transfer token ownership' })
   public transferOwnership(@Param('newOwner') newOwner: string) {
