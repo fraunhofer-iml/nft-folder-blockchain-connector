@@ -6,16 +6,18 @@
  */
 
 import { Module } from '@nestjs/common';
-import { SegmentController } from './controller/segment.controller';
+
+import { SegmentRestController } from './controller/rest/segment.rest.controller';
+import { SegmentAmqpController } from './controller/amqp/segment.amqp.controller';
+
 import { SegmentService } from './service/segment.service';
+import { ApiConfigService } from '../../config/apiConfig.service';
+
 import { BlockchainConnectorModule } from '../blockchain-connector/blockchain-connector.module';
-import { ApiConfigService } from '../../settings/apiConfig.service';
-import { ConfigModule } from '@nestjs/config';
-import { SegmentAMQPController } from './controller/segment.amqp.controller';
 
 @Module({
-  controllers: [SegmentController, SegmentAMQPController],
+  controllers: [SegmentRestController, SegmentAmqpController],
   providers: [SegmentService, ApiConfigService],
-  imports: [BlockchainConnectorModule, ConfigModule],
+  imports: [BlockchainConnectorModule],
 })
 export class SegmentModule {}

@@ -53,14 +53,8 @@ export const containerAbi = [
       {
         indexed: true,
         internalType: 'address',
-        name: 'segment',
+        name: 'segmentAddress',
         type: 'address',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'index',
-        type: 'uint256',
       },
     ],
     name: 'SegmentAdded',
@@ -78,7 +72,6 @@ export const containerAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [],
@@ -125,21 +118,6 @@ export const containerAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
-  },
-  {
-    inputs: [],
-    name: 'getSegmentCount',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -149,7 +127,7 @@ export const containerAbi = [
         type: 'uint256',
       },
     ],
-    name: 'getSegmentAtIndex',
+    name: 'getSegment',
     outputs: [
       {
         internalType: 'address',
@@ -159,13 +137,25 @@ export const containerAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
+  },
+  {
+    inputs: [],
+    name: 'getNumberOfSegments',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     inputs: [
       {
         internalType: 'address',
-        name: 'segment',
+        name: 'segmentAddress',
         type: 'address',
       },
     ],
@@ -179,6 +169,5 @@ export const containerAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
 ];

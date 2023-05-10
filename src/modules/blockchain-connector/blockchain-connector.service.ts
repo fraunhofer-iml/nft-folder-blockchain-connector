@@ -7,30 +7,15 @@
 
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { catchError, defer, from, Observable, of, switchMap, tap } from 'rxjs';
+
+import { ApiConfigService } from '../../config/apiConfig.service';
 import { ErrorDto } from '../../dto/error.dto';
-import { ApiConfigService } from '../../settings/apiConfig.service';
 
 @Injectable()
 export class BlockchainConnectorService {
   private logger = new Logger(BlockchainConnectorService.name);
-  private accounts = [];
 
-  constructor(@Inject('Web3Service') public readonly web3: any, private apiConfigService: ApiConfigService) {
-    this.fillAccountListFromWallet();
-  }
-
-  private fillAccountListFromWallet(): void {
-    const wallets = this.web3._provider.wallets;
-
-    for (const wallet in wallets) {
-      const account = wallets[wallet];
-      this.accounts.push({
-        privateKey: '0x' + account._privKey.toString('hex'),
-        publicKey: account._pubKey.toString('hex'),
-        publicAddress: wallet,
-      });
-    }
-  }
+  constructor(@Inject('Web3Service') public readonly web3: any, private apiConfigService: ApiConfigService) {}
 
   public sendTransaction(transaction): Observable<any | ErrorDto> {
     const account = this.web3.eth.accounts.privateKeyToAccount(this.apiConfigService.PRIVATE_KEY);

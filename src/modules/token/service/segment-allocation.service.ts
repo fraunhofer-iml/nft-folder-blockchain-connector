@@ -5,11 +5,12 @@
  * For details on the licensing terms, see the LICENSE file.
  */
 
-import { BlockchainConnectorService } from '../../blockchain-connector/blockchain-connector.service';
-import { ApiConfigService } from '../../../settings/apiConfig.service';
 import { Injectable } from '@nestjs/common';
-import { TokenAbi } from './token.abi';
 import { Observable } from 'rxjs';
+
+import { BlockchainConnectorService } from '../../blockchain-connector/blockchain-connector.service';
+import { ApiConfigService } from '../../../config/apiConfig.service';
+import { TokenAbi } from './token.abi';
 import { ErrorDto } from '../../../dto/error.dto';
 
 @Injectable()
@@ -23,20 +24,16 @@ export class SegmentAllocationService {
     this.contract = new this.blockchainConnectorService.web3.eth.Contract(TokenAbi, apiConfigService.TOKEN_ADDRESS);
   }
 
-  public getSegmentCountByToken(tokenId: number): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.call(this.contract.methods.getSegmentCountByToken(tokenId));
+  public getSegments(tokenId: number): Observable<any | ErrorDto> {
+    return this.blockchainConnectorService.call(this.contract.methods.getSegments(tokenId));
   }
 
-  public getSegmentForTokenAtSegmentIndex(tokenId: number, segmentIndex: number): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.call(
-      this.contract.methods.getSegmentForTokenAtSegmentIndex(tokenId, segmentIndex),
-    );
+  public getSegment(tokenId: number, segmentAddressIndex: number): Observable<any | ErrorDto> {
+    return this.blockchainConnectorService.call(this.contract.methods.getSegment(tokenId, segmentAddressIndex));
   }
 
-  public getIndexForTokenAtSegment(tokenId: number, segmentAddress: string): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.call(
-      this.contract.methods.getIndexForTokenAtSegment(tokenId, segmentAddress),
-    );
+  public getNumberOfSegments(tokenId: number): Observable<any | ErrorDto> {
+    return this.blockchainConnectorService.call(this.contract.methods.getNumberOfSegments(tokenId));
   }
 
   public isTokenInSegment(tokenId: number, segmentAddress: string): Observable<any | ErrorDto> {

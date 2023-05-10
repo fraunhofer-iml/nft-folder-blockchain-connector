@@ -19,10 +19,6 @@ export class ApiConfigService {
     return this.getConfig<string>('PRIVATE_KEY', '');
   }
 
-  get MNEMONIC_PASS_PHRASE(): string {
-    return this.getConfig<string>('MNEMONIC_PASS_PHRASE', '');
-  }
-
   get BLOCKCHAIN_URL(): string {
     return this.getConfig<string>('BLOCKCHAIN_URL', '');
   }
@@ -49,11 +45,13 @@ export class ApiConfigService {
 
   private getConfig<T>(tag: string, alternative: T): T {
     let config: any = this.configurationOverwrite.find((el) => el.name === tag);
+
     if (!config) {
       config = this.configService.get<T>(tag, alternative);
     } else {
       config = config.value;
     }
+
     return config;
   }
 }

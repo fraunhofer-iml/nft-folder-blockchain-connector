@@ -6,19 +6,28 @@
  */
 
 import { Module } from '@nestjs/common';
-import { TokenController } from './controller/token.controller';
+
+import { SegmentAllocationRestController } from './controller/rest/segment-allocation.rest.controller';
+import { SegmentAllocationAmqpController } from './controller/amqp/segment-allocation.amqp.controller';
+import { TokenRestController } from './controller/rest/token.rest.controller';
+import { TokenAmqpController } from './controller/amqp/tokenAmqpController';
+
 import { TokenService } from './service/token.service';
-import { BlockchainConnectorModule } from '../blockchain-connector/blockchain-connector.module';
-import { ApiConfigService } from '../../settings/apiConfig.service';
 import { SegmentAllocationService } from './service/segment-allocation.service';
-import { SegmentAllocationController } from './controller/segment-allocation.controller';
-import { ConfigModule } from '@nestjs/config';
-import { TokenAMQPController } from './controller/token.amqp.controller';
-import { SegmentAllocationAMQPController } from './controller/segment-allocation.amqp.controller';
+import { ApiConfigService } from '../../config/apiConfig.service';
+
+import { BlockchainConnectorModule } from '../blockchain-connector/blockchain-connector.module';
 
 @Module({
-  controllers: [TokenController, SegmentAllocationController, TokenAMQPController, SegmentAllocationAMQPController],
+  controllers: [
+    SegmentAllocationRestController,
+    SegmentAllocationAmqpController,
+    TokenRestController,
+    TokenAmqpController,
+  ],
   providers: [TokenService, SegmentAllocationService, ApiConfigService],
-  imports: [BlockchainConnectorModule, ConfigModule],
+  imports: [BlockchainConnectorModule],
 })
 export class TokenModule {}
+
+// TODO-MP: extract all extension related token code into their own corresponding files

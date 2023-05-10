@@ -6,8 +6,9 @@
  */
 
 import { Module } from '@nestjs/common';
-import { ContainerModule } from './modules/container/container.module';
 import { ConfigModule } from '@nestjs/config';
+
+import { ContainerModule } from './modules/container/container.module';
 import { SegmentModule } from './modules/segment/segment.module';
 import { TokenModule } from './modules/token/token.module';
 

@@ -1,0 +1,13 @@
+/**
+ * Copyright 2023 Open Logistics Foundation
+ *
+ * Licensed under the Open Logistics License 1.0.
+ * For details on the licensing terms, see the LICENSE file.
+ */
+
+export function areMethodsEqual(transactionA, transactionB) {
+  return (
+    transactionA._method.name == transactionB._method.name &&
+    transactionA.arguments.toString() == transactionB.arguments.toString()
+  );
+}
