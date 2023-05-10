@@ -7,115 +7,122 @@
 
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { TokenService } from '../service/token.service';
-import { TokenMintDto } from '../../../dto/tokenMint.dto';
+
+import { TokenService } from '../../service/token.service';
+import { TokenMintDto } from '../../../../dto/tokenMint.dto';
+import { handleException } from '../../../utils/errorHandling';
 
 @Controller()
-export class TokenAMQPController {
-  constructor(private readonly tokenConnectorService: TokenService) {}
+export class TokenAmqpController {
+  constructor(private readonly tokenService: TokenService) {}
 
   @MessagePattern('approve')
   public approve(@Payload() queryInput: any) {
-    return this.tokenConnectorService.approve(queryInput.to, queryInput.tokenId);
+    return this.tokenService.approve(queryInput.to, queryInput.tokenId);
   }
 
   @MessagePattern('burn')
   public burn(@Payload() queryInput: any) {
-    return this.tokenConnectorService.burn(queryInput.tokenId);
+    return this.tokenService.burn(queryInput.tokenId);
   }
 
   @MessagePattern('renounceOwnership')
   public renounceOwnership() {
-    return this.tokenConnectorService.renounceOwnership();
+    return this.tokenService.renounceOwnership();
   }
 
   @MessagePattern('safeMint')
   public safeMint(@Payload() tokenMintDto: TokenMintDto) {
-    return this.tokenConnectorService.safeMint(tokenMintDto);
+    return this.tokenService.safeMint(tokenMintDto);
   }
 
   @MessagePattern('safeTransferFrom')
   public safeTransferFrom(@Payload() queryInput: any) {
-    return this.tokenConnectorService.safeTransferFrom(queryInput.from, queryInput.to, queryInput.tokenId);
+    return this.tokenService.safeTransferFrom(queryInput.from, queryInput.to, queryInput.tokenId);
   }
 
   @MessagePattern('setApprovalForAll')
   public setApprovalForAll(@Payload() queryInput: any) {
-    return this.tokenConnectorService.setApprovalForAll(queryInput.operator, queryInput.approved);
+    return this.tokenService.setApprovalForAll(queryInput.operator, queryInput.approved);
   }
 
   @MessagePattern('transferFrom')
   public transferFrom(@Payload() queryInput: any) {
-    return this.tokenConnectorService.transferFrom(queryInput.from, queryInput.to, queryInput.tokenId);
+    return this.tokenService.transferFrom(queryInput.from, queryInput.to, queryInput.tokenId);
   }
 
   @MessagePattern('transferOwnership')
   public transferOwnership(@Payload() queryInput: any) {
-    return this.tokenConnectorService.transferOwnership(queryInput.newOwner);
+    return this.tokenService.transferOwnership(queryInput.newOwner);
   }
 
   @MessagePattern('balanceOf')
   public balanceOf(@Payload() queryInput: any) {
-    return this.tokenConnectorService.balanceOf(queryInput.ownerAddress);
+    return this.tokenService.balanceOf(queryInput.ownerAddress);
   }
 
   @MessagePattern('getAdditionalInformation')
   public getAdditionalInformation(@Payload() queryInput: any) {
-    return this.tokenConnectorService.getAdditionalInformation(queryInput.tokenId);
+    return this.tokenService.getAdditionalInformation(queryInput.tokenId);
   }
 
   @MessagePattern('getApproved')
   public getApproved(@Payload() queryInput: any) {
-    return this.tokenConnectorService.getApproved(queryInput.tokenId);
+    return this.tokenService.getApproved(queryInput.tokenId);
+  }
+
+  @MessagePattern('getAssetInformation')
+  public getAssetInformation(@Payload() queryInput: any) {
+    return handleException(this.tokenService.getAssetInformation(queryInput.tokenId));
   }
 
   @MessagePattern('getAssetHash')
   public getAssetHash(@Payload() queryInput: any) {
-    return this.tokenConnectorService.getAssetHash(queryInput.tokenId);
+    return this.tokenService.getAssetHash(queryInput.tokenId);
   }
 
   @MessagePattern('getAssetUri')
   public getAssetUri(@Payload() queryInput: any) {
-    return this.tokenConnectorService.getAssetUri(queryInput.tokenId);
+    return this.tokenService.getAssetUri(queryInput.tokenId);
   }
 
   @MessagePattern('getMetadataHash')
   public getMetadataHash(@Payload() queryInput: any) {
-    return this.tokenConnectorService.getMetadataHash(queryInput.tokenId);
+    return this.tokenService.getMetadataHash(queryInput.tokenId);
   }
 
   @MessagePattern('isApprovedForAll')
   public isApprovedForAll(@Payload() queryInput: any) {
-    return this.tokenConnectorService.isApprovedForAll(queryInput.owner, queryInput.operator);
+    return this.tokenService.isApprovedForAll(queryInput.owner, queryInput.operator);
   }
 
   @MessagePattern('name')
   public name() {
-    return this.tokenConnectorService.name();
+    return this.tokenService.name();
   }
 
   @MessagePattern('owner')
   public owner() {
-    return this.tokenConnectorService.owner();
+    return this.tokenService.owner();
   }
 
   @MessagePattern('ownerOf')
   public ownerOf(@Payload() queryInput: any) {
-    return this.tokenConnectorService.ownerOf(queryInput.tokenId);
+    return this.tokenService.ownerOf(queryInput.tokenId);
   }
 
   @MessagePattern('supportsInterface')
   public supportsInterface(@Payload() queryInput: any) {
-    return this.tokenConnectorService.supportsInterface(queryInput.interfaceId);
+    return this.tokenService.supportsInterface(queryInput.interfaceId);
   }
 
   @MessagePattern('symbol')
   public symbol() {
-    return this.tokenConnectorService.symbol();
+    return this.tokenService.symbol();
   }
 
   @MessagePattern('getTokenURI')
   public getTokenURI(@Payload() queryInput: any) {
-    return this.tokenConnectorService.getTokenURI(queryInput.tokenId);
+    return this.tokenService.getTokenURI(queryInput.tokenId);
   }
 }

@@ -6,16 +6,18 @@
  */
 
 import { Module } from '@nestjs/common';
-import { ContainerController } from './controller/container.controller';
-import { BlockchainConnectorModule } from '../blockchain-connector/blockchain-connector.module';
+
+import { ContainerRestController } from './controller/rest/container.rest.controller';
+import { ContainerAmqpController } from './controller/amqp/container.amqp.controller';
+
 import { ContainerService } from './service/container.service';
-import { ConfigModule } from '@nestjs/config';
-import { ApiConfigService } from '../../settings/apiConfig.service';
-import { ContainerAMQPController } from './controller/container.amqp.controller';
+import { ApiConfigService } from '../../config/apiConfig.service';
+
+import { BlockchainConnectorModule } from '../blockchain-connector/blockchain-connector.module';
 
 @Module({
-  controllers: [ContainerController, ContainerAMQPController],
+  controllers: [ContainerRestController, ContainerAmqpController],
   providers: [ContainerService, ApiConfigService],
-  imports: [BlockchainConnectorModule, ConfigModule],
+  imports: [BlockchainConnectorModule],
 })
 export class ContainerModule {}

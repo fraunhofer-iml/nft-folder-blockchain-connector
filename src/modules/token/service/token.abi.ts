@@ -106,12 +106,6 @@ export const TokenAbi = [
         name: 'segment',
         type: 'address',
       },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'index',
-        type: 'uint256',
-      },
     ],
     name: 'SegmentAddedToToken',
     type: 'event',
@@ -130,12 +124,6 @@ export const TokenAbi = [
         internalType: 'address',
         name: 'segment',
         type: 'address',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'index',
-        type: 'uint256',
       },
     ],
     name: 'SegmentRemovedFromToken',
@@ -299,12 +287,24 @@ export const TokenAbi = [
         type: 'uint256',
       },
     ],
-    name: 'getAssetUri',
+    name: 'getAssetInformation',
     outputs: [
       {
-        internalType: 'string',
+        components: [
+          {
+            internalType: 'string',
+            name: 'assetUri',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: 'assetHash',
+            type: 'string',
+          },
+        ],
+        internalType: 'struct ERC721Asset.AssetInformation',
         name: '',
-        type: 'string',
+        type: 'tuple',
       },
     ],
     stateMutability: 'view',
@@ -317,18 +317,13 @@ export const TokenAbi = [
         name: 'tokenId',
         type: 'uint256',
       },
-      {
-        internalType: 'address',
-        name: 'segmentAddress',
-        type: 'address',
-      },
     ],
-    name: 'getIndexForTokenAtSegment',
+    name: 'getAssetUri',
     outputs: [
       {
-        internalType: 'uint256',
+        internalType: 'string',
         name: '',
-        type: 'uint256',
+        type: 'string',
       },
     ],
     stateMutability: 'view',
@@ -361,7 +356,7 @@ export const TokenAbi = [
         type: 'uint256',
       },
     ],
-    name: 'getSegmentCountByToken',
+    name: 'getNumberOfSegments',
     outputs: [
       {
         internalType: 'uint256',
@@ -381,16 +376,35 @@ export const TokenAbi = [
       },
       {
         internalType: 'uint256',
-        name: 'segmentIndex',
+        name: 'segmentAddressIndex',
         type: 'uint256',
       },
     ],
-    name: 'getSegmentForTokenAtSegmentIndex',
+    name: 'getSegment',
     outputs: [
       {
         internalType: 'address',
         name: '',
         type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'getSegments',
+    outputs: [
+      {
+        internalType: 'address[]',
+        name: '',
+        type: 'address[]',
       },
     ],
     stateMutability: 'view',

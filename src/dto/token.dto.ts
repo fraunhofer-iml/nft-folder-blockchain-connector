@@ -13,11 +13,11 @@ export class TokenDto {
   @ApiProperty()
   public tokenId: number;
   @ApiProperty()
-  public segmentIndex: string;
+  public segmentAddress: string;
 
-  constructor(token: string, tokenId: number, segmentAddress: string) {
-    this.tokenAddress = token;
+  constructor(tokenAddress: string, tokenId: number, segmentAddress: string) {
+    this.tokenAddress = tokenAddress;
     this.tokenId = tokenId;
-    this.segmentIndex = segmentAddress;
+    this.segmentAddress = segmentAddress;
   }
 }

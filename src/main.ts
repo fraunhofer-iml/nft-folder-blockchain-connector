@@ -10,7 +10,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Transport } from '@nestjs/microservices';
 import { Logger } from '@nestjs/common';
-import { ApiConfigService } from './settings/apiConfig.service';
+import { ApiConfigService } from './config/apiConfig.service';
 
 async function bootstrap() {
   const logger = new Logger('Main.ts');

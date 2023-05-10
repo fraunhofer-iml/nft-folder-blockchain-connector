@@ -7,7 +7,7 @@
 
 import { TokenMintDto } from '../../../dto/tokenMint.dto';
 import { BlockchainConnectorService } from '../../blockchain-connector/blockchain-connector.service';
-import { ApiConfigService } from '../../../settings/apiConfig.service';
+import { ApiConfigService } from '../../../config/apiConfig.service';
 import { Injectable } from '@nestjs/common';
 import { TokenAbi } from './token.abi';
 import { Observable } from 'rxjs';
@@ -84,6 +84,10 @@ export class TokenService {
     return this.blockchainConnectorService.call(this.contract.methods.getApproved(tokenId));
   }
 
+  public getAssetInformation(tokenId: number): Observable<any | ErrorDto> {
+    return this.blockchainConnectorService.call(this.contract.methods.getAssetInformation(tokenId));
+  }
+
   public getAssetHash(tokenId: number): Observable<any | ErrorDto> {
     return this.blockchainConnectorService.call(this.contract.methods.getAssetHash(tokenId));
   }
@@ -122,11 +126,5 @@ export class TokenService {
 
   public getTokenURI(tokenId: number): Observable<any | ErrorDto> {
     return this.blockchainConnectorService.call(this.contract.methods.tokenURI(tokenId));
-  }
-
-  public setMetadata(tokenId: number, tokenUri: string, metadataHash: string): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.sendTransaction(
-      this.contract.methods.setMetadata(tokenId, tokenUri, metadataHash),
-    );
   }
 }

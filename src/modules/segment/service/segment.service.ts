@@ -5,17 +5,18 @@
  * For details on the licensing terms, see the LICENSE file.
  */
 
-import { BlockchainConnectorService } from '../../blockchain-connector/blockchain-connector.service';
 import { Injectable } from '@nestjs/common';
-import { SegmentAbi } from './segment.abi';
 import { Observable } from 'rxjs';
+
+import { BlockchainConnectorService } from '../../blockchain-connector/blockchain-connector.service';
+import { SegmentAbi } from './segment.abi';
 import { ErrorDto } from '../../../dto/error.dto';
 
 @Injectable()
 export class SegmentService {
   constructor(private readonly blockchainConnectorService: BlockchainConnectorService) {}
 
-  getSegmentContract(segmentAddress: string) {
+  private getSegmentContract(segmentAddress: string) {
     return new this.blockchainConnectorService.web3.eth.Contract(SegmentAbi, segmentAddress);
   }
 
@@ -39,19 +40,21 @@ export class SegmentService {
     return this.blockchainConnectorService.call(this.getSegmentContract(segmentAddress).methods.getContainer());
   }
 
+  public getAllTokenInformation(segmentAddress: string): Observable<any | ErrorDto> {
+    return this.blockchainConnectorService.call(
+      this.getSegmentContract(segmentAddress).methods.getAllTokenInformation(),
+    );
+  }
+
   public getTokenInformation(segmentAddress: string, index: number): Observable<any | ErrorDto> {
     return this.blockchainConnectorService.call(
       this.getSegmentContract(segmentAddress).methods.getTokenInformation(index),
     );
   }
 
-  public getTokenLocationInSegment(
-    tokenAddress: string,
-    tokenId: number,
-    segmentAddress: string,
-  ): Observable<any | ErrorDto> {
+  public getNumberOfTokenInformation(segmentAddress: string): Observable<any | ErrorDto> {
     return this.blockchainConnectorService.call(
-      this.getSegmentContract(segmentAddress).methods.getTokenLocationInSegment(tokenAddress, tokenId),
+      this.getSegmentContract(segmentAddress).methods.getNumberOfTokenInformation(),
     );
   }
 

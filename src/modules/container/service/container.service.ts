@@ -8,7 +8,7 @@
 import { Injectable } from '@nestjs/common';
 import { containerAbi } from './container.abi';
 import { BlockchainConnectorService } from '../../blockchain-connector/blockchain-connector.service';
-import { ApiConfigService } from '../../../settings/apiConfig.service';
+import { ApiConfigService } from '../../../config/apiConfig.service';
 import { Observable } from 'rxjs';
 import { ErrorDto } from '../../../dto/error.dto';
 
@@ -22,7 +22,7 @@ export class ContainerService {
   ) {
     this.contract = new this.blockchainConnectorService.web3.eth.Contract(
       containerAbi,
-      apiConfigService.CONTAINER_ADDRESS,
+      this.apiConfigService.CONTAINER_ADDRESS,
     );
   }
 
@@ -34,12 +34,12 @@ export class ContainerService {
     return this.blockchainConnectorService.call(this.contract.methods.getName());
   }
 
-  public getSegmentCount(): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.call(this.contract.methods.getSegmentCount());
+  public getSegment(index: number): Observable<any | ErrorDto> {
+    return this.blockchainConnectorService.call(this.contract.methods.getSegment(index));
   }
 
-  public getSegmentAtIndex(index: number): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.call(this.contract.methods.getSegmentAtIndex(index));
+  public getNumberOfSegments(): Observable<any | ErrorDto> {
+    return this.blockchainConnectorService.call(this.contract.methods.getNumberOfSegments());
   }
 
   public isSegmentInContainer(segment: string): Observable<any | ErrorDto> {
