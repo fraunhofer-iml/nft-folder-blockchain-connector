@@ -1,128 +1,46 @@
 /**
- * Copyright 2023 Open Logistics Foundation
+ * Copyright Open Logistics Foundation
  *
- * Licensed under the Open Logistics License 1.0.
+ * Licensed under the Open Logistics Foundation License 1.3.
  * For details on the licensing terms, see the LICENSE file.
+ * SPDX-License-Identifier: OLFL-1.3
  */
 
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
+import TransactionReceipt from 'web3/types';
 
 import { TokenService } from '../../service/token.service';
-import { TokenMintDto } from '../../../../dto/tokenMint.dto';
-import { handleException } from '../../../utils/errorHandling';
+import { GetTokenDto, MintTokenDto } from '../../../../dto/token.dto';
+import { GetSegmentDto } from '../../../../dto/getSegment.dto';
 
 @Controller()
 export class TokenAmqpController {
   constructor(private readonly tokenService: TokenService) {}
 
-  @MessagePattern('approve')
-  public approve(@Payload() queryInput: any) {
-    return this.tokenService.approve(queryInput.to, queryInput.tokenId);
+  @MessagePattern('mintToken')
+  public mintToken(@Payload() mintTokenDto: MintTokenDto): Observable<TransactionReceipt> {
+    return this.tokenService.mintToken(mintTokenDto);
   }
 
-  @MessagePattern('burn')
-  public burn(@Payload() queryInput: any) {
-    return this.tokenService.burn(queryInput.tokenId);
+  @MessagePattern('getToken')
+  public getToken(@Payload() queryInput: any): Observable<GetTokenDto> {
+    return this.tokenService.getToken(queryInput.tokenId);
   }
 
-  @MessagePattern('renounceOwnership')
-  public renounceOwnership() {
-    return this.tokenService.renounceOwnership();
+  @MessagePattern('getSegments')
+  public getAllSegments(@Payload() queryInput: any): Observable<GetSegmentDto[]> {
+    return this.tokenService.getAllSegments(queryInput.tokenId);
   }
 
-  @MessagePattern('safeMint')
-  public safeMint(@Payload() tokenMintDto: TokenMintDto) {
-    return this.tokenService.safeMint(tokenMintDto);
+  @MessagePattern('burnToken')
+  public burnToken(@Payload() queryInput: any): Observable<TransactionReceipt> {
+    return this.tokenService.burnToken(queryInput.tokenId);
   }
 
-  @MessagePattern('safeTransferFrom')
-  public safeTransferFrom(@Payload() queryInput: any) {
-    return this.tokenService.safeTransferFrom(queryInput.from, queryInput.to, queryInput.tokenId);
-  }
-
-  @MessagePattern('setApprovalForAll')
-  public setApprovalForAll(@Payload() queryInput: any) {
-    return this.tokenService.setApprovalForAll(queryInput.operator, queryInput.approved);
-  }
-
-  @MessagePattern('transferFrom')
-  public transferFrom(@Payload() queryInput: any) {
-    return this.tokenService.transferFrom(queryInput.from, queryInput.to, queryInput.tokenId);
-  }
-
-  @MessagePattern('transferOwnership')
-  public transferOwnership(@Payload() queryInput: any) {
-    return this.tokenService.transferOwnership(queryInput.newOwner);
-  }
-
-  @MessagePattern('balanceOf')
-  public balanceOf(@Payload() queryInput: any) {
-    return this.tokenService.balanceOf(queryInput.ownerAddress);
-  }
-
-  @MessagePattern('getAdditionalInformation')
-  public getAdditionalInformation(@Payload() queryInput: any) {
-    return this.tokenService.getAdditionalInformation(queryInput.tokenId);
-  }
-
-  @MessagePattern('getApproved')
-  public getApproved(@Payload() queryInput: any) {
-    return this.tokenService.getApproved(queryInput.tokenId);
-  }
-
-  @MessagePattern('getAssetInformation')
-  public getAssetInformation(@Payload() queryInput: any) {
-    return handleException(this.tokenService.getAssetInformation(queryInput.tokenId));
-  }
-
-  @MessagePattern('getAssetHash')
-  public getAssetHash(@Payload() queryInput: any) {
-    return this.tokenService.getAssetHash(queryInput.tokenId);
-  }
-
-  @MessagePattern('getAssetUri')
-  public getAssetUri(@Payload() queryInput: any) {
-    return this.tokenService.getAssetUri(queryInput.tokenId);
-  }
-
-  @MessagePattern('getMetadataHash')
-  public getMetadataHash(@Payload() queryInput: any) {
-    return this.tokenService.getMetadataHash(queryInput.tokenId);
-  }
-
-  @MessagePattern('isApprovedForAll')
-  public isApprovedForAll(@Payload() queryInput: any) {
-    return this.tokenService.isApprovedForAll(queryInput.owner, queryInput.operator);
-  }
-
-  @MessagePattern('name')
-  public name() {
-    return this.tokenService.name();
-  }
-
-  @MessagePattern('owner')
-  public owner() {
-    return this.tokenService.owner();
-  }
-
-  @MessagePattern('ownerOf')
-  public ownerOf(@Payload() queryInput: any) {
-    return this.tokenService.ownerOf(queryInput.tokenId);
-  }
-
-  @MessagePattern('supportsInterface')
-  public supportsInterface(@Payload() queryInput: any) {
-    return this.tokenService.supportsInterface(queryInput.interfaceId);
-  }
-
-  @MessagePattern('symbol')
-  public symbol() {
-    return this.tokenService.symbol();
-  }
-
-  @MessagePattern('getTokenURI')
-  public getTokenURI(@Payload() queryInput: any) {
-    return this.tokenService.getTokenURI(queryInput.tokenId);
+  @MessagePattern('transferToken')
+  public transferToken(@Payload() queryInput: any): Observable<TransactionReceipt> {
+    return this.tokenService.transferToken(queryInput.from, queryInput.to, queryInput.tokenId);
   }
 }

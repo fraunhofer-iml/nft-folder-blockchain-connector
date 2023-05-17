@@ -1,8 +1,9 @@
 /**
- * Copyright 2023 Open Logistics Foundation
+ * Copyright Open Logistics Foundation
  *
- * Licensed under the Open Logistics License 1.0.
+ * Licensed under the Open Logistics Foundation License 1.3.
  * For details on the licensing terms, see the LICENSE file.
+ * SPDX-License-Identifier: OLFL-1.3
  */
 
 export const TokenAbi = [
@@ -249,6 +250,25 @@ export const TokenAbi = [
         type: 'uint256',
       },
     ],
+    name: 'getAllSegments',
+    outputs: [
+      {
+        internalType: 'address[]',
+        name: '',
+        type: 'address[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
     name: 'getApproved',
     outputs: [
       {
@@ -394,25 +414,6 @@ export const TokenAbi = [
   {
     inputs: [
       {
-        internalType: 'uint256',
-        name: 'tokenId',
-        type: 'uint256',
-      },
-    ],
-    name: 'getSegments',
-    outputs: [
-      {
-        internalType: 'address[]',
-        name: '',
-        type: 'address[]',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
         internalType: 'address',
         name: 'owner',
         type: 'address',
@@ -532,77 +533,6 @@ export const TokenAbi = [
     inputs: [
       {
         internalType: 'address',
-        name: 'receiver',
-        type: 'address',
-      },
-      {
-        internalType: 'string',
-        name: 'assetUri',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'assetHash',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'metadataUri',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'metadataHash',
-        type: 'string',
-      },
-    ],
-    name: 'safeMint',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'receiver',
-        type: 'address',
-      },
-      {
-        internalType: 'string',
-        name: 'assetUri',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'assetHash',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'metadataUri',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'metadataHash',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'additionalInformation',
-        type: 'string',
-      },
-    ],
-    name: 'safeMint',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
         name: 'from',
         type: 'address',
       },
@@ -703,25 +633,6 @@ export const TokenAbi = [
   {
     inputs: [
       {
-        internalType: 'uint256',
-        name: 'tokenId',
-        type: 'uint256',
-      },
-    ],
-    name: 'tokenURI',
-    outputs: [
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
         internalType: 'address',
         name: 'from',
         type: 'address',
@@ -753,6 +664,96 @@ export const TokenAbi = [
     name: 'transferOwnership',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
+      },
+      {
+        internalType: 'string',
+        name: 'assetUri',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'assetHash',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'metadataUri',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'metadataHash',
+        type: 'string',
+      },
+    ],
+    name: 'safeMint',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
+      },
+      {
+        internalType: 'string',
+        name: 'assetUri',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'assetHash',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'metadataUri',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'metadataHash',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'additionalInformation',
+        type: 'string',
+      },
+    ],
+    name: 'safeMint',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'tokenURI',
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
 ];

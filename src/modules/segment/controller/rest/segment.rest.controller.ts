@@ -1,81 +1,59 @@
 /**
- * Copyright 2023 Open Logistics Foundation
+ * Copyright Open Logistics Foundation
  *
- * Licensed under the Open Logistics License 1.0.
+ * Licensed under the Open Logistics Foundation License 1.3.
  * For details on the licensing terms, see the LICENSE file.
+ * SPDX-License-Identifier: OLFL-1.3
  */
 
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { Observable } from 'rxjs';
+import TransactionReceipt from 'web3/types';
 
 import { SegmentService } from '../../service/segment.service';
-import { TokenDto } from '../../../../dto/token.dto';
-import { handleException } from '../../../utils/errorHandling';
+import { OriginTokenDto } from '../../../../dto/token.dto';
+import { CreateSegmentDto } from '../../../../dto/createSegment.dto';
+import { GetSegmentDto } from '../../../../dto/getSegment.dto';
 
-@ApiTags('SegmentRestController')
-@Controller('segment')
+@Controller('segments')
+@ApiTags('SegmentController')
 export class SegmentRestController {
   constructor(private readonly segmentService: SegmentService) {}
 
-  @Post('addToken')
-  @ApiBody({ type: TokenDto, description: 'Contains the attributes of a token and the segment address' })
-  @ApiOperation({ summary: 'Adds a token to a segment' })
-  public addToken(@Body() dto: TokenDto) {
-    return handleException(this.segmentService.addToken(dto.tokenAddress, dto.tokenId, dto.segmentAddress));
+  @Post()
+  @ApiOperation({ summary: 'Creates a new segment' })
+  @ApiBody({ description: 'Contains the name of the new segment', type: CreateSegmentDto })
+  public createSegment(@Body() dto: CreateSegmentDto): Observable<TransactionReceipt> {
+    return this.segmentService.createSegment(dto.name);
   }
 
-  @Delete('removeToken')
-  @ApiBody({ type: TokenDto, description: 'Contains the attributes of a token and the segment address' })
-  @ApiOperation({ summary: 'Removes a token from the segment' })
-  public removeToken(@Body() dto: TokenDto) {
-    return handleException(this.segmentService.removeToken(dto.tokenAddress, dto.tokenId, dto.segmentAddress));
+  @Get()
+  @ApiOperation({ summary: 'Returns all segments' })
+  public getAllSegments(): Observable<GetSegmentDto[]> {
+    return this.segmentService.getAllSegments();
   }
 
-  @Get('getName/:segmentAddress')
-  @ApiOperation({ summary: 'Returns the name of the segment' })
-  public getName(@Param('segmentAddress') segmentAddress: string) {
-    return handleException(this.segmentService.getName(segmentAddress));
-  }
-
-  @Get('getContainer/:segmentAddress')
-  @ApiParam({ name: 'segmentAddress', type: String })
-  @ApiOperation({ summary: 'Returns the container of the segment' })
-  public getContainer(@Param('segmentAddress') segmentAddress: string) {
-    return handleException(this.segmentService.getContainer(segmentAddress));
-  }
-
-  @Get('getTokenInformation/:segmentAddress')
-  @ApiParam({ name: 'segmentAddress', type: String })
-  @ApiOperation({ summary: 'Returns the token information of the segment' })
-  public getAllTokenInformation(@Param('segmentAddress') segmentAddress: string) {
-    return handleException(this.segmentService.getAllTokenInformation(segmentAddress));
-  }
-
-  @Get('getTokenInformation/:segmentAddress/:index')
-  @ApiParam({ name: 'segmentAddress', type: String })
+  @Get(':index')
+  @ApiOperation({ summary: 'Returns the segment at the specified index' })
   @ApiParam({ name: 'index', type: Number })
-  @ApiOperation({ summary: 'Returns the token information of the segment' })
-  public getTokenInformation(@Param('segmentAddress') segmentAddress: string, @Param('index') index: number) {
-    return handleException(this.segmentService.getTokenInformation(segmentAddress, index));
+  public getSegment(@Param('index') index: number): Observable<GetSegmentDto> {
+    return this.segmentService.getSegment(index);
   }
 
-  @Get('getNumberOfTokenInformation/:segmentAddress')
-  @ApiParam({ name: 'segmentAddress', type: String })
-  @ApiOperation({ summary: 'Returns the number of token information of the segment' })
-  public getNumberOfTokenInformation(@Param('segmentAddress') segmentAddress: string) {
-    return handleException(this.segmentService.getNumberOfTokenInformation(segmentAddress));
+  @Patch(':index/add-token')
+  @ApiOperation({ summary: 'Adds a token to the segment at the specified index' })
+  @ApiParam({ name: 'index', type: String })
+  @ApiBody({ type: OriginTokenDto, description: 'Contains the address and id of the token' })
+  public addToken(@Param('index') index: number, @Body() dto: OriginTokenDto): Observable<TransactionReceipt> {
+    return this.segmentService.addToken(index, dto.tokenAddress, Number(dto.tokenId));
   }
 
-  @Get('isTokenInSegment/:tokenAddress/:tokenId/:segmentAddress')
-  @ApiParam({ name: 'tokenAddress', type: String })
-  @ApiParam({ name: 'tokenId', type: Number })
-  @ApiParam({ name: 'segmentAddress', type: String })
-  @ApiOperation({ summary: 'Returns if the token is in the segment' })
-  public isTokenInSegment(
-    @Param('tokenAddress') tokenAddress: string,
-    @Param('tokenId') tokenId: number,
-    @Param('segmentAddress') segmentAddress: string,
-  ) {
-    return handleException(this.segmentService.isTokenInSegment(tokenAddress, tokenId, segmentAddress));
+  @Patch(':index/remove-token')
+  @ApiOperation({ summary: 'Removes a token from the segment at the specified index' })
+  @ApiParam({ name: 'index', type: String })
+  @ApiBody({ type: OriginTokenDto, description: 'Contains the address and id of the token' })
+  public removeToken(@Param('index') index: number, @Body() dto: OriginTokenDto): Observable<TransactionReceipt> {
+    return this.segmentService.removeToken(index, dto.tokenAddress, Number(dto.tokenId));
   }
 }
