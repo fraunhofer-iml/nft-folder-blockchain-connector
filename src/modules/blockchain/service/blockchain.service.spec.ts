@@ -1,20 +1,21 @@
 /**
- * Copyright 2023 Open Logistics Foundation
+ * Copyright Open Logistics Foundation
  *
- * Licensed under the Open Logistics License 1.0.
+ * Licensed under the Open Logistics Foundation License 1.3.
  * For details on the licensing terms, see the LICENSE file.
+ * SPDX-License-Identifier: OLFL-1.3
  */
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, resetMocks } from '@depay/web3-mock';
 import Web3 from 'web3';
 
-import { BlockchainConnectorService } from './blockchain-connector.service';
-import { ApiConfigService } from '../../config/apiConfig.service';
+import { BlockchainService } from './blockchain.service';
+import { ApiConfigService } from '../../../config/apiConfig.service';
 
-//todo-LG: fix and add more tests for Blockchain Connector
-describe('BlockchainConnectorService', () => {
-  let service: BlockchainConnectorService;
+// TODO-LG: fix and add more tests for Blockchain
+describe('BlockchainService', () => {
+  let service: BlockchainService;
   let fakeApiConfigService: Partial<ApiConfigService>;
 
   /*
@@ -42,7 +43,7 @@ describe('BlockchainConnectorService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockchainConnectorService,
+        BlockchainService,
         {
           provide: 'Web3Service',
           useValue: WEB3,
@@ -53,7 +54,7 @@ describe('BlockchainConnectorService', () => {
         },
       ],
     }).compile();
-    service = module.get<BlockchainConnectorService>(BlockchainConnectorService);
+    service = module.get<BlockchainService>(BlockchainService);
   });
 
   it('should be defined', () => {

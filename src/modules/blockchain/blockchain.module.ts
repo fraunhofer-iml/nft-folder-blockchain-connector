@@ -1,15 +1,16 @@
 /**
- * Copyright 2023 Open Logistics Foundation
+ * Copyright Open Logistics Foundation
  *
- * Licensed under the Open Logistics License 1.0.
+ * Licensed under the Open Logistics Foundation License 1.3.
  * For details on the licensing terms, see the LICENSE file.
+ * SPDX-License-Identifier: OLFL-1.3
  */
 
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Web3 from 'web3';
 
-import { BlockchainConnectorService } from './blockchain-connector.service';
+import { BlockchainService } from './service/blockchain.service';
 import { ApiConfigService } from '../../config/apiConfig.service';
 
 const Web3Service = {
@@ -23,7 +24,7 @@ const Web3Service = {
 };
 
 @Module({
-  providers: [BlockchainConnectorService, Web3Service, ApiConfigService],
-  exports: [BlockchainConnectorService, Web3Service],
+  providers: [BlockchainService, Web3Service, ApiConfigService],
+  exports: [BlockchainService, Web3Service],
 })
-export class BlockchainConnectorModule {}
+export class BlockchainModule {}

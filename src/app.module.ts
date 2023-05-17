@@ -1,20 +1,19 @@
 /**
- * Copyright 2023 Open Logistics Foundation
+ * Copyright Open Logistics Foundation
  *
- * Licensed under the Open Logistics License 1.0.
+ * Licensed under the Open Logistics Foundation License 1.3.
  * For details on the licensing terms, see the LICENSE file.
+ * SPDX-License-Identifier: OLFL-1.3
  */
 
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { ContainerModule } from './modules/container/container.module';
 import { SegmentModule } from './modules/segment/segment.module';
 import { TokenModule } from './modules/token/token.module';
 
 @Module({
   imports: [
-    ContainerModule,
     SegmentModule,
     TokenModule,
     ConfigModule.forRoot({

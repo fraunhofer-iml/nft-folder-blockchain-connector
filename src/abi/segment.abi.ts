@@ -1,8 +1,9 @@
 /**
- * Copyright 2023 Open Logistics Foundation
+ * Copyright Open Logistics Foundation
  *
- * Licensed under the Open Logistics License 1.0.
+ * Licensed under the Open Logistics Foundation License 1.3.
  * For details on the licensing terms, see the LICENSE file.
+ * SPDX-License-Identifier: OLFL-1.3
  */
 
 export const SegmentAbi = [
@@ -167,6 +168,19 @@ export const SegmentAbi = [
   },
   {
     inputs: [],
+    name: 'getContainer',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'getName',
     outputs: [
       {
@@ -180,12 +194,24 @@ export const SegmentAbi = [
   },
   {
     inputs: [],
-    name: 'getContainer',
+    name: 'getAllTokenInformation',
     outputs: [
       {
-        internalType: 'address',
+        components: [
+          {
+            internalType: 'address',
+            name: 'tokenAddress',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenId',
+            type: 'uint256',
+          },
+        ],
+        internalType: 'struct Segment.TokenInformation[]',
         name: '',
-        type: 'address',
+        type: 'tuple[]',
       },
     ],
     stateMutability: 'view',
@@ -217,31 +243,6 @@ export const SegmentAbi = [
         internalType: 'struct Segment.TokenInformation',
         name: '',
         type: 'tuple',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'getAllTokenInformation',
-    outputs: [
-      {
-        components: [
-          {
-            internalType: 'address',
-            name: 'tokenAddress',
-            type: 'address',
-          },
-          {
-            internalType: 'uint256',
-            name: 'tokenId',
-            type: 'uint256',
-          },
-        ],
-        internalType: 'struct Segment.TokenInformation[]',
-        name: '',
-        type: 'tuple[]',
       },
     ],
     stateMutability: 'view',

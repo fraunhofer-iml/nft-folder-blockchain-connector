@@ -1,66 +1,102 @@
 /**
- * Copyright 2023 Open Logistics Foundation
+ * Copyright Open Logistics Foundation
  *
- * Licensed under the Open Logistics License 1.0.
+ * Licensed under the Open Logistics Foundation License 1.3.
  * For details on the licensing terms, see the LICENSE file.
+ * SPDX-License-Identifier: OLFL-1.3
  */
 
 import { Injectable } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { forkJoin, map, mergeMap, Observable, of } from 'rxjs';
+import TransactionReceipt from 'web3/types';
+import Contract from 'web3/eth/contract';
 
-import { BlockchainConnectorService } from '../../blockchain-connector/blockchain-connector.service';
-import { SegmentAbi } from './segment.abi';
-import { ErrorDto } from '../../../dto/error.dto';
+import { BlockchainService } from '../../blockchain/service/blockchain.service';
+import { ApiConfigService } from '../../../config/apiConfig.service';
+import { SegmentAbi } from '../../../abi/segment.abi';
+import { ContainerAbi } from '../../../abi/container.abi';
+import { GetSegmentDto } from '../../../dto/getSegment.dto';
+import { OriginTokenDto } from '../../../dto/token.dto';
 
 @Injectable()
 export class SegmentService {
-  constructor(private readonly blockchainConnectorService: BlockchainConnectorService) {}
+  private containerContract: Contract;
 
-  private getSegmentContract(segmentAddress: string) {
-    return new this.blockchainConnectorService.web3.eth.Contract(SegmentAbi, segmentAddress);
-  }
-
-  public addToken(tokenAddress: string, tokenId: number, segmentAddress: string): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.sendTransaction(
-      this.getSegmentContract(segmentAddress).methods.addToken(tokenAddress, tokenId),
+  constructor(
+    private readonly blockchainService: BlockchainService,
+    private readonly apiConfigService: ApiConfigService,
+  ) {
+    this.containerContract = new this.blockchainService.web3.eth.Contract(
+      ContainerAbi,
+      this.apiConfigService.CONTAINER_ADDRESS,
     );
   }
 
-  public removeToken(tokenAddress: string, tokenId: number, segmentAddress: string): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.sendTransaction(
-      this.getSegmentContract(segmentAddress).methods.removeToken(tokenAddress, tokenId),
+  private getSegmentContract(segmentAddress: string): Contract {
+    return new this.blockchainService.web3.eth.Contract(SegmentAbi, segmentAddress);
+  }
+
+  public createSegment(name: string): Observable<TransactionReceipt> {
+    return this.blockchainService.sendTransaction(this.containerContract.methods.createSegment(name));
+  }
+
+  // TODO-MP: a segmentId would be nice
+  public getAllSegments(): Observable<GetSegmentDto[]> {
+    return this.blockchainService.call(this.containerContract.methods.getAllSegments()).pipe(
+      mergeMap((segmentAddresses) =>
+        forkJoin(segmentAddresses.map((segmentAddress) => this.getSegmentData(segmentAddress))),
+      ),
+      map((segments: any) =>
+        segments.map(([segmentAddress, name, tokenInformation]) =>
+          this.createSegmentObject(segmentAddress, name, tokenInformation),
+        ),
+      ),
     );
   }
 
-  public getName(segmentAddress: string): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.call(this.getSegmentContract(segmentAddress).methods.getName());
-  }
-
-  public getContainer(segmentAddress: string): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.call(this.getSegmentContract(segmentAddress).methods.getContainer());
-  }
-
-  public getAllTokenInformation(segmentAddress: string): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.call(
-      this.getSegmentContract(segmentAddress).methods.getAllTokenInformation(),
+  public getSegment(index: number): Observable<GetSegmentDto> {
+    return this.blockchainService.call(this.containerContract.methods.getSegment(index)).pipe(
+      mergeMap((segmentAddress) => this.getSegmentData(segmentAddress)),
+      map(([segmentAddress, name, tokenInformation]) =>
+        this.createSegmentObject(segmentAddress, name, tokenInformation),
+      ),
     );
   }
 
-  public getTokenInformation(segmentAddress: string, index: number): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.call(
-      this.getSegmentContract(segmentAddress).methods.getTokenInformation(index),
-    );
+  private getSegmentData(segmentAddress: string): Observable<[string, any, any]> {
+    return forkJoin([
+      of(segmentAddress),
+      this.blockchainService.call(this.getSegmentContract(segmentAddress).methods.getName()),
+      this.blockchainService.call(this.getSegmentContract(segmentAddress).methods.getAllTokenInformation()),
+    ]);
   }
 
-  public getNumberOfTokenInformation(segmentAddress: string): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.call(
-      this.getSegmentContract(segmentAddress).methods.getNumberOfTokenInformation(),
-    );
+  private createSegmentObject(segmentAddress: string, segmentName: string, tokenInformation: any): GetSegmentDto {
+    const tokens = tokenInformation.map(([tokenAddress, tokenId]) => new OriginTokenDto(tokenAddress, tokenId));
+    return new GetSegmentDto(segmentAddress, segmentName, tokens);
   }
 
-  public isTokenInSegment(tokenAddress: string, tokenId: number, segmentAddress: string): Observable<any | ErrorDto> {
-    return this.blockchainConnectorService.call(
-      this.getSegmentContract(segmentAddress).methods.isTokenInSegment(tokenAddress, tokenId),
-    );
+  public addToken(index: number, tokenAddress: string, tokenId: number): Observable<TransactionReceipt> {
+    return this.blockchainService
+      .call(this.containerContract.methods.getSegment(index))
+      .pipe(
+        mergeMap((segmentAddress) =>
+          this.blockchainService.sendTransaction(
+            this.getSegmentContract(segmentAddress).methods.addToken(tokenAddress, tokenId),
+          ),
+        ),
+      );
+  }
+
+  public removeToken(index: number, tokenAddress: string, tokenId: number): Observable<TransactionReceipt> {
+    return this.blockchainService
+      .call(this.containerContract.methods.getSegment(index))
+      .pipe(
+        mergeMap((segmentAddress) =>
+          this.blockchainService.sendTransaction(
+            this.getSegmentContract(segmentAddress).methods.removeToken(tokenAddress, tokenId),
+          ),
+        ),
+      );
   }
 }

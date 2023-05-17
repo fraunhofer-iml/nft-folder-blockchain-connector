@@ -1,11 +1,12 @@
 /**
- * Copyright 2023 Open Logistics Foundation
+ * Copyright Open Logistics Foundation
  *
- * Licensed under the Open Logistics License 1.0.
+ * Licensed under the Open Logistics Foundation License 1.3.
  * For details on the licensing terms, see the LICENSE file.
+ * SPDX-License-Identifier: OLFL-1.3
  */
 
-export const containerAbi = [
+export const ContainerAbi = [
   {
     inputs: [
       {
@@ -114,6 +115,19 @@ export const containerAbi = [
         internalType: 'string',
         name: '',
         type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getAllSegments',
+    outputs: [
+      {
+        internalType: 'address[]',
+        name: '',
+        type: 'address[]',
       },
     ],
     stateMutability: 'view',
