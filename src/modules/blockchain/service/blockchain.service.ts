@@ -28,7 +28,7 @@ export class BlockchainService {
       to: transactionObject._parent._address,
       from: account.address,
       data: transactionObject.encodeABI(),
-      maxFeePerGas: 6721975000,
+      maxFeePerGas: 20000000000,
       gasLimit: 6721975,
     };
 
@@ -52,7 +52,8 @@ export class BlockchainService {
   }
 
   public handleError(error: any): Observable<any> {
-    const errorMessage = error.data ? error.data.reason : error.reason;
+    let errorMessage = error.data ? error.data.reason : error.reason;
+    errorMessage = errorMessage ? errorMessage : error.message;
     throw new BadRequestException(errorMessage);
   }
 }

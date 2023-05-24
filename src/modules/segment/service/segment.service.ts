@@ -41,6 +41,7 @@ export class SegmentService {
   }
 
   // TODO-MP: a segmentId would be nice
+  // TODO-MP: error when no segments available
   public getAllSegments(): Observable<GetSegmentDto[]> {
     return this.blockchainService.call(this.containerContract.methods.getAllSegments()).pipe(
       mergeMap((segmentAddresses) =>

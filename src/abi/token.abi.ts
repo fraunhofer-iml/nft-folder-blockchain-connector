@@ -209,6 +209,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -241,6 +242,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -260,6 +262,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -279,6 +282,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -298,6 +302,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -329,6 +334,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -348,6 +354,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -367,6 +374,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -386,6 +394,27 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'getRemoteId',
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -410,6 +439,27 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: 'remoteId',
+        type: 'string',
+      },
+    ],
+    name: 'getTokenId',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -434,6 +484,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -458,6 +509,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [],
@@ -471,6 +523,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [],
@@ -484,6 +537,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -503,6 +557,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -616,6 +671,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [],
@@ -629,6 +685,7 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -693,6 +750,16 @@ export const TokenAbi = [
         name: 'metadataHash',
         type: 'string',
       },
+      {
+        internalType: 'string',
+        name: 'remoteId',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'additionalInformation',
+        type: 'string',
+      },
     ],
     name: 'safeMint',
     outputs: [],
@@ -728,7 +795,7 @@ export const TokenAbi = [
       },
       {
         internalType: 'string',
-        name: 'additionalInformation',
+        name: 'remoteId',
         type: 'string',
       },
     ],
@@ -755,5 +822,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
 ];
