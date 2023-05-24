@@ -6,8 +6,8 @@
  * SPDX-License-Identifier: OLFL-1.3
  */
 
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import TransactionReceipt from 'web3/types';
 
@@ -15,11 +15,12 @@ import { TokenService } from '../../service/token.service';
 import { TransferTokenDto } from '../../../../dto/transferToken.dto';
 import { GetSegmentDto } from '../../../../dto/getSegment.dto';
 import { TokenGetDto, TokenMintDto } from '../../../../dto/token.dto';
+import { BlockchainService } from '../../../blockchain/service/blockchain.service';
 
 @Controller('tokens')
 @ApiTags('TokenController')
 export class TokenRestController {
-  constructor(private readonly tokenService: TokenService) {}
+  constructor(private readonly tokenService: TokenService, private readonly blockchainService: BlockchainService) {}
 
   @Post()
   @ApiOperation({ summary: 'Creates a new token' })
@@ -28,11 +29,18 @@ export class TokenRestController {
     return this.tokenService.mintToken(mintTokenDto);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Returns the token with the specified id' })
-  @ApiParam({ name: 'id', type: Number })
-  public getToken(@Param('id') id: number): Observable<TokenGetDto> {
-    return this.tokenService.getToken(String(id));
+  @Get()
+  @ApiOperation({ summary: 'Returns the token with the specified tokenId or remoteId' })
+  @ApiQuery({ name: 'tokenId', type: Number, required: false })
+  @ApiQuery({ name: 'remoteId', type: String, required: false })
+  public getToken(@Query('tokenId') tokenId?: number, @Query('remoteId') remoteId?: string): Observable<TokenGetDto> {
+    if (tokenId) {
+      return this.tokenService.getTokenByTokenId(String(tokenId));
+    } else if (remoteId) {
+      return this.tokenService.getTokenByRemoteId(remoteId);
+    } else {
+      this.blockchainService.handleError({ message: 'Neither a tokenId nor a remoteId was specified' });
+    }
   }
 
   @Get(':id/segments')

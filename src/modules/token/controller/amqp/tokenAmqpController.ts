@@ -26,7 +26,7 @@ export class TokenAmqpController {
 
   @MessagePattern('getToken')
   public getToken(@Payload() queryInput: any): Observable<TokenGetDto> {
-    return this.tokenService.getToken(queryInput.tokenId);
+    return this.tokenService.getTokenByTokenId(queryInput.tokenId);
   }
 
   @MessagePattern('getSegments')
