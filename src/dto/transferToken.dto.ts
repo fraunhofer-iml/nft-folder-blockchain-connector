@@ -10,10 +10,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class TransferTokenDto {
   @ApiProperty()
-  public fromAddress: string;
+  fromAddress: string;
 
   @ApiProperty()
-  public toAddress: string;
+  toAddress: string;
 
   constructor(fromAddress: string, toAddress: string) {
     this.fromAddress = fromAddress;

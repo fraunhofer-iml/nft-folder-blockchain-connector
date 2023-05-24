@@ -11,7 +11,7 @@ import { of } from 'rxjs';
 
 import { SegmentRestController } from './segment.rest.controller';
 import { SegmentService } from '../../service/segment.service';
-import { OriginTokenDto } from '../../../../dto/token.dto';
+import { TokenContractInfoDto } from '../../../../dto/token.dto';
 import { GetSegmentDto } from '../../../../dto/getSegment.dto';
 
 describe('SegmentRestController', () => {
@@ -23,7 +23,7 @@ describe('SegmentRestController', () => {
   const INPUT_TOKEN_ADDRESS = 'testTokenAddress1';
   const INPUT_TOKEN_ID = '2223932';
   const INPUT_SEGMENT_INDEX = 1;
-  const INPUT_TOKEN = new OriginTokenDto(INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID);
+  const INPUT_TOKEN = new TokenContractInfoDto(INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID);
 
   // test output
   const OUTPUT_CREATE_SEGMENT_RESPONSE: any = {};

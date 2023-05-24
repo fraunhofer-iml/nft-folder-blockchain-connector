@@ -10,11 +10,12 @@ import { Injectable } from '@nestjs/common';
 import { forkJoin, map, Observable } from 'rxjs';
 import { TransactionObject } from 'web3/eth/types';
 import TransactionReceipt from 'web3/types';
+import Web3 from 'web3';
 
 import { BlockchainService } from '../../blockchain/service/blockchain.service';
 import { ApiConfigService } from '../../../config/apiConfig.service';
 import { SegmentService } from '../../segment/service/segment.service';
-import { AssetDto, GetTokenDto, MetadataDto, MintTokenDto } from '../../../dto/token.dto';
+import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto } from '../../../dto/token.dto';
 import { GetSegmentDto } from '../../../dto/getSegment.dto';
 import { TokenAbi } from '../../../abi/token.abi';
 
@@ -30,29 +31,24 @@ export class TokenService {
     this.tokenContract = new this.blockchainService.web3.eth.Contract(TokenAbi, apiConfigService.TOKEN_ADDRESS);
   }
 
-  public mintToken(mintTokenDto: MintTokenDto): Observable<TransactionReceipt> {
-    const transactionObject: TransactionObject<any> = mintTokenDto.additionalInformation
-      ? this.tokenContract.methods.safeMint(
-          mintTokenDto.ownerAddress,
-          mintTokenDto.asset.uri,
-          mintTokenDto.asset.hash,
-          mintTokenDto.metadata.uri,
-          mintTokenDto.metadata.hash,
-          mintTokenDto.remoteId,
-          mintTokenDto.additionalInformation,
-        )
-      : this.tokenContract.methods.safeMint(
-          mintTokenDto.ownerAddress,
-          mintTokenDto.asset.uri,
-          mintTokenDto.asset.hash,
-          mintTokenDto.metadata.uri,
-          mintTokenDto.metadata.hash,
-          mintTokenDto.remoteId,
-        );
+  public mintToken(mintTokenDto: TokenMintDto): Observable<TransactionReceipt> {
+    if (!Web3.utils.isAddress(mintTokenDto.ownerAddress)) {
+      this.blockchainService.handleError({ message: `'${mintTokenDto.ownerAddress}' is not an address` });
+    }
+
+    const transactionObject: TransactionObject<any> = this.tokenContract.methods.safeMint(
+      mintTokenDto.ownerAddress,
+      mintTokenDto.asset.uri,
+      mintTokenDto.asset.hash,
+      mintTokenDto.metadata.uri,
+      mintTokenDto.metadata.hash,
+      mintTokenDto.remoteId,
+      mintTokenDto.additionalInformation,
+    );
     return this.blockchainService.sendTransaction(transactionObject);
   }
 
-  public getToken(id: string): Observable<GetTokenDto> {
+  public getToken(id: string): Observable<TokenGetDto> {
     return forkJoin([
       this.blockchainService.call(this.tokenContract.methods.ownerOf(id)),
       this.blockchainService.call(this.tokenContract.methods.getAssetInformation(id)),
@@ -62,10 +58,10 @@ export class TokenService {
       this.blockchainService.call(this.tokenContract.methods.getAdditionalInformation(id)),
     ]).pipe(
       map(([ownerAddress, assetInformation, tokenUri, metadataHash, remoteId, additionalInformation]) => {
-        const asset = new AssetDto(assetInformation.assetUri, assetInformation.assetHash);
-        const metadata = new MetadataDto(tokenUri, metadataHash);
+        const asset = new TokenAssetDto(assetInformation.assetUri, assetInformation.assetHash);
+        const metadata = new TokenMetadataDto(tokenUri, metadataHash);
 
-        return new GetTokenDto(
+        return new TokenGetDto(
           this.apiConfigService.TOKEN_ADDRESS,
           id,
           ownerAddress,
@@ -85,7 +81,9 @@ export class TokenService {
         map((segments) =>
           segments.filter(
             (segment) =>
-              segment.tokens && segment.tokens.length > 0 && segment.tokens.some((token) => token.tokenId === id),
+              segment.tokenContractInfos &&
+              segment.tokenContractInfos.length > 0 &&
+              segment.tokenContractInfos.some((token) => token.tokenId === id),
           ),
         ),
       );

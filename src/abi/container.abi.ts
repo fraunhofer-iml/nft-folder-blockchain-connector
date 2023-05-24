@@ -73,7 +73,6 @@ export const ContainerAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [],
@@ -120,7 +119,6 @@ export const ContainerAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [],
@@ -134,7 +132,6 @@ export const ContainerAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -154,7 +151,6 @@ export const ContainerAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [],
@@ -168,7 +164,6 @@ export const ContainerAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -188,6 +183,5 @@ export const ContainerAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
 ];

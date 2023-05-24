@@ -9,14 +9,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 // TODO-MP: use inheritance
-// TODO-MP: remove public
 
-class OriginTokenDto {
+class TokenContractInfoDto {
   @ApiProperty()
-  public tokenAddress: string;
+  tokenAddress: string;
 
   @ApiProperty()
-  public tokenId: string;
+  tokenId: string;
 
   constructor(tokenAddress: string, tokenId: string) {
     this.tokenAddress = tokenAddress;
@@ -24,12 +23,12 @@ class OriginTokenDto {
   }
 }
 
-class AssetDto {
+class TokenAssetDto {
   @ApiProperty()
-  public uri: string;
+  uri: string;
 
   @ApiProperty()
-  public hash: string;
+  hash: string;
 
   constructor(uri: string, hash: string) {
     this.uri = uri;
@@ -37,12 +36,12 @@ class AssetDto {
   }
 }
 
-class MetadataDto {
+class TokenMetadataDto {
   @ApiProperty()
-  public uri: string;
+  uri: string;
 
   @ApiProperty()
-  public hash: string;
+  hash: string;
 
   constructor(uri: string, hash: string) {
     this.uri = uri;
@@ -50,63 +49,29 @@ class MetadataDto {
   }
 }
 
-class MintTokenDto {
+class TokenMintDto {
   @ApiProperty()
-  public ownerAddress: string;
+  ownerAddress: string;
 
   @ApiProperty()
-  public asset: AssetDto;
+  asset: TokenAssetDto;
 
   @ApiProperty()
-  public metadata: MetadataDto;
+  metadata: TokenMetadataDto;
 
   @ApiProperty()
-  public remoteId: string;
+  remoteId: string;
 
   @ApiProperty()
-  public additionalInformation: string;
-
-  constructor(ownerAddress: string, asset: AssetDto, metadata: MetadataDto, additionalInformation: string) {
-    this.ownerAddress = ownerAddress;
-    this.asset = asset;
-    this.metadata = metadata;
-    this.additionalInformation = additionalInformation;
-  }
-}
-
-class GetTokenDto {
-  @ApiProperty()
-  public tokenAddress: string;
-
-  @ApiProperty()
-  public tokenId: string;
-
-  @ApiProperty()
-  public ownerAddress: string;
-
-  @ApiProperty()
-  public asset: AssetDto;
-
-  @ApiProperty()
-  public metadata: MetadataDto;
-
-  @ApiProperty()
-  public remoteId: string;
-
-  @ApiProperty()
-  public additionalInformation: string;
+  additionalInformation: string;
 
   constructor(
-    tokenAddress: string,
-    tokenId: string,
     ownerAddress: string,
-    asset: AssetDto,
-    metadata: MetadataDto,
+    asset: TokenAssetDto,
+    metadata: TokenMetadataDto,
     remoteId: string,
     additionalInformation: string,
   ) {
-    this.tokenAddress = tokenAddress;
-    this.tokenId = tokenId;
     this.ownerAddress = ownerAddress;
     this.asset = asset;
     this.metadata = metadata;
@@ -115,4 +80,26 @@ class GetTokenDto {
   }
 }
 
-export { OriginTokenDto, MintTokenDto, GetTokenDto, AssetDto, MetadataDto };
+class TokenGetDto extends TokenMintDto {
+  @ApiProperty()
+  tokenAddress: string;
+
+  @ApiProperty()
+  tokenId: string;
+
+  constructor(
+    tokenAddress: string,
+    tokenId: string,
+    ownerAddress: string,
+    asset: TokenAssetDto,
+    metadata: TokenMetadataDto,
+    remoteId: string,
+    additionalInformation: string,
+  ) {
+    super(ownerAddress, asset, metadata, remoteId, additionalInformation);
+    this.tokenAddress = tokenAddress;
+    this.tokenId = tokenId;
+  }
+}
+
+export { TokenContractInfoDto, TokenAssetDto, TokenMetadataDto, TokenMintDto, TokenGetDto };

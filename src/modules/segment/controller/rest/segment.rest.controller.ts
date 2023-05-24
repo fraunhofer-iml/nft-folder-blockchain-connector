@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 import TransactionReceipt from 'web3/types';
 
 import { SegmentService } from '../../service/segment.service';
-import { OriginTokenDto } from '../../../../dto/token.dto';
+import { TokenContractInfoDto } from '../../../../dto/token.dto';
 import { CreateSegmentDto } from '../../../../dto/createSegment.dto';
 import { GetSegmentDto } from '../../../../dto/getSegment.dto';
 
@@ -44,16 +44,16 @@ export class SegmentRestController {
   @Patch(':index/add-token')
   @ApiOperation({ summary: 'Adds a token to the segment at the specified index' })
   @ApiParam({ name: 'index', type: String })
-  @ApiBody({ type: OriginTokenDto, description: 'Contains the address and id of the token' })
-  public addToken(@Param('index') index: number, @Body() dto: OriginTokenDto): Observable<TransactionReceipt> {
+  @ApiBody({ type: TokenContractInfoDto, description: 'Contains the address and id of the token' })
+  public addToken(@Param('index') index: number, @Body() dto: TokenContractInfoDto): Observable<TransactionReceipt> {
     return this.segmentService.addToken(index, dto.tokenAddress, Number(dto.tokenId));
   }
 
   @Patch(':index/remove-token')
   @ApiOperation({ summary: 'Removes a token from the segment at the specified index' })
   @ApiParam({ name: 'index', type: String })
-  @ApiBody({ type: OriginTokenDto, description: 'Contains the address and id of the token' })
-  public removeToken(@Param('index') index: number, @Body() dto: OriginTokenDto): Observable<TransactionReceipt> {
+  @ApiBody({ type: TokenContractInfoDto, description: 'Contains the address and id of the token' })
+  public removeToken(@Param('index') index: number, @Body() dto: TokenContractInfoDto): Observable<TransactionReceipt> {
     return this.segmentService.removeToken(index, dto.tokenAddress, Number(dto.tokenId));
   }
 }
