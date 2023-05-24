@@ -14,7 +14,7 @@ import TransactionReceipt from 'web3/types';
 import { TokenService } from '../../service/token.service';
 import { TransferTokenDto } from '../../../../dto/transferToken.dto';
 import { GetSegmentDto } from '../../../../dto/getSegment.dto';
-import { GetTokenDto, MintTokenDto } from '../../../../dto/token.dto';
+import { TokenGetDto, TokenMintDto } from '../../../../dto/token.dto';
 
 @Controller('tokens')
 @ApiTags('TokenController')
@@ -23,15 +23,15 @@ export class TokenRestController {
 
   @Post()
   @ApiOperation({ summary: 'Creates a new token' })
-  @ApiBody({ type: MintTokenDto, description: 'Contains all relevant information for the creation of a token' })
-  public mintToken(@Body() mintTokenDto: MintTokenDto): Observable<TransactionReceipt> {
+  @ApiBody({ type: TokenMintDto, description: 'Contains all relevant information for the creation of a token' })
+  public mintToken(@Body() mintTokenDto: TokenMintDto): Observable<TransactionReceipt> {
     return this.tokenService.mintToken(mintTokenDto);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Returns the token with the specified id' })
   @ApiParam({ name: 'id', type: Number })
-  public getToken(@Param('id') id: number): Observable<GetTokenDto> {
+  public getToken(@Param('id') id: number): Observable<TokenGetDto> {
     return this.tokenService.getToken(String(id));
   }
 

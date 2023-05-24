@@ -16,7 +16,7 @@ import { ApiConfigService } from '../../../config/apiConfig.service';
 import { SegmentAbi } from '../../../abi/segment.abi';
 import { ContainerAbi } from '../../../abi/container.abi';
 import { GetSegmentDto } from '../../../dto/getSegment.dto';
-import { OriginTokenDto } from '../../../dto/token.dto';
+import { TokenContractInfoDto } from '../../../dto/token.dto';
 
 @Injectable()
 export class SegmentService {
@@ -48,8 +48,8 @@ export class SegmentService {
         forkJoin(segmentAddresses.map((segmentAddress) => this.getSegmentData(segmentAddress))),
       ),
       map((segments: any) =>
-        segments.map(([segmentAddress, name, tokenInformation]) =>
-          this.createSegmentObject(segmentAddress, name, tokenInformation),
+        segments.map(([segmentAddress, name, tokenContractInfo]) =>
+          this.createSegmentObject(segmentAddress, name, tokenContractInfo),
         ),
       ),
     );
@@ -58,8 +58,8 @@ export class SegmentService {
   public getSegment(index: number): Observable<GetSegmentDto> {
     return this.blockchainService.call(this.containerContract.methods.getSegment(index)).pipe(
       mergeMap((segmentAddress) => this.getSegmentData(segmentAddress)),
-      map(([segmentAddress, name, tokenInformation]) =>
-        this.createSegmentObject(segmentAddress, name, tokenInformation),
+      map(([segmentAddress, name, tokenContractInfo]) =>
+        this.createSegmentObject(segmentAddress, name, tokenContractInfo),
       ),
     );
   }
@@ -72,8 +72,8 @@ export class SegmentService {
     ]);
   }
 
-  private createSegmentObject(segmentAddress: string, segmentName: string, tokenInformation: any): GetSegmentDto {
-    const tokens = tokenInformation.map(([tokenAddress, tokenId]) => new OriginTokenDto(tokenAddress, tokenId));
+  private createSegmentObject(segmentAddress: string, segmentName: string, tokenContractInfo: any): GetSegmentDto {
+    const tokens = tokenContractInfo.map(([tokenAddress, tokenId]) => new TokenContractInfoDto(tokenAddress, tokenId));
     return new GetSegmentDto(segmentAddress, segmentName, tokens);
   }
 

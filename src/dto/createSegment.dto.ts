@@ -10,7 +10,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSegmentDto {
   @ApiProperty()
-  public name: string;
+  name: string;
 
   constructor(name: string) {
     this.name = name;

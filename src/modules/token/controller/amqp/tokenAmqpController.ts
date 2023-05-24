@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 import TransactionReceipt from 'web3/types';
 
 import { TokenService } from '../../service/token.service';
-import { GetTokenDto, MintTokenDto } from '../../../../dto/token.dto';
+import { TokenGetDto, TokenMintDto } from '../../../../dto/token.dto';
 import { GetSegmentDto } from '../../../../dto/getSegment.dto';
 
 @Controller()
@@ -20,12 +20,12 @@ export class TokenAmqpController {
   constructor(private readonly tokenService: TokenService) {}
 
   @MessagePattern('mintToken')
-  public mintToken(@Payload() mintTokenDto: MintTokenDto): Observable<TransactionReceipt> {
-    return this.tokenService.mintToken(mintTokenDto);
+  public mintToken(@Payload() dto: TokenMintDto): Observable<TransactionReceipt> {
+    return this.tokenService.mintToken(dto);
   }
 
   @MessagePattern('getToken')
-  public getToken(@Payload() queryInput: any): Observable<GetTokenDto> {
+  public getToken(@Payload() queryInput: any): Observable<TokenGetDto> {
     return this.tokenService.getToken(queryInput.tokenId);
   }
 

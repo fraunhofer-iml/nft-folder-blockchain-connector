@@ -19,7 +19,7 @@ import { ApiConfigService } from '../../../config/apiConfig.service';
 import { TransferTokenDto } from '../../../dto/transferToken.dto';
 import { areMethodsEqual } from '../../utils/test.utils';
 import { GetSegmentDto } from '../../../dto/getSegment.dto';
-import { AssetDto, MetadataDto, MintTokenDto } from '../../../dto/token.dto';
+import { TokenAssetDto, TokenMetadataDto, TokenMintDto } from '../../../dto/token.dto';
 import { TokenAbi } from '../../../abi/token.abi';
 
 describe('TokenService', () => {
@@ -30,13 +30,14 @@ describe('TokenService', () => {
   // test input
   const INPUT_TOKEN_ID = '12';
   const INPUT_TOKEN_ADDRESS = '0x1f7b7F7F6A0a32496eE805b6532f686E40568D83';
-  const INPUT_TOKEN_SENDER = 'inputTokenSender';
-  const INPUT_TOKEN_RECEIVER = 'inputTokenReceiver';
-  const INPUT_TOKEN_MINT_DTO: MintTokenDto = new MintTokenDto(
-    'a',
-    new AssetDto('a', 'a'),
-    new MetadataDto('a', 'a'),
-    'a',
+  const INPUT_TOKEN_SENDER = '0xe168326f1f10da12bbc838D9BB9d0B6241Fd518d';
+  const INPUT_TOKEN_RECEIVER = '0xe168326f1f10da12bbc838D9BB9d0B6241Fd518d';
+  const INPUT_TOKEN_MINT_DTO: TokenMintDto = new TokenMintDto(
+    INPUT_TOKEN_RECEIVER,
+    new TokenAssetDto('', ''),
+    new TokenMetadataDto('', ''),
+    '',
+    '',
   );
   const INPUT_TRANSFER_DTO = new TransferTokenDto(INPUT_TOKEN_RECEIVER, INPUT_TOKEN_SENDER);
 

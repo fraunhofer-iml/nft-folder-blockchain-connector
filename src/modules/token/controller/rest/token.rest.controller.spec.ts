@@ -13,7 +13,7 @@ import { TokenRestController } from './token.rest.controller';
 import { TokenService } from '../../service/token.service';
 import { TransferTokenDto } from '../../../../dto/transferToken.dto';
 import { GetSegmentDto } from '../../../../dto/getSegment.dto';
-import { AssetDto, GetTokenDto, MetadataDto, MintTokenDto } from '../../../../dto/token.dto';
+import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto } from '../../../../dto/token.dto';
 
 // TODO-LG: add tests for error cases
 describe('TokenController', () => {
@@ -24,17 +24,23 @@ describe('TokenController', () => {
   const INPUT_TOKEN_ID = 12;
   const INPUT_TOKEN_SENDER = 'inputTokenSender';
   const INPUT_TOKEN_RECEIVER = 'inputTokenReceiver';
-  const INPUT_TOKEN_MINT_DTO: MintTokenDto = new MintTokenDto('', new AssetDto('', ''), new MetadataDto('', ''), '');
+  const INPUT_TOKEN_MINT_DTO: TokenMintDto = new TokenMintDto(
+    '',
+    new TokenAssetDto('', ''),
+    new TokenMetadataDto('', ''),
+    '',
+    '',
+  );
   const INPUT_TRANSFER_DTO = new TransferTokenDto(INPUT_TOKEN_SENDER, INPUT_TOKEN_RECEIVER);
 
   // test output
   const OUTPUT_MINT_TOKEN: any = {};
-  const OUTPUT_GET_TOKEN: GetTokenDto = new GetTokenDto(
+  const OUTPUT_GET_TOKEN: TokenGetDto = new TokenGetDto(
     '',
     '',
     '',
-    new AssetDto('', ''),
-    new MetadataDto('', ''),
+    new TokenAssetDto('', ''),
+    new TokenMetadataDto('', ''),
     '',
     '',
   );
