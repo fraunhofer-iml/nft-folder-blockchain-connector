@@ -7,7 +7,7 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { forkJoin, map, Observable } from 'rxjs';
+import { forkJoin, map, mergeMap, Observable } from 'rxjs';
 import { TransactionObject } from 'web3/eth/types';
 import TransactionReceipt from 'web3/types';
 import Web3 from 'web3';
@@ -48,7 +48,7 @@ export class TokenService {
     return this.blockchainService.sendTransaction(transactionObject);
   }
 
-  public getToken(id: string): Observable<TokenGetDto> {
+  public getTokenByTokenId(id: string): Observable<TokenGetDto> {
     return forkJoin([
       this.blockchainService.call(this.tokenContract.methods.ownerOf(id)),
       this.blockchainService.call(this.tokenContract.methods.getAssetInformation(id)),
@@ -72,6 +72,13 @@ export class TokenService {
         );
       }),
     );
+  }
+
+  // TODO-MP: returns the last token, which has this remoteId
+  public getTokenByRemoteId(remoteId: string): Observable<TokenGetDto> {
+    return this.blockchainService
+      .call(this.tokenContract.methods.getTokenId(remoteId))
+      .pipe(mergeMap((tokenId) => this.getTokenByTokenId(tokenId)));
   }
 
   public getAllSegments(id: string): Observable<GetSegmentDto[]> {

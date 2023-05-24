@@ -14,11 +14,13 @@ import { TokenService } from '../../service/token.service';
 import { TransferTokenDto } from '../../../../dto/transferToken.dto';
 import { GetSegmentDto } from '../../../../dto/getSegment.dto';
 import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto } from '../../../../dto/token.dto';
+import { BlockchainService } from '../../../blockchain/service/blockchain.service';
 
 // TODO-LG: add tests for error cases
 describe('TokenController', () => {
   let controller: TokenRestController;
-  let fakeService: Partial<TokenService>;
+  let fakeTokenService: Partial<TokenService>;
+  let fakeBlockchainService: Partial<BlockchainService>;
 
   // test input
   const INPUT_TOKEN_ID = 12;
@@ -49,19 +51,26 @@ describe('TokenController', () => {
   const OUTPUT_TRANSFER_TOKEN: any = {};
 
   beforeEach(async () => {
-    fakeService = {
+    fakeTokenService = {
       mintToken: () => of(OUTPUT_MINT_TOKEN),
-      getToken: () => of(OUTPUT_GET_TOKEN),
+      getTokenByTokenId: () => of(OUTPUT_GET_TOKEN),
       getAllSegments: () => of(OUTPUT_GET_SEGMENTS),
       burnToken: () => of(OUTPUT_BURN_TOKEN),
       transferToken: () => of(OUTPUT_TRANSFER_TOKEN),
+    };
+    fakeBlockchainService = {
+      handleError: () => null,
     };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
           provide: TokenService,
-          useValue: fakeService,
+          useValue: fakeTokenService,
+        },
+        {
+          provide: BlockchainService,
+          useValue: fakeBlockchainService,
         },
       ],
       controllers: [TokenRestController],
