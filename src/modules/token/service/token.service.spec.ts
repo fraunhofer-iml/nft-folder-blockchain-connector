@@ -73,6 +73,7 @@ describe('TokenService', () => {
               INPUT_TOKEN_MINT_DTO.asset.hash,
               INPUT_TOKEN_MINT_DTO.metadata.uri,
               INPUT_TOKEN_MINT_DTO.metadata.hash,
+              INPUT_TOKEN_MINT_DTO.remoteId,
               INPUT_TOKEN_MINT_DTO.additionalInformation,
             ),
           )

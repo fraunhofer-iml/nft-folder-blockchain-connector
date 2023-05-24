@@ -29,7 +29,15 @@ describe('TokenController', () => {
 
   // test output
   const OUTPUT_MINT_TOKEN: any = {};
-  const OUTPUT_GET_TOKEN: GetTokenDto = new GetTokenDto('', '', '', new AssetDto('', ''), new MetadataDto('', ''), '');
+  const OUTPUT_GET_TOKEN: GetTokenDto = new GetTokenDto(
+    '',
+    '',
+    '',
+    new AssetDto('', ''),
+    new MetadataDto('', ''),
+    '',
+    '',
+  );
   const OUTPUT_GET_SEGMENTS: GetSegmentDto[] = [];
   const OUTPUT_BURN_TOKEN: any = {};
   const OUTPUT_TRANSFER_TOKEN: any = {};

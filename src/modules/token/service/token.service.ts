@@ -38,6 +38,7 @@ export class TokenService {
           mintTokenDto.asset.hash,
           mintTokenDto.metadata.uri,
           mintTokenDto.metadata.hash,
+          mintTokenDto.remoteId,
           mintTokenDto.additionalInformation,
         )
       : this.tokenContract.methods.safeMint(
@@ -46,6 +47,7 @@ export class TokenService {
           mintTokenDto.asset.hash,
           mintTokenDto.metadata.uri,
           mintTokenDto.metadata.hash,
+          mintTokenDto.remoteId,
         );
     return this.blockchainService.sendTransaction(transactionObject);
   }
@@ -56,17 +58,20 @@ export class TokenService {
       this.blockchainService.call(this.tokenContract.methods.getAssetInformation(id)),
       this.blockchainService.call(this.tokenContract.methods.tokenURI(id)),
       this.blockchainService.call(this.tokenContract.methods.getMetadataHash(id)),
+      this.blockchainService.call(this.tokenContract.methods.getRemoteId(id)),
       this.blockchainService.call(this.tokenContract.methods.getAdditionalInformation(id)),
     ]).pipe(
-      map(([ownerAddress, assetInformation, tokenUri, metadataHash, additionalInformation]) => {
+      map(([ownerAddress, assetInformation, tokenUri, metadataHash, remoteId, additionalInformation]) => {
         const asset = new AssetDto(assetInformation.assetUri, assetInformation.assetHash);
         const metadata = new MetadataDto(tokenUri, metadataHash);
+
         return new GetTokenDto(
           this.apiConfigService.TOKEN_ADDRESS,
           id,
           ownerAddress,
           asset,
           metadata,
+          remoteId,
           additionalInformation,
         );
       }),

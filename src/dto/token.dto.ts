@@ -9,6 +9,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 // TODO-MP: use inheritance
+// TODO-MP: remove public
 
 class OriginTokenDto {
   @ApiProperty()
@@ -60,6 +61,9 @@ class MintTokenDto {
   public metadata: MetadataDto;
 
   @ApiProperty()
+  public remoteId: string;
+
+  @ApiProperty()
   public additionalInformation: string;
 
   constructor(ownerAddress: string, asset: AssetDto, metadata: MetadataDto, additionalInformation: string) {
@@ -87,6 +91,9 @@ class GetTokenDto {
   public metadata: MetadataDto;
 
   @ApiProperty()
+  public remoteId: string;
+
+  @ApiProperty()
   public additionalInformation: string;
 
   constructor(
@@ -95,6 +102,7 @@ class GetTokenDto {
     ownerAddress: string,
     asset: AssetDto,
     metadata: MetadataDto,
+    remoteId: string,
     additionalInformation: string,
   ) {
     this.tokenAddress = tokenAddress;
@@ -102,6 +110,7 @@ class GetTokenDto {
     this.ownerAddress = ownerAddress;
     this.asset = asset;
     this.metadata = metadata;
+    this.remoteId = remoteId;
     this.additionalInformation = additionalInformation;
   }
 }
