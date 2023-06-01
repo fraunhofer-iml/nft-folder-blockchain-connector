@@ -7,9 +7,9 @@
  */
 
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { catchError, defer, from, map, Observable, switchMap } from 'rxjs';
+import { catchError, defer, from, map, Observable, of, switchMap } from 'rxjs';
 import TransactionReceipt from 'web3/types';
-import { Account, TxSignature } from 'web3/eth/accounts';
+import { TxSignature } from 'web3/eth/accounts';
 import { TransactionObject } from 'web3/eth/types';
 
 import { ApiConfigService } from '../../../config/apiConfig.service';
@@ -20,19 +20,26 @@ export class BlockchainService {
     this.web3.eth.handleRevert = true;
   }
 
-  public sendTransaction(transactionObject: TransactionObject<any>): Observable<TransactionReceipt> {
-    const account: Account = this.web3.eth.accounts.privateKeyToAccount(this.apiConfigService.PRIVATE_KEY);
-    const transaction = {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      to: transactionObject._parent._address,
-      from: account.address,
-      data: transactionObject.encodeABI(),
-      maxFeePerGas: 20000000000,
-      gasLimit: 6721975,
-    };
+  public sendBatchTransactions(transactionObjects: TransactionObject<any>[]): Observable<true> {
+    const batch = new this.web3.eth.BatchRequest();
 
-    return defer(() => from(this.web3.eth.accounts.signTransaction(transaction, account.privateKey))).pipe(
+    transactionObjects.forEach((transactionObject) => {
+      const transactionParameters = this.createTransactionParameters(transactionObject);
+      batch.add(this.web3.eth.sendTransaction.request(transactionParameters));
+    });
+
+    return defer(() => {
+      batch.execute();
+      return of(true);
+    }).pipe(catchError(this.handleError));
+  }
+
+  public sendTransaction(transactionObject: TransactionObject<any>): Observable<TransactionReceipt> {
+    const transactionParameters = this.createTransactionParameters(transactionObject);
+
+    return defer(() =>
+      from(this.web3.eth.accounts.signTransaction(transactionParameters, this.apiConfigService.PRIVATE_KEY)),
+    ).pipe(
       catchError(this.handleError),
       switchMap((signedTransaction: TxSignature) => {
         return defer(() => from(this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction))).pipe(
@@ -40,6 +47,17 @@ export class BlockchainService {
         );
       }),
     );
+  }
+
+  private createTransactionParameters(transactionObject: TransactionObject<any>) {
+    return {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      to: transactionObject._parent._address,
+      from: this.web3.eth.accounts.privateKeyToAccount(this.apiConfigService.PRIVATE_KEY).address,
+      data: transactionObject.encodeABI(),
+      gas: 6721975, // London fork is implemented in Quorum and Ganache
+    };
   }
 
   public call(transaction): Observable<any> {

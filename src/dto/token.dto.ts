@@ -8,8 +8,6 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 
-// TODO-MP: use inheritance
-
 class TokenContractInfoDto {
   @ApiProperty()
   tokenAddress: string;
@@ -102,4 +100,35 @@ class TokenGetDto extends TokenMintDto {
   }
 }
 
-export { TokenContractInfoDto, TokenAssetDto, TokenMetadataDto, TokenMintDto, TokenGetDto };
+class TokenUpdateDto {
+  @ApiProperty()
+  assetUri: string;
+
+  @ApiProperty()
+  assetHash: string;
+
+  @ApiProperty()
+  metadataUri: string;
+
+  @ApiProperty()
+  metadataHash: string;
+
+  @ApiProperty()
+  additionalInformation: string;
+
+  constructor(
+    assetUri: string,
+    assetHash: string,
+    metadataUri: string,
+    metadataHash: string,
+    additionalInformation: string,
+  ) {
+    this.assetUri = assetUri;
+    this.assetHash = assetHash;
+    this.metadataUri = metadataUri;
+    this.metadataHash = metadataHash;
+    this.additionalInformation = additionalInformation;
+  }
+}
+
+export { TokenContractInfoDto, TokenAssetDto, TokenMetadataDto, TokenMintDto, TokenGetDto, TokenUpdateDto };

@@ -39,8 +39,8 @@ export class TokenAmqpController {
     return this.tokenService.burnToken(queryInput.tokenId);
   }
 
-  @MessagePattern('transferToken')
-  public transferToken(@Payload() queryInput: any): Observable<TransactionReceipt> {
-    return this.tokenService.transferToken(queryInput.from, queryInput.to, queryInput.tokenId);
+  @MessagePattern('updateToken')
+  public updateToken(@Payload() queryInput: any): Observable<true> {
+    return this.tokenService.updateToken(queryInput.remoteId, queryInput.tokenUpdateDto);
   }
 }
