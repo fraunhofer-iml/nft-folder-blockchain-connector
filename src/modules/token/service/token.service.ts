@@ -15,7 +15,7 @@ import Web3 from 'web3';
 import { BlockchainService } from '../../blockchain/service/blockchain.service';
 import { ApiConfigService } from '../../../config/apiConfig.service';
 import { SegmentService } from '../../segment/service/segment.service';
-import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto } from '../../../dto/token.dto';
+import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from '../../../dto/token.dto';
 import { GetSegmentDto } from '../../../dto/getSegment.dto';
 import { TokenAbi } from '../../../abi/token.abi';
 
@@ -52,14 +52,14 @@ export class TokenService {
     return forkJoin([
       this.blockchainService.call(this.tokenContract.methods.ownerOf(id)),
       this.blockchainService.call(this.tokenContract.methods.getAssetInformation(id)),
-      this.blockchainService.call(this.tokenContract.methods.tokenURI(id)),
+      this.blockchainService.call(this.tokenContract.methods.getMetadataUri(id)),
       this.blockchainService.call(this.tokenContract.methods.getMetadataHash(id)),
       this.blockchainService.call(this.tokenContract.methods.getRemoteId(id)),
       this.blockchainService.call(this.tokenContract.methods.getAdditionalInformation(id)),
     ]).pipe(
-      map(([ownerAddress, assetInformation, tokenUri, metadataHash, remoteId, additionalInformation]) => {
+      map(([ownerAddress, assetInformation, metadataUri, metadataHash, remoteId, additionalInformation]) => {
         const asset = new TokenAssetDto(assetInformation.assetUri, assetInformation.assetHash);
-        const metadata = new TokenMetadataDto(tokenUri, metadataHash);
+        const metadata = new TokenMetadataDto(metadataUri, metadataHash);
 
         return new TokenGetDto(
           this.apiConfigService.TOKEN_ADDRESS,
@@ -74,7 +74,6 @@ export class TokenService {
     );
   }
 
-  // TODO-MP: returns the last token, which has this remoteId
   public getTokenByRemoteId(remoteId: string): Observable<TokenGetDto> {
     return this.blockchainService
       .call(this.tokenContract.methods.getTokenId(remoteId))
@@ -100,7 +99,34 @@ export class TokenService {
     return this.blockchainService.sendTransaction(this.tokenContract.methods.burn(tokenId));
   }
 
-  public transferToken(tokenId: string, from: string, to: string): Observable<TransactionReceipt> {
-    return this.blockchainService.sendTransaction(this.tokenContract.methods.safeTransferFrom(from, to, tokenId));
+  public updateToken(remoteId: string, tokenUpdateDto: TokenUpdateDto): Observable<true> {
+    const contractFunctions = {
+      assetUri: 'setAssetUri',
+      assetHash: 'setAssetHash',
+      metadataUri: 'setMetadataUri',
+      metadataHash: 'setMetadataHash',
+      additionalInformation: 'setAdditionalInformation',
+    };
+
+    return this.getTokenId(remoteId).pipe(
+      mergeMap((tokenId) => {
+        const transactionObjects: TransactionObject<any>[] = [];
+
+        for (const propertyName in tokenUpdateDto) {
+          if (propertyName in contractFunctions) {
+            const contractFunction = contractFunctions[propertyName];
+            const newValue = tokenUpdateDto[propertyName];
+            const transactionObject = this.tokenContract.methods[contractFunction](tokenId, newValue);
+            transactionObjects.push(transactionObject);
+          }
+        }
+
+        return this.blockchainService.sendBatchTransactions(transactionObjects);
+      }),
+    );
+  }
+
+  private getTokenId(remoteId: string) {
+    return this.blockchainService.call(this.tokenContract.methods.getTokenId(remoteId));
   }
 }

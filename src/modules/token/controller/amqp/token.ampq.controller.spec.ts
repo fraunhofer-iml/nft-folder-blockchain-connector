@@ -11,8 +11,7 @@ import { of } from 'rxjs';
 
 import { TokenAmqpController } from './tokenAmqpController';
 import { TokenService } from '../../service/token.service';
-import { TransferTokenDto } from '../../../../dto/transferToken.dto';
-import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto } from '../../../../dto/token.dto';
+import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from '../../../../dto/token.dto';
 import { GetSegmentDto } from '../../../../dto/getSegment.dto';
 
 // TODO-LG: add tests for error cases
@@ -22,8 +21,7 @@ describe('TokenController', () => {
 
   // test input
   const INPUT_TOKEN_ID = 12;
-  const INPUT_TOKEN_SENDER = 'inputTokenSender';
-  const INPUT_TOKEN_RECEIVER = 'inputTokenReceiver';
+  const INPUT_REMOTE_ID = 'a1b2c3';
   const INPUT_TOKEN_MINT_DTO: TokenMintDto = new TokenMintDto(
     '',
     new TokenAssetDto('', ''),
@@ -31,7 +29,7 @@ describe('TokenController', () => {
     '',
     '',
   );
-  const INPUT_TRANSFER_DTO = new TransferTokenDto(INPUT_TOKEN_SENDER, INPUT_TOKEN_RECEIVER);
+  const INPUT_TOKEN_UPDATE_DTO: TokenUpdateDto = new TokenUpdateDto('au', 'ah', 'mu', 'mh', 'ai');
 
   // test output
   const OUTPUT_MINT_TOKEN: any = {};
@@ -54,7 +52,7 @@ describe('TokenController', () => {
       getTokenByTokenId: () => of(OUTPUT_GET_TOKEN),
       getAllSegments: () => of(OUTPUT_GET_SEGMENTS),
       burnToken: () => of(OUTPUT_BURN_TOKEN),
-      transferToken: () => of(OUTPUT_TRANSFER_TOKEN),
+      updateToken: () => of(OUTPUT_TRANSFER_TOKEN),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -107,7 +105,7 @@ describe('TokenController', () => {
   });
 
   it('should transfer a token from the current owner to a new owner', (done) => {
-    controller.transferToken(INPUT_TRANSFER_DTO).subscribe((res) => {
+    controller.updateToken({ remoteId: INPUT_REMOTE_ID, tokenUpdateDto: INPUT_TOKEN_UPDATE_DTO }).subscribe((res) => {
       expect(res).toEqual(OUTPUT_TRANSFER_TOKEN);
       done();
     });

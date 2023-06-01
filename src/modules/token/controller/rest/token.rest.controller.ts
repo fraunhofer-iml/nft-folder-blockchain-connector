@@ -12,9 +12,8 @@ import { Observable } from 'rxjs';
 import TransactionReceipt from 'web3/types';
 
 import { TokenService } from '../../service/token.service';
-import { TransferTokenDto } from '../../../../dto/transferToken.dto';
 import { GetSegmentDto } from '../../../../dto/getSegment.dto';
-import { TokenGetDto, TokenMintDto } from '../../../../dto/token.dto';
+import { TokenGetDto, TokenMintDto, TokenUpdateDto } from '../../../../dto/token.dto';
 import { BlockchainService } from '../../../blockchain/service/blockchain.service';
 
 @Controller('tokens')
@@ -57,10 +56,10 @@ export class TokenRestController {
     return this.tokenService.burnToken(String(id));
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Transfers the token with the specified id from the current owner to a new owner' })
-  @ApiBody({ type: TransferTokenDto, description: 'Contains the address of the current and new owner' })
-  public transferToken(@Param('id') id: number, @Body() transferDto: TransferTokenDto): Observable<TransactionReceipt> {
-    return this.tokenService.transferToken(String(id), transferDto.fromAddress, transferDto.toAddress);
+  @Patch(':remoteId')
+  @ApiOperation({ summary: 'Updates the token with the specified tokenId or remoteId' })
+  @ApiBody({ type: TokenUpdateDto, description: 'Contains the payload' })
+  public updateToken(@Param('remoteId') remoteId: string, @Body() tokenUpdateDto: TokenUpdateDto): Observable<true> {
+    return this.tokenService.updateToken(remoteId, tokenUpdateDto);
   }
 }
