@@ -24,8 +24,10 @@ export class TokenRestController {
   @Post()
   @ApiOperation({ summary: 'Creates a new token' })
   @ApiBody({ type: TokenMintDto, description: 'Contains all relevant information for the creation of a token' })
-  public mintToken(@Body() mintTokenDto: TokenMintDto): Observable<TransactionReceipt> {
-    return this.tokenService.mintToken(mintTokenDto);
+  public mintToken(@Body() dto: TokenMintDto): Observable<TransactionReceipt> {
+    const dtoWithDefaultValues = TokenMintDto.createWithDefaultValues();
+    Object.assign(dtoWithDefaultValues, dto);
+    return this.tokenService.mintToken(dtoWithDefaultValues);
   }
 
   @Get()
@@ -34,7 +36,7 @@ export class TokenRestController {
   @ApiQuery({ name: 'remoteId', type: String, required: false })
   public getToken(@Query('tokenId') tokenId?: number, @Query('remoteId') remoteId?: string): Observable<TokenGetDto> {
     if (tokenId) {
-      return this.tokenService.getTokenByTokenId(String(tokenId));
+      return this.tokenService.getTokenByTokenId(tokenId);
     } else if (remoteId) {
       return this.tokenService.getTokenByRemoteId(remoteId);
     } else {
@@ -42,24 +44,24 @@ export class TokenRestController {
     }
   }
 
-  @Get(':id/segments')
-  @ApiParam({ name: 'id', type: Number })
+  @Get(':tokenId/segments')
+  @ApiParam({ name: 'tokenId', type: Number })
   @ApiOperation({ summary: 'Returns all segments which contain the specific token' })
-  public getAllSegments(@Param('id') tokenId: number): Observable<GetSegmentDto[]> {
+  public getAllSegments(@Param('tokenId') tokenId: number): Observable<GetSegmentDto[]> {
     return this.tokenService.getAllSegments(String(tokenId));
   }
 
-  @Delete(':id')
+  @Delete(':tokenId')
   @ApiOperation({ summary: 'Burns the token with the specified id' })
-  @ApiParam({ name: 'id', type: Number })
-  public burnToken(@Param('id') id: number): Observable<TransactionReceipt> {
-    return this.tokenService.burnToken(String(id));
+  @ApiParam({ name: 'tokenId', type: Number })
+  public burnToken(@Param('tokenId') tokenId: number): Observable<TransactionReceipt> {
+    return this.tokenService.burnToken(String(tokenId));
   }
 
   @Patch(':remoteId')
   @ApiOperation({ summary: 'Updates the token with the specified tokenId or remoteId' })
   @ApiBody({ type: TokenUpdateDto, description: 'Contains the payload' })
-  public updateToken(@Param('remoteId') remoteId: string, @Body() tokenUpdateDto: TokenUpdateDto): Observable<true> {
-    return this.tokenService.updateToken(remoteId, tokenUpdateDto);
+  public updateToken(@Param('remoteId') remoteId: string, @Body() dto: TokenUpdateDto): Observable<true> {
+    return this.tokenService.updateToken(remoteId, dto);
   }
 }

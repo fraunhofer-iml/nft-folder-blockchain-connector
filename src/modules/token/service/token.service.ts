@@ -7,9 +7,10 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { forkJoin, map, mergeMap, Observable } from 'rxjs';
+import { forkJoin, from, map, mergeMap, Observable, switchMap } from 'rxjs';
 import { TransactionObject } from 'web3/eth/types';
 import TransactionReceipt from 'web3/types';
+import EventLog from 'web3/types';
 import Web3 from 'web3';
 
 import { BlockchainService } from '../../blockchain/service/blockchain.service';
@@ -48,30 +49,65 @@ export class TokenService {
     return this.blockchainService.sendTransaction(transactionObject);
   }
 
-  public getTokenByTokenId(id: string): Observable<TokenGetDto> {
+  public getTokenByTokenId(tokenId: number): Observable<TokenGetDto> {
     return forkJoin([
-      this.blockchainService.call(this.tokenContract.methods.ownerOf(id)),
-      this.blockchainService.call(this.tokenContract.methods.getAssetInformation(id)),
-      this.blockchainService.call(this.tokenContract.methods.getMetadataUri(id)),
-      this.blockchainService.call(this.tokenContract.methods.getMetadataHash(id)),
-      this.blockchainService.call(this.tokenContract.methods.getRemoteId(id)),
-      this.blockchainService.call(this.tokenContract.methods.getAdditionalInformation(id)),
+      this.blockchainService.call(this.tokenContract.methods.ownerOf(tokenId)),
+      this.blockchainService.call(this.tokenContract.methods.getAssetInformation(tokenId)),
+      this.blockchainService.call(this.tokenContract.methods.getMetadataUri(tokenId)),
+      this.blockchainService.call(this.tokenContract.methods.getMetadataHash(tokenId)),
+      this.blockchainService.call(this.tokenContract.methods.getRemoteId(tokenId)),
+      this.blockchainService.call(this.tokenContract.methods.getAdditionalInformation(tokenId)),
     ]).pipe(
-      map(([ownerAddress, assetInformation, metadataUri, metadataHash, remoteId, additionalInformation]) => {
+      switchMap(([ownerAddress, assetInformation, metadataUri, metadataHash, remoteId, additionalInformation]) => {
         const asset = new TokenAssetDto(assetInformation.assetUri, assetInformation.assetHash);
         const metadata = new TokenMetadataDto(metadataUri, metadataHash);
-
-        return new TokenGetDto(
-          this.apiConfigService.TOKEN_ADDRESS,
-          id,
-          ownerAddress,
-          asset,
-          metadata,
-          remoteId,
-          additionalInformation,
+        const getMinterAndLastUpdatedOn$ = from(this.getMinterAndLastUpdatedOn(tokenId));
+        return getMinterAndLastUpdatedOn$.pipe(
+          map(({ minterAddress, lastUpdatedOn }: { minterAddress: string; lastUpdatedOn: string }) => {
+            return new TokenGetDto(
+              remoteId,
+              asset,
+              metadata,
+              additionalInformation,
+              ownerAddress,
+              minterAddress,
+              lastUpdatedOn,
+              tokenId,
+              this.apiConfigService.TOKEN_ADDRESS,
+            );
+          }),
         );
       }),
     );
+  }
+
+  private async getMinterAndLastUpdatedOn(tokenId: number): Promise<{ minterAddress: string; lastUpdatedOn: string }> {
+    const firstAndLastEvent: any = await this.fetchFirstAndLastEvent(tokenId);
+
+    const minterAddress: string = firstAndLastEvent.firstEvent.returnValues.to;
+
+    const transactionHash: string = firstAndLastEvent.lastEvent.transactionHash;
+    const timestamp: number = await this.blockchainService.fetchTransactionTimestamp(transactionHash);
+    const timestampInSeconds = new Date(timestamp * 1000);
+    const lastUpdatedOn = timestampInSeconds.toISOString();
+
+    return { minterAddress, lastUpdatedOn };
+  }
+
+  private async fetchFirstAndLastEvent(tokenId: number): Promise<{ firstEvent: EventLog; lastEvent: EventLog }> {
+    const events: EventLog[] = await this.tokenContract.getPastEvents('Transfer', {
+      filter: { tokenId },
+      fromBlock: 'genesis',
+      toBlock: 'latest',
+    });
+
+    if (events.length === 0) {
+      return { firstEvent: null, lastEvent: null };
+    }
+
+    const firstEvent: EventLog = events[0]; // contains the minter address
+    const lastEvent: EventLog = events[events.length - 1]; // contains the tx hash, which is used to fetch its time
+    return { firstEvent, lastEvent };
   }
 
   public getTokenByRemoteId(remoteId: string): Observable<TokenGetDto> {
@@ -112,6 +148,7 @@ export class TokenService {
       mergeMap((tokenId) => {
         const transactionObjects: TransactionObject<any>[] = [];
 
+        // Create a transactionObject for every dto property that corresponds to a contract function
         for (const propertyName in tokenUpdateDto) {
           if (propertyName in contractFunctions) {
             const contractFunction = contractFunctions[propertyName];

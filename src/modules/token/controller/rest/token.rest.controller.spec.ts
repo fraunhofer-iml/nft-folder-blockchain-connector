@@ -37,11 +37,13 @@ describe('TokenController', () => {
   const OUTPUT_MINT_TOKEN: any = {};
   const OUTPUT_GET_TOKEN: TokenGetDto = new TokenGetDto(
     '',
-    '',
-    '',
     new TokenAssetDto('', ''),
     new TokenMetadataDto('', ''),
     '',
+    '',
+    '',
+    '',
+    0,
     '',
   );
   const OUTPUT_GET_SEGMENTS: GetSegmentDto[] = [];
