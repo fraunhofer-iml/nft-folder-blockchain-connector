@@ -69,6 +69,20 @@ export class BlockchainService {
     );
   }
 
+  public async fetchTransactionTimestamp(transactionHash: string): Promise<number> {
+    const transaction = await this.web3.eth.getTransaction(transactionHash);
+    if (!transaction || !transaction.blockNumber) {
+      throw new BadRequestException('Transaction not found or not yet confirmed.');
+    }
+
+    const block = await this.web3.eth.getBlock(transaction.blockNumber);
+    if (!block || !block.timestamp) {
+      throw new BadRequestException('Block not found or missing timestamp.');
+    }
+
+    return block.timestamp;
+  }
+
   public handleError(error: any): Observable<any> {
     let errorMessage = error.data ? error.data.reason : error.reason;
     errorMessage = errorMessage ? errorMessage : error.message;

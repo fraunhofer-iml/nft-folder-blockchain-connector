@@ -49,7 +49,7 @@ class TokenMetadataDto {
 
 class TokenMintDto {
   @ApiProperty()
-  ownerAddress: string;
+  remoteId: string;
 
   @ApiProperty()
   asset: TokenAssetDto;
@@ -58,45 +58,59 @@ class TokenMintDto {
   metadata: TokenMetadataDto;
 
   @ApiProperty()
-  remoteId: string;
-
-  @ApiProperty()
   additionalInformation: string;
 
+  @ApiProperty()
+  ownerAddress: string;
+
   constructor(
-    ownerAddress: string,
+    remoteId: string,
     asset: TokenAssetDto,
     metadata: TokenMetadataDto,
-    remoteId: string,
     additionalInformation: string,
+    ownerAddress: string,
   ) {
-    this.ownerAddress = ownerAddress;
+    this.remoteId = remoteId;
     this.asset = asset;
     this.metadata = metadata;
-    this.remoteId = remoteId;
     this.additionalInformation = additionalInformation;
+    this.ownerAddress = ownerAddress;
+  }
+
+  static createWithDefaultValues(): TokenMintDto {
+    return new TokenMintDto('', new TokenAssetDto('', ''), new TokenMetadataDto('', ''), '', '');
   }
 }
 
 class TokenGetDto extends TokenMintDto {
   @ApiProperty()
-  tokenAddress: string;
+  minterAddress: string;
 
   @ApiProperty()
-  tokenId: string;
+  lastUpdatedOn: string;
+
+  @ApiProperty()
+  tokenId: number;
+
+  @ApiProperty()
+  tokenAddress: string;
 
   constructor(
-    tokenAddress: string,
-    tokenId: string,
-    ownerAddress: string,
+    remoteId: string,
     asset: TokenAssetDto,
     metadata: TokenMetadataDto,
-    remoteId: string,
     additionalInformation: string,
+    ownerAddress: string,
+    minterAddress: string,
+    lastUpdatedOn: string,
+    tokenId: number,
+    tokenAddress: string,
   ) {
-    super(ownerAddress, asset, metadata, remoteId, additionalInformation);
-    this.tokenAddress = tokenAddress;
+    super(remoteId, asset, metadata, additionalInformation, ownerAddress);
+    this.minterAddress = minterAddress;
+    this.lastUpdatedOn = lastUpdatedOn;
     this.tokenId = tokenId;
+    this.tokenAddress = tokenAddress;
   }
 }
 
