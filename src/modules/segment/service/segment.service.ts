@@ -10,13 +10,15 @@ import { Injectable } from '@nestjs/common';
 import { forkJoin, map, mergeMap, Observable, of } from 'rxjs';
 import TransactionReceipt from 'web3/types';
 import Contract from 'web3/eth/contract';
+import Web3 from 'web3';
 
-import { BlockchainService } from '../../blockchain/service/blockchain.service';
 import { ApiConfigService } from '../../../config/apiConfig.service';
-import { SegmentAbi } from '../../../abi/segment.abi';
-import { ContainerAbi } from '../../../abi/container.abi';
+import { BlockchainService } from '../../blockchain/service/blockchain.service';
+
 import { GetSegmentDto } from '../../../dto/getSegment.dto';
 import { TokenContractInfoDto } from '../../../dto/token.dto';
+import { SegmentAbi } from '../../../abi/segment.abi';
+import { ContainerAbi } from '../../../abi/container.abi';
 
 @Injectable()
 export class SegmentService {
@@ -78,6 +80,10 @@ export class SegmentService {
   }
 
   public addToken(index: number, tokenAddress: string, tokenId: number): Observable<TransactionReceipt> {
+    if (!Web3.utils.isAddress(tokenAddress)) {
+      this.blockchainService.handleError({ message: `'${tokenAddress}' is not an address` });
+    }
+
     return this.blockchainService
       .call(this.containerContract.methods.getSegment(index))
       .pipe(
@@ -90,6 +96,10 @@ export class SegmentService {
   }
 
   public removeToken(index: number, tokenAddress: string, tokenId: number): Observable<TransactionReceipt> {
+    if (!Web3.utils.isAddress(tokenAddress)) {
+      this.blockchainService.handleError({ message: `'${tokenAddress}' is not an address` });
+    }
+
     return this.blockchainService
       .call(this.containerContract.methods.getSegment(index))
       .pipe(

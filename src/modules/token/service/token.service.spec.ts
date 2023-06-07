@@ -20,11 +20,13 @@ import { areMethodsEqual } from '../../utils/test.utils';
 import { GetSegmentDto } from '../../../dto/getSegment.dto';
 import { TokenAssetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from '../../../dto/token.dto';
 import { TokenAbi } from '../../../abi/token.abi';
+import { EventInformationService } from './eventInformation.service';
 
 describe('TokenService', () => {
   let service: TokenService;
   let fakeBlockchainService: Partial<BlockchainService>;
   let fakeApiConfigService: Partial<ApiConfigService>;
+  let fakeEventInformationService: Partial<EventInformationService>;
 
   // test input
   const INPUT_TOKEN_ID = '12';
@@ -108,6 +110,10 @@ describe('TokenService', () => {
         {
           provide: ApiConfigService,
           useValue: fakeApiConfigService,
+        },
+        {
+          provide: EventInformationService,
+          useValue: fakeEventInformationService,
         },
         TokenService,
         SegmentService,

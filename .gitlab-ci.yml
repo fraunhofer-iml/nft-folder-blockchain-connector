@@ -1,34 +1,151 @@
 stages:
   - build
+  - analyze
   - test
+  # - license
 
-npm-install:
-  stage: build
-  image: node:18-alpine
-  script:
-    - npm config set registry ${NEXUS_NPM_CACHE_URL}
-    - npm install
+variables:
+  GIT_DEPTH: 0
+  HUSKY: 0
+  NPM_CI: npm ci --include dev --cache .npm --prefer-offline
+
+default:
   cache:
+    key:
+      files:
+        - package-lock.json
     paths:
-      - node_modules/
-  artifacts:
-    expire_in: 2 hours
-    when: on_success
-    paths:
-      - node_modules/
+      - .npm
+    policy: pull
+  image: node:18.16.0-alpine3.18
+  timeout: 20 minutes
 
-run-tests:
+.pull-push-cache:
+  cache:
+    policy: pull-push
+
+#############
+### build ###
+#############
+
+install-dependencies:
+  stage: build
+  extends: .pull-push-cache
+  script:
+    - $NPM_CI
+  rules:
+    - when: always
+
+###############
+### analyze ###
+###############
+
+run-eslint:
+  stage: analyze
+  before_script:
+    - $NPM_CI
+  script:
+    - npm run eslint:check
+  rules:
+    - when: on_success
+
+run-prettier:
+  stage: analyze
+  before_script:
+    - $NPM_CI
+  script:
+    - npm run prettier:check
+  rules:
+    - when: on_success
+
+run-sonar-scanner:
+  stage: analyze
+  image: red6/docker-sonar-scanner:latest
+  script:
+    - >
+      sonar-scanner
+      -Dproject.settings=sonar.properties
+      -Dsonar.host.url="${SONAR_HOST_URL}"
+      -Dsonar.login="${SONAR_TOKEN}"
+  rules:
+    - when: on_success
+
+############
+### test ###
+############
+
+run-unit-tests:
   stage: test
-  dependencies:
-    - npm-install
-  image: node:18-alpine
+  before_script:
+    - $NPM_CI
   script:
     - npm run test
+  rules:
+    - when: on_success
 
+###############
+### license ###
+###############
 
-lint-test-job:   # This job also runs in the test stage.
-  stage: test    # It can run at the same time as unit-test-job (in parallel).
+# TODO-MP: check EXCLUDED_PACKAGES && EXCLUDED_LICENSES
+# TODO-MP: --exclude "LGPL-3.0" results in an exception :-(
+.create-npm-licenses-list:
+  stage: license
+  variables:
+    LICENSES_LIST: "npm-licenses-list.csv"
+    LICENSES_OVERRIDES: "third-party-licenses/npm-licenses-overrides.txt"
+    EXCLUDED_PACKAGES: "argparse@2.0.1;jsonify@0.0.1;oboe@2.1.5;path-scurry@1.6.3;precond@0.2.3;semaphore@1.1.0"
+  before_script:
+    - $NPM_CI
+    - >
+      if [ -e ${LICENSES_OVERRIDES} ]; then
+        EXCLUDED_PACKAGES=$(cat ${LICENSES_OVERRIDES});
+      fi
   script:
-    - echo "Linting code... This will take about 10 seconds."
-    - sleep 10
-    - echo "No lint issues found."
+    - >
+      npx license-checker
+      --production
+      --unknown
+      --csv
+      --excludePrivatePackages
+      --excludePackages "${EXCLUDED_PACKAGES}"
+      --exclude "LGPL-3.0"
+      --onlyAllow "${NPM_LICENSE_CHECKER_WHITELIST}"
+      --out "${LICENSES_LIST}"
+    - >
+      if [ ${EXCLUDED_PACKAGES} ]; then
+        echo -e "\n\nManually overridden packages excluded from the licenses check:\n${EXCLUDED_PACKAGES}" >> ${LICENSES_LIST};
+      fi
+    - cat "${LICENSES_LIST}"
+  artifacts:
+    name: "npm-licenses-list"
+    expose_as: 'NPM Licenses List'
+    expire_in: 1 hour
+    paths:
+      - $LICENSES_LIST
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+.publish-all-licenses-list:
+  stage: license
+  needs:
+    - "create-npm-licenses-list"
+  before_script:
+    - mkdir -p public
+  script:
+    - >
+      for file in *licenses-list.csv; do
+        mv "$file" public/
+        echo -e "\n\nGenerated on branch ${CI_COMMIT_BRANCH} for commit ${CI_COMMIT_SHA} @ ${CI_COMMIT_TIMESTAMP}" >> public/"$file"
+      done
+    - echo "Publishing the lists of dependencies and their licenses on GitLab Pages ..."
+  artifacts:
+    name: "all-licenses-list"
+    expose_as: 'All Licenses List'
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

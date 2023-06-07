@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 import TransactionReceipt from 'web3/types';
 
 import { SegmentService } from '../../service/segment.service';
+
 import { TokenContractInfoDto } from '../../../../dto/token.dto';
 import { CreateSegmentDto } from '../../../../dto/createSegment.dto';
 import { GetSegmentDto } from '../../../../dto/getSegment.dto';

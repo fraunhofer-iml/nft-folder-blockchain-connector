@@ -11,6 +11,7 @@ import { of } from 'rxjs';
 
 import { SegmentAmqpController } from './segment.amqp.controller';
 import { SegmentService } from '../../service/segment.service';
+
 import { GetSegmentDto } from '../../../../dto/getSegment.dto';
 
 describe('SegmentAmqpController', () => {

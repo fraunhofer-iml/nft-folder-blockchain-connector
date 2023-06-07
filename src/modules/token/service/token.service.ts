@@ -10,12 +10,12 @@ import { Injectable } from '@nestjs/common';
 import { forkJoin, from, map, mergeMap, Observable, switchMap } from 'rxjs';
 import { TransactionObject } from 'web3/eth/types';
 import TransactionReceipt from 'web3/types';
-import EventLog from 'web3/types';
-import Web3 from 'web3';
 
-import { BlockchainService } from '../../blockchain/service/blockchain.service';
-import { ApiConfigService } from '../../../config/apiConfig.service';
+import { EventInformationService } from './eventInformation.service';
 import { SegmentService } from '../../segment/service/segment.service';
+import { ApiConfigService } from '../../../config/apiConfig.service';
+import { BlockchainService } from '../../blockchain/service/blockchain.service';
+
 import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from '../../../dto/token.dto';
 import { GetSegmentDto } from '../../../dto/getSegment.dto';
 import { TokenAbi } from '../../../abi/token.abi';
@@ -25,28 +25,20 @@ export class TokenService {
   private tokenContract: any;
 
   constructor(
-    private readonly blockchainService: BlockchainService,
+    private readonly eventInformationService: EventInformationService,
     private readonly segmentService: SegmentService,
     private readonly apiConfigService: ApiConfigService,
+    private readonly blockchainService: BlockchainService,
   ) {
     this.tokenContract = new this.blockchainService.web3.eth.Contract(TokenAbi, apiConfigService.TOKEN_ADDRESS);
   }
 
-  public mintToken(mintTokenDto: TokenMintDto): Observable<TransactionReceipt> {
-    if (!Web3.utils.isAddress(mintTokenDto.ownerAddress)) {
-      this.blockchainService.handleError({ message: `'${mintTokenDto.ownerAddress}' is not an address` });
-    }
+  public getTokenByRemoteId(remoteId: string): Observable<TokenGetDto> {
+    return this.getTokenId(remoteId).pipe(mergeMap((tokenId) => this.getTokenByTokenId(tokenId)));
+  }
 
-    const transactionObject: TransactionObject<any> = this.tokenContract.methods.safeMint(
-      mintTokenDto.ownerAddress,
-      mintTokenDto.asset.uri,
-      mintTokenDto.asset.hash,
-      mintTokenDto.metadata.uri,
-      mintTokenDto.metadata.hash,
-      mintTokenDto.remoteId,
-      mintTokenDto.additionalInformation,
-    );
-    return this.blockchainService.sendTransaction(transactionObject);
+  private getTokenId(remoteId: string) {
+    return this.blockchainService.call(this.tokenContract.methods.getTokenId(remoteId));
   }
 
   public getTokenByTokenId(tokenId: number): Observable<TokenGetDto> {
@@ -61,8 +53,8 @@ export class TokenService {
       switchMap(([ownerAddress, assetInformation, metadataUri, metadataHash, remoteId, additionalInformation]) => {
         const asset = new TokenAssetDto(assetInformation.assetUri, assetInformation.assetHash);
         const metadata = new TokenMetadataDto(metadataUri, metadataHash);
-        const getMinterAndLastUpdatedOn$ = from(this.getMinterAndLastUpdatedOn(tokenId));
-        return getMinterAndLastUpdatedOn$.pipe(
+
+        return from(this.eventInformationService.getMinterAddressAndLastUpdatedOn(tokenId)).pipe(
           map(({ minterAddress, lastUpdatedOn }: { minterAddress: string; lastUpdatedOn: string }) => {
             return new TokenGetDto(
               remoteId,
@@ -81,41 +73,6 @@ export class TokenService {
     );
   }
 
-  private async getMinterAndLastUpdatedOn(tokenId: number): Promise<{ minterAddress: string; lastUpdatedOn: string }> {
-    const firstAndLastEvent: any = await this.fetchFirstAndLastEvent(tokenId);
-
-    const minterAddress: string = firstAndLastEvent.firstEvent.returnValues.to;
-
-    const transactionHash: string = firstAndLastEvent.lastEvent.transactionHash;
-    const timestamp: number = await this.blockchainService.fetchTransactionTimestamp(transactionHash);
-    const timestampInSeconds = new Date(timestamp * 1000);
-    const lastUpdatedOn = timestampInSeconds.toISOString();
-
-    return { minterAddress, lastUpdatedOn };
-  }
-
-  private async fetchFirstAndLastEvent(tokenId: number): Promise<{ firstEvent: EventLog; lastEvent: EventLog }> {
-    const events: EventLog[] = await this.tokenContract.getPastEvents('Transfer', {
-      filter: { tokenId },
-      fromBlock: 'genesis',
-      toBlock: 'latest',
-    });
-
-    if (events.length === 0) {
-      return { firstEvent: null, lastEvent: null };
-    }
-
-    const firstEvent: EventLog = events[0]; // contains the minter address
-    const lastEvent: EventLog = events[events.length - 1]; // contains the tx hash, which is used to fetch its time
-    return { firstEvent, lastEvent };
-  }
-
-  public getTokenByRemoteId(remoteId: string): Observable<TokenGetDto> {
-    return this.blockchainService
-      .call(this.tokenContract.methods.getTokenId(remoteId))
-      .pipe(mergeMap((tokenId) => this.getTokenByTokenId(tokenId)));
-  }
-
   public getAllSegments(id: string): Observable<GetSegmentDto[]> {
     return this.segmentService
       .getAllSegments()
@@ -131,11 +88,20 @@ export class TokenService {
       );
   }
 
-  public burnToken(tokenId: string): Observable<TransactionReceipt> {
-    return this.blockchainService.sendTransaction(this.tokenContract.methods.burn(tokenId));
+  public mintToken(mintTokenDto: TokenMintDto): Observable<TransactionReceipt> {
+    const transactionObject: TransactionObject<any> = this.tokenContract.methods.safeMint(
+      this.blockchainService.getPublicAddress(),
+      mintTokenDto.asset.uri,
+      mintTokenDto.asset.hash,
+      mintTokenDto.metadata.uri,
+      mintTokenDto.metadata.hash,
+      mintTokenDto.remoteId,
+      mintTokenDto.additionalInformation,
+    );
+    return this.blockchainService.sendTransaction(transactionObject);
   }
 
-  public updateToken(remoteId: string, tokenUpdateDto: TokenUpdateDto): Observable<true> {
+  public updateToken(remoteId: string, tokenUpdateDto: TokenUpdateDto): Observable<string[]> {
     const contractFunctions = {
       assetUri: 'setAssetUri',
       assetHash: 'setAssetHash',
@@ -163,7 +129,7 @@ export class TokenService {
     );
   }
 
-  private getTokenId(remoteId: string) {
-    return this.blockchainService.call(this.tokenContract.methods.getTokenId(remoteId));
+  public burnToken(tokenId: string): Observable<TransactionReceipt> {
+    return this.blockchainService.sendTransaction(this.tokenContract.methods.burn(tokenId));
   }
 }

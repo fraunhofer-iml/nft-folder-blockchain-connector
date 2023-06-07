@@ -15,12 +15,13 @@ import TransactionReceipt from 'web3/types';
 import Web3 from 'web3';
 
 import { SegmentService } from './segment.service';
-import { BlockchainService } from '../../blockchain/service/blockchain.service';
 import { ApiConfigService } from '../../../config/apiConfig.service';
+import { BlockchainService } from '../../blockchain/service/blockchain.service';
 import { areMethodsEqual } from '../../utils/test.utils';
+
+import { GetSegmentDto } from '../../../dto/getSegment.dto';
 import { SegmentAbi } from '../../../abi/segment.abi';
 import { ContainerAbi } from '../../../abi/container.abi';
-import { GetSegmentDto } from '../../../dto/getSegment.dto';
 
 describe('SegmentService', () => {
   let service: SegmentService;
