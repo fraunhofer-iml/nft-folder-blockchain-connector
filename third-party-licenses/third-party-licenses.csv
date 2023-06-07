@@ -551,6 +551,7 @@
 "http2-wrapper@2.2.0","MIT","https://github.com/szmarczak/http2-wrapper"
 "human-signals@1.1.1","Apache-2.0","https://github.com/ehmicky/human-signals"
 "human-signals@2.1.0","Apache-2.0","https://github.com/ehmicky/human-signals"
+"husky@8.0.3","MIT","https://github.com/typicode/husky"
 "iconv-lite@0.4.24","MIT","https://github.com/ashtuchkin/iconv-lite"
 "idna-uts46-hx@2.3.1","MIT","https://github.com/hexonet/idna-uts46"
 "ieee754@1.2.1","BSD-3-Clause","https://github.com/feross/ieee754"

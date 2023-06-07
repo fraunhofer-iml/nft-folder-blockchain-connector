@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 import TransactionReceipt from 'web3/types';
 
 import { TokenService } from '../../service/token.service';
+
 import { TokenGetDto, TokenMintDto } from '../../../../dto/token.dto';
 import { GetSegmentDto } from '../../../../dto/getSegment.dto';
 
@@ -40,7 +41,7 @@ export class TokenAmqpController {
   }
 
   @MessagePattern('updateToken')
-  public updateToken(@Payload() queryInput: any): Observable<true> {
+  public updateToken(@Payload() queryInput: any): Observable<string[]> {
     return this.tokenService.updateToken(queryInput.remoteId, queryInput.tokenUpdateDto);
   }
 }

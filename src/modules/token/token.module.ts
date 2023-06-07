@@ -12,14 +12,14 @@ import { TokenRestController } from './controller/rest/token.rest.controller';
 import { TokenAmqpController } from './controller/amqp/tokenAmqpController';
 
 import { TokenService } from './service/token.service';
-import { ApiConfigService } from '../../config/apiConfig.service';
-
-import { BlockchainModule } from '../blockchain/blockchain.module';
+import { EventInformationService } from './service/eventInformation.service';
 import { SegmentService } from '../segment/service/segment.service';
+import { ApiConfigService } from '../../config/apiConfig.service';
+import { BlockchainModule } from '../blockchain/blockchain.module';
 
 @Module({
   controllers: [TokenRestController, TokenAmqpController],
-  providers: [TokenService, SegmentService, ApiConfigService],
+  providers: [TokenService, EventInformationService, SegmentService, ApiConfigService],
   imports: [BlockchainModule],
 })
 export class TokenModule {}

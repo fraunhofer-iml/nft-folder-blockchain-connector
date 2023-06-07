@@ -12,23 +12,15 @@ import { Observable } from 'rxjs';
 import TransactionReceipt from 'web3/types';
 
 import { TokenService } from '../../service/token.service';
-import { GetSegmentDto } from '../../../../dto/getSegment.dto';
-import { TokenGetDto, TokenMintDto, TokenUpdateDto } from '../../../../dto/token.dto';
 import { BlockchainService } from '../../../blockchain/service/blockchain.service';
+
+import { TokenGetDto, TokenMintDto, TokenUpdateDto } from '../../../../dto/token.dto';
+import { GetSegmentDto } from '../../../../dto/getSegment.dto';
 
 @Controller('tokens')
 @ApiTags('TokenController')
 export class TokenRestController {
   constructor(private readonly tokenService: TokenService, private readonly blockchainService: BlockchainService) {}
-
-  @Post()
-  @ApiOperation({ summary: 'Creates a new token' })
-  @ApiBody({ type: TokenMintDto, description: 'Contains all relevant information for the creation of a token' })
-  public mintToken(@Body() dto: TokenMintDto): Observable<TransactionReceipt> {
-    const dtoWithDefaultValues = TokenMintDto.createWithDefaultValues();
-    Object.assign(dtoWithDefaultValues, dto);
-    return this.tokenService.mintToken(dtoWithDefaultValues);
-  }
 
   @Get()
   @ApiOperation({ summary: 'Returns the token with the specified tokenId or remoteId' })
@@ -51,17 +43,26 @@ export class TokenRestController {
     return this.tokenService.getAllSegments(String(tokenId));
   }
 
-  @Delete(':tokenId')
-  @ApiOperation({ summary: 'Burns the token with the specified id' })
-  @ApiParam({ name: 'tokenId', type: Number })
-  public burnToken(@Param('tokenId') tokenId: number): Observable<TransactionReceipt> {
-    return this.tokenService.burnToken(String(tokenId));
+  @Post()
+  @ApiOperation({ summary: 'Creates a new token' })
+  @ApiBody({ type: TokenMintDto, description: 'Contains all relevant information for the creation of a token' })
+  public mintToken(@Body() dto: TokenMintDto): Observable<TransactionReceipt> {
+    const dtoWithDefaultValues = TokenMintDto.createWithDefaultValues();
+    Object.assign(dtoWithDefaultValues, dto);
+    return this.tokenService.mintToken(dtoWithDefaultValues);
   }
 
   @Patch(':remoteId')
   @ApiOperation({ summary: 'Updates the token with the specified tokenId or remoteId' })
   @ApiBody({ type: TokenUpdateDto, description: 'Contains the payload' })
-  public updateToken(@Param('remoteId') remoteId: string, @Body() dto: TokenUpdateDto): Observable<true> {
+  public updateToken(@Param('remoteId') remoteId: string, @Body() dto: TokenUpdateDto): Observable<string[]> {
     return this.tokenService.updateToken(remoteId, dto);
+  }
+
+  @Delete(':tokenId')
+  @ApiOperation({ summary: 'Burns the token with the specified id' })
+  @ApiParam({ name: 'tokenId', type: Number })
+  public burnToken(@Param('tokenId') tokenId: number): Observable<TransactionReceipt> {
+    return this.tokenService.burnToken(String(tokenId));
   }
 }

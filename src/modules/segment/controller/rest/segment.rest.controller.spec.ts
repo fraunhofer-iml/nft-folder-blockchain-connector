@@ -11,8 +11,9 @@ import { of } from 'rxjs';
 
 import { SegmentRestController } from './segment.rest.controller';
 import { SegmentService } from '../../service/segment.service';
-import { TokenContractInfoDto } from '../../../../dto/token.dto';
+
 import { GetSegmentDto } from '../../../../dto/getSegment.dto';
+import { TokenContractInfoDto } from '../../../../dto/token.dto';
 
 describe('SegmentRestController', () => {
   let controller: SegmentRestController;

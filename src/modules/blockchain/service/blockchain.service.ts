@@ -8,9 +8,11 @@
 
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { catchError, defer, from, map, Observable, of, switchMap } from 'rxjs';
-import TransactionReceipt from 'web3/types';
 import { TxSignature } from 'web3/eth/accounts';
 import { TransactionObject } from 'web3/eth/types';
+import TransactionReceipt from 'web3/types';
+import { errors } from 'web3-core-helpers';
+import Jsonrpc from 'web3-core-requestmanager/src/jsonrpc';
 
 import { ApiConfigService } from '../../../config/apiConfig.service';
 
@@ -20,7 +22,7 @@ export class BlockchainService {
     this.web3.eth.handleRevert = true;
   }
 
-  public sendBatchTransactions(transactionObjects: TransactionObject<any>[]): Observable<true> {
+  public sendBatchTransactions(transactionObjects: TransactionObject<any>[]): Observable<string[]> {
     const batch = new this.web3.eth.BatchRequest();
 
     transactionObjects.forEach((transactionObject) => {
@@ -29,9 +31,37 @@ export class BlockchainService {
     });
 
     return defer(() => {
-      batch.execute();
-      return of(true);
+      return of(this.sendBatchAsync(batch));
     }).pipe(catchError(this.handleError));
+  }
+
+  // Credit to https://github.com/web3/web3.js/issues/3411#issuecomment-1185052107
+  private sendBatchAsync(batch) {
+    return new Promise((resolve) => {
+      const requests = batch.requests;
+
+      batch.requestManager.sendBatch(requests, (err, results) => {
+        results = results || [];
+
+        const response = requests
+          .map((request, index) => {
+            return results[index] || {};
+          })
+          .map((result, index) => {
+            if (result && result.error) {
+              return errors.ErrorResponse(result);
+            }
+
+            if (!Jsonrpc.isValidResponse(result)) {
+              return errors.InvalidResponse(result);
+            }
+
+            return requests[index].format ? requests[index].format(result.result) : result.result;
+          });
+
+        resolve(response);
+      });
+    });
   }
 
   public sendTransaction(transactionObject: TransactionObject<any>): Observable<TransactionReceipt> {
@@ -87,5 +117,9 @@ export class BlockchainService {
     let errorMessage = error.data ? error.data.reason : error.reason;
     errorMessage = errorMessage ? errorMessage : error.message;
     throw new BadRequestException(errorMessage);
+  }
+
+  public getPublicAddress(): any {
+    return this.web3.eth.accounts.privateKeyToAccount(this.apiConfigService.PRIVATE_KEY).address;
   }
 }
