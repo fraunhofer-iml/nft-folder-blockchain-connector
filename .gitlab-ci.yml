@@ -34,7 +34,7 @@ default:
 ### build ###
 #############
 
-.install-dependencies:
+install-dependencies:
   stage: build
   extends: .pull-push-cache
   script:
@@ -46,7 +46,7 @@ default:
 ### analyze ###
 ###############
 
-.run-eslint:
+run-eslint:
   stage: analyze
   before_script:
     - $NPM_CI
@@ -55,7 +55,7 @@ default:
   rules:
     - when: on_success
 
-.run-prettier:
+run-prettier:
   stage: analyze
   before_script:
     - $NPM_CI
@@ -64,7 +64,7 @@ default:
   rules:
     - when: on_success
 
-.run-sonar-scanner:
+run-sonar-scanner:
   stage: analyze
   image: red6/docker-sonar-scanner:latest
   script:
@@ -80,7 +80,7 @@ default:
 ### test ###
 ############
 
-.run-unit-tests:
+run-unit-tests:
   stage: test
   before_script:
     - $NPM_CI
