@@ -1,0 +1,37 @@
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repo: "nexus.blockchain-europe.iml.fraunhofer.de:5000/nft-folder/blockchain-connector"
+  tag: "latest"
+  # Set this to true to let openshift regularly poll for new images and update pods
+  scheduledUpdate: false
+
+service:
+  name: "blockchain-connector"
+  type: ClusterIP
+  port:
+    http:
+      target: 3000
+      exposed: 3000
+
+config:
+  blockchainUrl: "http://153.97.12.222:8545"
+  containerAddress: "0xC63b6aBbe0ED418c547c581C4f78Dd59ceC7af78"
+  tokenAddress: "0x0B71fdBd5C70878363A2eb83896eC8785373514f"
+  useAmqp: "no!" # 'false' is interpreted as bool during parsing and results in an error
+  amqpUrl: "amqp://localhost:5672"
+  amqpBaseQueue: "blockchain-connector-data"
+  secret:
+    name: "private-keys"
+    key: "alice"
+
+nodeSelector: { }
+
+livenessProbe:
+  enabled: false
+
+readinessProbe:
+  enabled: false

@@ -33,7 +33,7 @@ export class ApiConfigService {
   }
 
   get USE_AMQP(): boolean {
-    return this.configService.get<string>('USE_AMQP', 'true').toLocaleLowerCase() === 'true';
+    return this.configService.get<string>('USE_AMQP', 'false').toLocaleLowerCase() === 'true';
   }
 
   get AMQP_URL(): string {
