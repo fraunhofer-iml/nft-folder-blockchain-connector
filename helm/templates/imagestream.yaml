@@ -1,0 +1,19 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  annotations: { }
+  labels:
+    sele.service: {{ .Values.service.name }}
+  name: {{ include "app.fullname" . }}
+spec:
+  tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
+      generation: null
+      importPolicy:
+        scheduled: {{ .Values.image.scheduledUpdate }}
+      name: {{ .Values.image.tag }}
+status:
+  dockerImageRepository: ""

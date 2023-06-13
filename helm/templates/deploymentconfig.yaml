@@ -1,0 +1,54 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  annotations: { }
+  labels:
+    sele.service: {{ .Values.service.name }}
+  name: {{ include "app.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    sele.service: {{ .Values.service.name }}
+  strategy:
+    resources: { }
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        sele.service: {{ .Values.service.name }}
+    spec:
+      containers:
+        - image: ' '
+          name: {{ .Values.service.name }}
+          env:
+            - name: BLOCKCHAIN_URL
+              value: {{ .Values.config.blockchainUrl }}
+            - name: CONTAINER_ADDRESS
+              value: {{ .Values.config.containerAddress }}
+            - name: TOKEN_ADDRESS
+              value: {{ .Values.config.tokenAddress }}
+            - name: USE_AMQP
+              value: "dummy"
+            - name: AMQP_URL
+              value: {{ .Values.config.amqpUrl }}
+            - name: AMQP_BASE_QUEUE
+              value: {{ .Values.config.amqpBaseQueue }}
+            - name: PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.config.secret.name }}
+                  key: {{ .Values.config.secret.key }}
+          ports:
+            - containerPort: {{ .Values.service.port.http.target }}
+      restartPolicy: Always
+  test: false
+  triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - {{ .Values.service.name }}
+        from:
+          kind: ImageStreamTag
+          name: "{{ .Values.service.name }}:{{ .Values.image.tag }}"
+      type: ImageChange

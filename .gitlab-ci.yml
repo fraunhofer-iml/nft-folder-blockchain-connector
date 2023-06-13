@@ -3,11 +3,17 @@ stages:
   - analyze
   - test
   # - license
+  - archive
+  - deploy
 
 variables:
+  GITLAB_TAG: 'be'
   GIT_DEPTH: 0
   HUSKY: 0
   NPM_CI: npm ci --include dev --cache .npm --prefer-offline
+  DOCKER_REGISTRY_URI: "$BE_NEXUS_DOCKER_REGISTRY:$BE_NEXUS_DOCKER_REGISTRY_DEPLOY_PORT"
+  BLOCKCHAIN_CONNECTOR_IMAGE: "${DOCKER_REGISTRY_URI}/nft-folder/blockchain-connector"
+  OPENSHIFT_IMAGE: "nexus.apps.sele.iml.fraunhofer.de:443/sele/cicdtools/openshift-cli-helm:latest"
 
 default:
   cache:
@@ -28,7 +34,7 @@ default:
 ### build ###
 #############
 
-install-dependencies:
+.install-dependencies:
   stage: build
   extends: .pull-push-cache
   script:
@@ -40,7 +46,7 @@ install-dependencies:
 ### analyze ###
 ###############
 
-run-eslint:
+.run-eslint:
   stage: analyze
   before_script:
     - $NPM_CI
@@ -49,7 +55,7 @@ run-eslint:
   rules:
     - when: on_success
 
-run-prettier:
+.run-prettier:
   stage: analyze
   before_script:
     - $NPM_CI
@@ -58,7 +64,7 @@ run-prettier:
   rules:
     - when: on_success
 
-run-sonar-scanner:
+.run-sonar-scanner:
   stage: analyze
   image: red6/docker-sonar-scanner:latest
   script:
@@ -74,7 +80,7 @@ run-sonar-scanner:
 ### test ###
 ############
 
-run-unit-tests:
+.run-unit-tests:
   stage: test
   before_script:
     - $NPM_CI
@@ -148,4 +154,37 @@ run-unit-tests:
       - public
   rules:
     - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+###############
+### archive ###
+###############
+
+build-docker-image:
+  stage: archive
+  image: nexus.blockchain-europe.iml.fraunhofer.de:5003/gitlab-runner/node_docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - $NPM_CI
+    - npm run build
+    - docker login -u "$BE_NEXUS_USER" -p "$BE_NEXUS_PASS" "$DOCKER_REGISTRY_URI"
+  script:
+    - docker build --no-cache -t "${BLOCKCHAIN_CONNECTOR_IMAGE}:latest" .
+    - docker push "${BLOCKCHAIN_CONNECTOR_IMAGE}:latest"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+##############
+### deploy ###
+##############
+
+deploy-to-okd:
+  stage: deploy
+  image: $OPENSHIFT_IMAGE
+  script:
+    - oc login --server="$BE_OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN" --insecure-skip-tls-verify
+    - cd helm
+    - sh ./okd_deploy.sh
+  rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
