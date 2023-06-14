@@ -116,33 +116,19 @@ class TokenGetDto extends TokenMintDto {
 
 class TokenUpdateDto {
   @ApiProperty()
-  assetUri: string;
+  assetUri?: string;
 
   @ApiProperty()
-  assetHash: string;
+  assetHash?: string;
 
   @ApiProperty()
-  metadataUri: string;
+  metadataUri?: string;
 
   @ApiProperty()
-  metadataHash: string;
+  metadataHash?: string;
 
   @ApiProperty()
-  additionalInformation: string;
-
-  constructor(
-    assetUri: string,
-    assetHash: string,
-    metadataUri: string,
-    metadataHash: string,
-    additionalInformation: string,
-  ) {
-    this.assetUri = assetUri;
-    this.assetHash = assetHash;
-    this.metadataUri = metadataUri;
-    this.metadataHash = metadataHash;
-    this.additionalInformation = additionalInformation;
-  }
+  additionalInformation?: string;
 }
 
 export { TokenContractInfoDto, TokenAssetDto, TokenMetadataDto, TokenMintDto, TokenGetDto, TokenUpdateDto };

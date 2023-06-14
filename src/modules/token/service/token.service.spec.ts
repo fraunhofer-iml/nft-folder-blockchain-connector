@@ -41,7 +41,6 @@ describe('TokenService', () => {
     '',
     '',
   );
-  const INPUT_TOKEN_UPDATE_DTO: TokenUpdateDto = new TokenUpdateDto('au', 'ah', 'mu', 'mh', 'ai');
 
   // test output
   const OUTPUT_MINT_TOKEN: any = {};
