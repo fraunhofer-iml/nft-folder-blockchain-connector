@@ -31,7 +31,12 @@ describe('TokenController', () => {
     '',
     '',
   );
-  const INPUT_TOKEN_UPDATE_DTO: TokenUpdateDto = new TokenUpdateDto('au', 'ah', 'mu', 'mh', 'ai');
+  const INPUT_TOKEN_UPDATE_DTO: TokenUpdateDto = new TokenUpdateDto();
+  INPUT_TOKEN_UPDATE_DTO.assetUri = 'au';
+  INPUT_TOKEN_UPDATE_DTO.assetHash = 'ah';
+  INPUT_TOKEN_UPDATE_DTO.metadataUri = 'mu';
+  INPUT_TOKEN_UPDATE_DTO.metadataHash = 'mh';
+  INPUT_TOKEN_UPDATE_DTO.additionalInformation = 'ai';
 
   // test output
   const OUTPUT_MINT_TOKEN: any = {};
