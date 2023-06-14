@@ -19,8 +19,8 @@ service:
 
 config:
   blockchainUrl: "http://153.97.12.222:8545"
-  containerAddress: "0xC63b6aBbe0ED418c547c581C4f78Dd59ceC7af78"
-  tokenAddress: "0x0B71fdBd5C70878363A2eb83896eC8785373514f"
+  containerAddress: "0x6ACf80829dB160361079Cc51c1E1E6F0fC5C1ea8"
+  tokenAddress: "0x8Cc71fEA7bE5a5f6e2bd1226fe87d51351d92a60"
   useAmqp: "no!" # 'false' is interpreted as bool during parsing and results in an error
   amqpUrl: "amqp://localhost:5672"
   amqpBaseQueue: "blockchain-connector-data"
