@@ -18,7 +18,7 @@ import { SegmentService } from '../../segment/service/segment.service';
 import { ApiConfigService } from '../../../config/apiConfig.service';
 import { areMethodsEqual } from '../../utils/test.utils';
 import { GetSegmentDto } from '../../../dto/getSegment.dto';
-import { TokenAssetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from '../../../dto/token.dto';
+import { TokenAssetDto, TokenMetadataDto, TokenMintDto } from '../../../dto/token.dto';
 import { TokenAbi } from '../../../abi/token.abi';
 import { EventInformationService } from './eventInformation.service';
 
@@ -30,7 +30,6 @@ describe('TokenService', () => {
 
   // test input
   const INPUT_TOKEN_ID = '12';
-  const INPUT_REMOTE_ID = 'a1b2c3';
   const INPUT_TOKEN_ADDRESS = '0x1f7b7F7F6A0a32496eE805b6532f686E40568D83';
   const INPUT_TOKEN_SENDER = '0xe168326f1f10da12bbc838D9BB9d0B6241Fd518d';
   const INPUT_TOKEN_RECEIVER = '0xe168326f1f10da12bbc838D9BB9d0B6241Fd518d';

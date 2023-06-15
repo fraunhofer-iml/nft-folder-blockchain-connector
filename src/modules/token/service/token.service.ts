@@ -101,7 +101,7 @@ export class TokenService {
     return this.blockchainService.sendTransaction(transactionObject);
   }
 
-  public updateToken(remoteId: string, tokenUpdateDto: TokenUpdateDto): Observable<string[]> {
+  public updateToken(remoteId: string, tokenUpdateDto: TokenUpdateDto): Observable<TransactionReceipt> {
     const contractFunctions = {
       assetUri: 'setAssetUri',
       assetHash: 'setAssetHash',
@@ -124,7 +124,17 @@ export class TokenService {
           }
         }
 
-        return this.blockchainService.sendBatchTransactions(transactionObjects);
+        if (transactionObjects.length === 0) {
+          const propertyNames: string[] = Object.keys(contractFunctions);
+          const propertyNamesWithSpaces: string = propertyNames.join(', ');
+
+          this.blockchainService.handleError({
+            message: `Only those properties can be updated: ${propertyNamesWithSpaces}`,
+          });
+        }
+
+        // TODO-MP: this only temporary; sendBatchTransactions must sign transactions before sending to Quorum
+        return this.blockchainService.sendTransaction(transactionObjects[0]);
       }),
     );
   }

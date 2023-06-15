@@ -55,7 +55,7 @@ export class TokenRestController {
   @Patch(':remoteId')
   @ApiOperation({ summary: 'Updates the token with the specified tokenId or remoteId' })
   @ApiBody({ type: TokenUpdateDto, description: 'Contains the payload' })
-  public updateToken(@Param('remoteId') remoteId: string, @Body() dto: TokenUpdateDto): Observable<string[]> {
+  public updateToken(@Param('remoteId') remoteId: string, @Body() dto: TokenUpdateDto): Observable<TransactionReceipt> {
     return this.tokenService.updateToken(remoteId, dto);
   }
 
