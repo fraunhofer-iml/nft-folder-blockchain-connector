@@ -41,7 +41,7 @@ export class TokenAmqpController {
   }
 
   @MessagePattern('updateToken')
-  public updateToken(@Payload() queryInput: any): Observable<string[]> {
+  public updateToken(@Payload() queryInput: any): Observable<TransactionReceipt> {
     return this.tokenService.updateToken(queryInput.remoteId, queryInput.tokenUpdateDto);
   }
 }
