@@ -9,11 +9,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { of } from 'rxjs';
 
-import { TokenRestController } from './token.rest.controller';
-import { TokenService } from '../../service/token.service';
-import { GetSegmentDto } from '../../../../dto/getSegment.dto';
-import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from '../../../../dto/token.dto';
-import { BlockchainService } from '../../../blockchain/service/blockchain.service';
+import { TokenRestController } from './token.controller';
+import { TokenService } from '../service/token.service';
+import { GetSegmentDto } from '../../../dto/getSegment.dto';
+import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from '../../../dto/token.dto';
+import { BlockchainService } from '../../blockchain/service/blockchain.service';
 
 // TODO-LG: add tests for error cases
 describe('TokenController', () => {

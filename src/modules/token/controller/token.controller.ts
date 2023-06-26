@@ -11,11 +11,11 @@ import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swag
 import { Observable } from 'rxjs';
 import TransactionReceipt from 'web3/types';
 
-import { TokenService } from '../../service/token.service';
-import { BlockchainService } from '../../../blockchain/service/blockchain.service';
+import { TokenService } from '../service/token.service';
+import { BlockchainService } from '../../blockchain/service/blockchain.service';
 
-import { TokenGetDto, TokenMintDto, TokenUpdateDto } from '../../../../dto/token.dto';
-import { GetSegmentDto } from '../../../../dto/getSegment.dto';
+import { TokenGetDto, TokenMintDto, TokenUpdateDto } from '../../../dto/token.dto';
+import { GetSegmentDto } from '../../../dto/getSegment.dto';
 
 @Controller('tokens')
 @ApiTags('TokenController')

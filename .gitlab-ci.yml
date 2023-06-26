@@ -34,7 +34,7 @@ default:
 ### build ###
 #############
 
-install-dependencies:
+.install-dependencies:
   stage: build
   extends: .pull-push-cache
   script:
@@ -46,7 +46,7 @@ install-dependencies:
 ### analyze ###
 ###############
 
-run-eslint:
+.run-eslint:
   stage: analyze
   before_script:
     - $NPM_CI
@@ -55,7 +55,7 @@ run-eslint:
   rules:
     - when: on_success
 
-run-prettier:
+.run-prettier:
   stage: analyze
   before_script:
     - $NPM_CI
@@ -64,7 +64,7 @@ run-prettier:
   rules:
     - when: on_success
 
-run-sonar-scanner:
+.run-sonar-scanner:
   stage: analyze
   image: red6/docker-sonar-scanner:latest
   script:
@@ -80,7 +80,7 @@ run-sonar-scanner:
 ### test ###
 ############
 
-run-unit-tests:
+.run-unit-tests:
   stage: test
   before_script:
     - $NPM_CI
@@ -160,7 +160,7 @@ run-unit-tests:
 ### archive ###
 ###############
 
-build-docker-image:
+.build-docker-image:
   stage: archive
   image: nexus.blockchain-europe.iml.fraunhofer.de:5003/gitlab-runner/node_docker:latest
   services:
@@ -179,12 +179,22 @@ build-docker-image:
 ### deploy ###
 ##############
 
-deploy-to-okd:
+deploy-ecmr-to-okd:
   stage: deploy
   image: $OPENSHIFT_IMAGE
   script:
     - oc login --server="$BE_OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN" --insecure-skip-tls-verify
-    - cd helm
+    - cd helm/ecmr
+    - sh ./okd_deploy.sh
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+deploy-sfbdc-to-okd:
+  stage: deploy
+  image: $OPENSHIFT_IMAGE
+  script:
+    - oc login --server="$BE_OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN" --insecure-skip-tls-verify
+    - cd helm/sfbdc
     - sh ./okd_deploy.sh
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

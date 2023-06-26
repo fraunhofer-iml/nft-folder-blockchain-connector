@@ -8,8 +8,7 @@
 
 import { Module } from '@nestjs/common';
 
-import { TokenRestController } from './controller/rest/token.rest.controller';
-import { TokenAmqpController } from './controller/amqp/tokenAmqpController';
+import { TokenRestController } from './controller/token.controller';
 
 import { TokenService } from './service/token.service';
 import { EventInformationService } from './service/eventInformation.service';
@@ -18,7 +17,7 @@ import { ApiConfigService } from '../../config/apiConfig.service';
 import { BlockchainModule } from '../blockchain/blockchain.module';
 
 @Module({
-  controllers: [TokenRestController, TokenAmqpController],
+  controllers: [TokenRestController],
   providers: [TokenService, EventInformationService, SegmentService, ApiConfigService],
   imports: [BlockchainModule],
 })

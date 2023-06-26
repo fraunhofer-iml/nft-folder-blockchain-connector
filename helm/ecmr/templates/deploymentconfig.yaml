@@ -27,12 +27,6 @@ spec:
               value: {{ .Values.config.containerAddress }}
             - name: TOKEN_ADDRESS
               value: {{ .Values.config.tokenAddress }}
-            - name: USE_AMQP
-              value: "dummy"
-            - name: AMQP_URL
-              value: {{ .Values.config.amqpUrl }}
-            - name: AMQP_BASE_QUEUE
-              value: {{ .Values.config.amqpBaseQueue }}
             - name: PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
