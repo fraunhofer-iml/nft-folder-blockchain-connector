@@ -52,9 +52,6 @@
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.3.0",
     "@truffle/hdwallet-provider": "^2.1.9",
-    "@types/amqplib": "^0.10.1",
-    "amqp-connection-manager": "^4.1.12",
-    "amqplib": "^0.10.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "web3": "^1.9.0"

@@ -7,7 +7,7 @@ NAMESPACE="${NAMESPACE:=blockchain-connector}"
 oc project "$NAMESPACE"
 
 # Upgrade or install
-helm upgrade --namespace "$NAMESPACE" -i blockchain-connector .
+helm upgrade --namespace "$NAMESPACE" -i sfbdc-blockchain-connector .
 
 # Ensure image stream picks up the new docker image right away
 oc import-image blockchain-connector

@@ -1,10 +1,10 @@
-├─ MIT: 819
-├─ ISC: 87
-├─ LGPL-3.0: 42
-├─ Apache-2.0: 28
+├─ MIT: 812
+├─ ISC: 88
+├─ Apache-2.0: 27
 ├─ BSD-3-Clause: 25
+├─ LGPL-3.0: 21
 ├─ BSD-2-Clause: 18
-├─ MPL-2.0: 12
+├─ MPL-2.0: 13
 ├─ Unlicense: 5
 ├─ UNKNOWN: 3
 ├─ (MIT OR Apache-2.0): 2

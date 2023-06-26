@@ -16,9 +16,6 @@ services:
       BLOCKCHAIN_URL: 'http://localhost:7545'
       CONTAINER_ADDRESS: '0x062Ea36f1dc7Bf1FDbc4141f171EfA69779E300a'
       TOKEN_ADDRESS: '0x56B03C1c10482c140605A6f002451C2152C3C517'
-      USE_AMQP: 'false'
-      AMQP_URL: 'amqp://localhost:5672'
-      AMQP_BASE_QUEUE: 'blockchain-connector-data'
   dev:
     image: nft-folder/blockchain-connector
     container_name: blockchain-connector-dev
@@ -30,6 +27,3 @@ services:
       BLOCKCHAIN_URL: 'http://153.97.12.222:8545'
       CONTAINER_ADDRESS: '0x6ACf80829dB160361079Cc51c1E1E6F0fC5C1ea8'
       TOKEN_ADDRESS: '0x8Cc71fEA7bE5a5f6e2bd1226fe87d51351d92a60'
-      USE_AMQP: 'false'
-      AMQP_URL: 'amqp://localhost:5672'
-      AMQP_BASE_QUEUE: 'blockchain-connector-data'

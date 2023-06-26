@@ -1,0 +1,37 @@
+replicaCount: 1
+
+nameOverride: "ecmr-blockchain-connector"
+fullnameOverride: "ecmr-blockchain-connector"
+
+image:
+  repo: "nexus.blockchain-europe.iml.fraunhofer.de:5000/nft-folder/blockchain-connector"
+  tag: "latest"
+  # Set this to true to let openshift regularly poll for new images and update pods
+  scheduledUpdate: false
+
+imageStream:
+  name: "blockchain-connector"
+
+service:
+  name: "ecmr-blockchain-connector"
+  type: ClusterIP
+  port:
+    http:
+      target: 3000
+      exposed: 3000
+
+config:
+  blockchainUrl: "http://153.97.12.222:8545"
+  containerAddress: "0x99738579FDFc0e100cD68ed6ABF87929613589A4"
+  tokenAddress: "0xA263D8123f00eAfB56b5Fe32badF4c6591f35D2B"
+  secret:
+    name: "private-keys"
+    key: "ecmr"
+
+nodeSelector: { }
+
+livenessProbe:
+  enabled: false
+
+readinessProbe:
+  enabled: false

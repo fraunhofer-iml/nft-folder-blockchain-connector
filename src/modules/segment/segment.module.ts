@@ -8,8 +8,7 @@
 
 import { Module } from '@nestjs/common';
 
-import { SegmentRestController } from './controller/rest/segment.rest.controller';
-import { SegmentAmqpController } from './controller/amqp/segment.amqp.controller';
+import { SegmentRestController } from './controller/segment.controller';
 
 import { SegmentService } from './service/segment.service';
 import { ApiConfigService } from '../../config/apiConfig.service';
@@ -17,7 +16,7 @@ import { ApiConfigService } from '../../config/apiConfig.service';
 import { BlockchainModule } from '../blockchain/blockchain.module';
 
 @Module({
-  controllers: [SegmentRestController, SegmentAmqpController],
+  controllers: [SegmentRestController],
   providers: [SegmentService, ApiConfigService],
   imports: [BlockchainModule],
 })

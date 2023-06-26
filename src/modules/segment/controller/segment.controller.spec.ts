@@ -9,11 +9,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { of } from 'rxjs';
 
-import { SegmentRestController } from './segment.rest.controller';
-import { SegmentService } from '../../service/segment.service';
+import { SegmentRestController } from './segment.controller';
+import { SegmentService } from '../service/segment.service';
 
-import { GetSegmentDto } from '../../../../dto/getSegment.dto';
-import { TokenContractInfoDto } from '../../../../dto/token.dto';
+import { GetSegmentDto } from '../../../dto/getSegment.dto';
+import { TokenContractInfoDto } from '../../../dto/token.dto';
 
 describe('SegmentRestController', () => {
   let controller: SegmentRestController;

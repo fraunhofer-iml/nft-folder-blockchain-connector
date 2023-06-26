@@ -4,7 +4,7 @@ metadata:
   annotations: { }
   labels:
     sele.service: {{ .Values.service.name }}
-  name: {{ include "app.fullname" . }}
+  name: {{ .Values.imageStream.name }}
 spec:
   tags:
     - annotations: null
