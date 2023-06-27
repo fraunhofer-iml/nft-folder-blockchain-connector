@@ -34,7 +34,7 @@ default:
 ### build ###
 #############
 
-.install-dependencies:
+install-dependencies:
   stage: build
   extends: .pull-push-cache
   script:
@@ -46,7 +46,7 @@ default:
 ### analyze ###
 ###############
 
-.run-eslint:
+run-eslint:
   stage: analyze
   before_script:
     - $NPM_CI
@@ -55,7 +55,7 @@ default:
   rules:
     - when: on_success
 
-.run-prettier:
+run-prettier:
   stage: analyze
   before_script:
     - $NPM_CI
@@ -64,7 +64,7 @@ default:
   rules:
     - when: on_success
 
-.run-sonar-scanner:
+run-sonar-scanner:
   stage: analyze
   image: red6/docker-sonar-scanner:latest
   script:
@@ -80,7 +80,7 @@ default:
 ### test ###
 ############
 
-.run-unit-tests:
+run-unit-tests:
   stage: test
   before_script:
     - $NPM_CI
@@ -95,7 +95,7 @@ default:
 
 # TODO-MP: check EXCLUDED_PACKAGES && EXCLUDED_LICENSES
 # TODO-MP: --exclude "LGPL-3.0" results in an exception :-(
-.create-npm-licenses-list:
+create-npm-licenses-list:
   stage: license
   variables:
     LICENSES_LIST: "npm-licenses-list.csv"
@@ -134,7 +134,7 @@ default:
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-.publish-all-licenses-list:
+publish-all-licenses-list:
   stage: license
   needs:
     - "create-npm-licenses-list"
@@ -160,7 +160,7 @@ default:
 ### archive ###
 ###############
 
-.build-docker-image:
+build-docker-image:
   stage: archive
   image: nexus.blockchain-europe.iml.fraunhofer.de:5003/gitlab-runner/node_docker:latest
   services:
