@@ -10,7 +10,7 @@ image:
   scheduledUpdate: false
 
 imageStream:
-  name: "blockchain-connector"
+  name: "ecmr-blockchain-connector"
 
 service:
   name: "ecmr-blockchain-connector"
@@ -23,7 +23,7 @@ service:
 config:
   blockchainUrl: "http://153.97.12.222:8545"
   containerAddress: "0x99738579FDFc0e100cD68ed6ABF87929613589A4"
-  tokenAddress: "0xA263D8123f00eAfB56b5Fe32badF4c6591f35D2B"
+  tokenAddress: "0x6F2C77F8a0D1D302B417bcd057b8A8324DcF9Ca7"
   secret:
     name: "private-keys"
     key: "ecmr"
