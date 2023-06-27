@@ -1068,6 +1068,44 @@ export const TokenAbi = [
         name: 'tokenId',
         type: 'uint256',
       },
+      {
+        internalType: 'string',
+        name: 'assetUri',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'assetHash',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'metadataUri',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'metadataHash',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'additionalInformation',
+        type: 'string',
+      },
+    ],
+    name: 'updateToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
     ],
     name: 'tokenURI',
     outputs: [

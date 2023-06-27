@@ -102,41 +102,24 @@ export class TokenService {
   }
 
   public updateToken(remoteId: string, tokenUpdateDto: TokenUpdateDto): Observable<TransactionReceipt> {
-    const contractFunctions = {
-      assetUri: 'setAssetUri',
-      assetHash: 'setAssetHash',
-      metadataUri: 'setMetadataUri',
-      metadataHash: 'setMetadataHash',
-      additionalInformation: 'setAdditionalInformation',
-    };
-
     return this.getTokenId(remoteId).pipe(
       mergeMap((tokenId) => {
-        const transactionObjects: TransactionObject<any>[] = [];
+        const transactionObject: TransactionObject<any> = this.tokenContract.methods.updateToken(
+          tokenId,
+          this.getValue(tokenUpdateDto.assetUri),
+          this.getValue(tokenUpdateDto.assetHash),
+          this.getValue(tokenUpdateDto.metadataUri),
+          this.getValue(tokenUpdateDto.metadataHash),
+          this.getValue(tokenUpdateDto.additionalInformation),
+        );
 
-        // Create a transactionObject for every dto property that corresponds to a contract function
-        for (const propertyName in tokenUpdateDto) {
-          if (propertyName in contractFunctions) {
-            const contractFunction = contractFunctions[propertyName];
-            const newValue = tokenUpdateDto[propertyName];
-            const transactionObject = this.tokenContract.methods[contractFunction](tokenId, newValue);
-            transactionObjects.push(transactionObject);
-          }
-        }
-
-        if (transactionObjects.length === 0) {
-          const propertyNames: string[] = Object.keys(contractFunctions);
-          const propertyNamesWithSpaces: string = propertyNames.join(', ');
-
-          this.blockchainService.handleError({
-            message: `Only those properties can be updated: ${propertyNamesWithSpaces}`,
-          });
-        }
-
-        // TODO-MP: this only temporary; sendBatchTransactions must sign transactions before sending to Quorum
-        return this.blockchainService.sendTransaction(transactionObjects[0]);
+        return this.blockchainService.sendTransaction(transactionObject);
       }),
     );
+  }
+
+  private getValue(field: string): string {
+    return field ? field : '';
   }
 
   public burnToken(tokenId: string): Observable<TransactionReceipt> {

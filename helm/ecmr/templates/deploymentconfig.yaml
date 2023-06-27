@@ -44,5 +44,5 @@ spec:
           - {{ .Values.service.name }}
         from:
           kind: ImageStreamTag
-          name: "{{ .Values.service.name }}:{{ .Values.image.tag }}"
+          name: "{{ .Values.imageStream.name }}:{{ .Values.image.tag }}"
       type: ImageChange
