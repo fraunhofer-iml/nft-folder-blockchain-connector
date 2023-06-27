@@ -95,7 +95,7 @@ run-unit-tests:
 
 # TODO-MP: check EXCLUDED_PACKAGES && EXCLUDED_LICENSES
 # TODO-MP: --exclude "LGPL-3.0" results in an exception :-(
-create-npm-licenses-list:
+.create-npm-licenses-list:
   stage: license
   variables:
     LICENSES_LIST: "npm-licenses-list.csv"
@@ -134,7 +134,7 @@ create-npm-licenses-list:
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-publish-all-licenses-list:
+.publish-all-licenses-list:
   stage: license
   needs:
     - "create-npm-licenses-list"
