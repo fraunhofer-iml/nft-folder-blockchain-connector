@@ -8,7 +8,7 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateSegmentDto {
+export class SegmentCreateDto {
   @ApiProperty()
   name: string;
 

@@ -6,14 +6,10 @@
  * SPDX-License-Identifier: OLFL-1.3
  */
 
-import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Web3 from 'web3';
 
-import { BlockchainService } from './service/blockchain.service';
-import { ApiConfigService } from '../../config/apiConfig.service';
-
-const Web3Service = {
+export const Web3Service = {
   provide: 'Web3Service',
   useFactory: async (apiConfigService: ConfigService) => {
     const web3 = new Web3(apiConfigService.get<string>('BLOCKCHAIN_URL'));
@@ -22,9 +18,3 @@ const Web3Service = {
   },
   inject: [ConfigService],
 };
-
-@Module({
-  providers: [BlockchainService, Web3Service, ApiConfigService],
-  exports: [BlockchainService, Web3Service],
-})
-export class BlockchainModule {}

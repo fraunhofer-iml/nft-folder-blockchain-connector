@@ -11,21 +11,21 @@ import { forkJoin, from, map, mergeMap, Observable, switchMap } from 'rxjs';
 import { TransactionObject } from 'web3/eth/types';
 import TransactionReceipt from 'web3/types';
 
-import { EventInformationService } from './eventInformation.service';
-import { SegmentService } from '../../segment/service/segment.service';
-import { ApiConfigService } from '../../../config/apiConfig.service';
-import { BlockchainService } from '../../blockchain/service/blockchain.service';
+import { EventService } from './event.service';
+import { SegmentService } from '../segment/segment.service';
+import { ApiConfigService } from '../config/api.config.service';
+import { BlockchainService } from '../shared/blockchain.service';
 
-import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from '../../../dto/token.dto';
-import { GetSegmentDto } from '../../../dto/getSegment.dto';
-import { TokenAbi } from '../../../abi/token.abi';
+import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from './dto/token.dto';
+import { SegmentReadDto } from '../segment/dto/segment.read.dto';
+import { TokenAbi } from './abi/token.abi';
 
 @Injectable()
 export class TokenService {
   private tokenContract: any;
 
   constructor(
-    private readonly eventInformationService: EventInformationService,
+    private readonly eventInformationService: EventService,
     private readonly segmentService: SegmentService,
     private readonly apiConfigService: ApiConfigService,
     private readonly blockchainService: BlockchainService,
@@ -73,7 +73,7 @@ export class TokenService {
     );
   }
 
-  public getAllSegments(id: string): Observable<GetSegmentDto[]> {
+  public getAllSegments(id: string): Observable<SegmentReadDto[]> {
     return this.segmentService
       .getAllSegments()
       .pipe(
@@ -90,7 +90,7 @@ export class TokenService {
 
   public mintToken(mintTokenDto: TokenMintDto): Observable<TransactionReceipt> {
     const transactionObject: TransactionObject<any> = this.tokenContract.methods.safeMint(
-      this.blockchainService.getPublicAddress(),
+      this.blockchainService.derivePublicAddressFromPrivateKey(),
       mintTokenDto.asset.uri,
       mintTokenDto.asset.hash,
       mintTokenDto.metadata.uri,

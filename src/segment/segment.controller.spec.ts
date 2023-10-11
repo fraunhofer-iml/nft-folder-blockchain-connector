@@ -10,10 +10,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { of } from 'rxjs';
 
 import { SegmentRestController } from './segment.controller';
-import { SegmentService } from '../service/segment.service';
+import { SegmentService } from './segment.service';
 
-import { GetSegmentDto } from '../../../dto/getSegment.dto';
-import { TokenContractInfoDto } from '../../../dto/token.dto';
+import { SegmentReadDto } from './dto/segment.read.dto';
+import { TokenContractInfoDto } from '../token/dto/token.dto';
 
 describe('SegmentRestController', () => {
   let controller: SegmentRestController;
@@ -28,8 +28,8 @@ describe('SegmentRestController', () => {
 
   // test output
   const OUTPUT_CREATE_SEGMENT_RESPONSE: any = {};
-  const OUTPUT_GET_ALL_SEGMENTS: GetSegmentDto[] = [];
-  const OUTPUT_GET_SEGMENT_RESPONSE: GetSegmentDto = new GetSegmentDto('', '', []);
+  const OUTPUT_GET_ALL_SEGMENTS: SegmentReadDto[] = [];
+  const OUTPUT_GET_SEGMENT_RESPONSE: SegmentReadDto = new SegmentReadDto('', '', []);
   const OUTPUT_ADD_TOKEN: any = {};
   const OUTPUT_REMOVE_TOKEN: any = {};
 

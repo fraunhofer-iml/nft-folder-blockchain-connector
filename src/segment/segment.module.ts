@@ -8,16 +8,15 @@
 
 import { Module } from '@nestjs/common';
 
-import { SegmentRestController } from './controller/segment.controller';
+import { SegmentRestController } from './segment.controller';
 
-import { SegmentService } from './service/segment.service';
-import { ApiConfigService } from '../../config/apiConfig.service';
-
-import { BlockchainModule } from '../blockchain/blockchain.module';
+import { SegmentService } from './segment.service';
+import { ApiConfigService } from '../config/api.config.service';
+import { SharedModule } from '../shared/shared.module';
 
 @Module({
+  imports: [SharedModule],
   controllers: [SegmentRestController],
   providers: [SegmentService, ApiConfigService],
-  imports: [BlockchainModule],
 })
 export class SegmentModule {}

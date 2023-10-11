@@ -11,11 +11,11 @@ import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swag
 import { Observable } from 'rxjs';
 import TransactionReceipt from 'web3/types';
 
-import { TokenService } from '../service/token.service';
-import { BlockchainService } from '../../blockchain/service/blockchain.service';
+import { TokenService } from './token.service';
+import { BlockchainService } from '../shared/blockchain.service';
 
-import { TokenGetDto, TokenMintDto, TokenUpdateDto } from '../../../dto/token.dto';
-import { GetSegmentDto } from '../../../dto/getSegment.dto';
+import { TokenGetDto, TokenMintDto, TokenUpdateDto } from './dto/token.dto';
+import { SegmentReadDto } from '../segment/dto/segment.read.dto';
 
 @Controller('tokens')
 @ApiTags('TokenController')
@@ -39,7 +39,7 @@ export class TokenRestController {
   @Get(':tokenId/segments')
   @ApiParam({ name: 'tokenId', type: Number })
   @ApiOperation({ summary: 'Returns all segments which contain the specific token' })
-  public getAllSegments(@Param('tokenId') tokenId: number): Observable<GetSegmentDto[]> {
+  public getAllSegments(@Param('tokenId') tokenId: number): Observable<SegmentReadDto[]> {
     return this.tokenService.getAllSegments(String(tokenId));
   }
 

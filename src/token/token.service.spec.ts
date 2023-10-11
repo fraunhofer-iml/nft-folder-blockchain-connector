@@ -13,20 +13,20 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 
 import { TokenService } from './token.service';
-import { BlockchainService } from '../../blockchain/service/blockchain.service';
-import { SegmentService } from '../../segment/service/segment.service';
-import { ApiConfigService } from '../../../config/apiConfig.service';
-import { areMethodsEqual } from '../../utils/test.utils';
-import { GetSegmentDto } from '../../../dto/getSegment.dto';
-import { TokenAssetDto, TokenMetadataDto, TokenMintDto } from '../../../dto/token.dto';
-import { TokenAbi } from '../../../abi/token.abi';
-import { EventInformationService } from './eventInformation.service';
+import { BlockchainService } from '../shared/blockchain.service';
+import { SegmentService } from '../segment/segment.service';
+import { ApiConfigService } from '../config/api.config.service';
+import { areMethodsEqual } from '../shared/test.utils';
+import { SegmentReadDto } from '../segment/dto/segment.read.dto';
+import { TokenAssetDto, TokenMetadataDto, TokenMintDto } from './dto/token.dto';
+import { TokenAbi } from './abi/token.abi';
+import { EventService } from './event.service';
 
 describe('TokenService', () => {
   let service: TokenService;
   let fakeBlockchainService: Partial<BlockchainService>;
   let fakeApiConfigService: Partial<ApiConfigService>;
-  let fakeEventInformationService: Partial<EventInformationService>;
+  let fakeEventInformationService: Partial<EventService>;
 
   // test input
   const INPUT_TOKEN_ID = '12';
@@ -43,7 +43,7 @@ describe('TokenService', () => {
 
   // test output
   const OUTPUT_MINT_TOKEN: any = {};
-  const OUTPUT_GET_SEGMENTS: GetSegmentDto[] = [];
+  const OUTPUT_GET_SEGMENTS: SegmentReadDto[] = [];
   const OUTPUT_BURN_TOKEN: any = {};
   const OUTPUT_TRANSFER_TOKEN: any = {};
 
@@ -110,7 +110,7 @@ describe('TokenService', () => {
           useValue: fakeApiConfigService,
         },
         {
-          provide: EventInformationService,
+          provide: EventService,
           useValue: fakeEventInformationService,
         },
         TokenService,

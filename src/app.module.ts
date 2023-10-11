@@ -9,8 +9,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { SegmentModule } from './modules/segment/segment.module';
-import { TokenModule } from './modules/token/token.module';
+import { SegmentModule } from './segment/segment.module';
+import { TokenModule } from './token/token.module';
 
 @Module({
   imports: [

@@ -8,10 +8,10 @@
 
 import { Injectable } from '@nestjs/common';
 
-import { ApiConfigService } from '../../../config/apiConfig.service';
-import { BlockchainService } from '../../blockchain/service/blockchain.service';
+import { ApiConfigService } from '../config/api.config.service';
+import { BlockchainService } from '../shared/blockchain.service';
 
-import { TokenAbi } from '../../../abi/token.abi';
+import { TokenAbi } from './abi/token.abi';
 
 interface EventInformation {
   blockNumber: number;
@@ -19,7 +19,7 @@ interface EventInformation {
 }
 
 @Injectable()
-export class EventInformationService {
+export class EventService {
   private tokenContract: any;
 
   constructor(

@@ -66,7 +66,7 @@ run-prettier:
 
 run-sonar-scanner:
   stage: analyze
-  image: red6/docker-sonar-scanner:latest
+  image: sonarsource/sonar-scanner-cli
   script:
     - >
       sonar-scanner
@@ -188,6 +188,7 @@ deploy-ecmr-to-okd:
     - sh ./okd_deploy.sh
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
 
 deploy-sfbdc-to-okd:
   stage: deploy
@@ -198,3 +199,4 @@ deploy-sfbdc-to-okd:
     - sh ./okd_deploy.sh
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual

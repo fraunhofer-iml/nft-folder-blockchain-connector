@@ -7,61 +7,17 @@
  */
 
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { catchError, defer, from, map, Observable, of, switchMap } from 'rxjs';
+import { catchError, defer, from, map, Observable, switchMap } from 'rxjs';
 import { TxSignature } from 'web3/eth/accounts';
 import { TransactionObject } from 'web3/eth/types';
 import TransactionReceipt from 'web3/types';
-import { errors } from 'web3-core-helpers';
-import Jsonrpc from 'web3-core-requestmanager/src/jsonrpc';
 
-import { ApiConfigService } from '../../../config/apiConfig.service';
+import { ApiConfigService } from '../config/api.config.service';
 
 @Injectable()
 export class BlockchainService {
   constructor(@Inject('Web3Service') public readonly web3: any, private readonly apiConfigService: ApiConfigService) {
     this.web3.eth.handleRevert = true;
-  }
-
-  public sendBatchTransactions(transactionObjects: TransactionObject<any>[]): Observable<string[]> {
-    const batch = new this.web3.eth.BatchRequest();
-
-    transactionObjects.forEach((transactionObject) => {
-      const transactionParameters = this.createTransactionParameters(transactionObject);
-      batch.add(this.web3.eth.sendTransaction.request(transactionParameters));
-    });
-
-    return defer(() => {
-      return of(this.sendBatchAsync(batch));
-    }).pipe(catchError(this.handleError));
-  }
-
-  // Credit to https://github.com/web3/web3.js/issues/3411#issuecomment-1185052107
-  private sendBatchAsync(batch) {
-    return new Promise((resolve) => {
-      const requests = batch.requests;
-
-      batch.requestManager.sendBatch(requests, (err, results) => {
-        results = results || [];
-
-        const response = requests
-          .map((request, index) => {
-            return results[index] || {};
-          })
-          .map((result, index) => {
-            if (result && result.error) {
-              return errors.ErrorResponse(result);
-            }
-
-            if (!Jsonrpc.isValidResponse(result)) {
-              return errors.InvalidResponse(result);
-            }
-
-            return requests[index].format ? requests[index].format(result.result) : result.result;
-          });
-
-        resolve(response);
-      });
-    });
   }
 
   public sendTransaction(transactionObject: TransactionObject<any>): Observable<TransactionReceipt> {
@@ -86,7 +42,7 @@ export class BlockchainService {
       to: transactionObject._parent._address,
       from: this.web3.eth.accounts.privateKeyToAccount(this.apiConfigService.PRIVATE_KEY).address,
       data: transactionObject.encodeABI(),
-      gas: 6721975, // London fork is implemented in Quorum and Ganache
+      gas: 6721975, // London fork is implemented in Quorum and Ganache, really?
     };
   }
 
@@ -119,7 +75,7 @@ export class BlockchainService {
     throw new BadRequestException(errorMessage);
   }
 
-  public getPublicAddress(): any {
+  public derivePublicAddressFromPrivateKey(): any {
     return this.web3.eth.accounts.privateKeyToAccount(this.apiConfigService.PRIVATE_KEY).address;
   }
 }

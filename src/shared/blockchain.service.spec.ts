@@ -11,7 +11,7 @@ import { mock, resetMocks } from '@depay/web3-mock';
 import Web3 from 'web3';
 
 import { BlockchainService } from './blockchain.service';
-import { ApiConfigService } from '../../../config/apiConfig.service';
+import { ApiConfigService } from '../config/api.config.service';
 
 // TODO-LG: fix and add more tests for Blockchain
 describe('BlockchainService', () => {

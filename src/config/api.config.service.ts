@@ -8,7 +8,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ConfigObject } from './entity/configObject';
+import { ConfigObject } from './entity/config.object';
 
 @Injectable()
 export class ApiConfigService {

@@ -11,11 +11,11 @@ import { ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import TransactionReceipt from 'web3/types';
 
-import { SegmentService } from '../service/segment.service';
+import { SegmentService } from './segment.service';
 
-import { TokenContractInfoDto } from '../../../dto/token.dto';
-import { CreateSegmentDto } from '../../../dto/createSegment.dto';
-import { GetSegmentDto } from '../../../dto/getSegment.dto';
+import { TokenContractInfoDto } from '../token/dto/token.dto';
+import { SegmentCreateDto } from './dto/segment.create.dto';
+import { SegmentReadDto } from './dto/segment.read.dto';
 
 @Controller('segments')
 @ApiTags('SegmentController')
@@ -24,21 +24,21 @@ export class SegmentRestController {
 
   @Post()
   @ApiOperation({ summary: 'Creates a new segment' })
-  @ApiBody({ description: 'Contains the name of the new segment', type: CreateSegmentDto })
-  public createSegment(@Body() dto: CreateSegmentDto): Observable<TransactionReceipt> {
+  @ApiBody({ description: 'Contains the name of the new segment', type: SegmentCreateDto })
+  public createSegment(@Body() dto: SegmentCreateDto): Observable<TransactionReceipt> {
     return this.segmentService.createSegment(dto.name);
   }
 
   @Get()
   @ApiOperation({ summary: 'Returns all segments' })
-  public getAllSegments(): Observable<GetSegmentDto[]> {
+  public getAllSegments(): Observable<SegmentReadDto[]> {
     return this.segmentService.getAllSegments();
   }
 
   @Get(':index')
   @ApiOperation({ summary: 'Returns the segment at the specified index' })
   @ApiParam({ name: 'index', type: Number })
-  public getSegment(@Param('index') index: number): Observable<GetSegmentDto> {
+  public getSegment(@Param('index') index: number): Observable<SegmentReadDto> {
     return this.segmentService.getSegment(index);
   }
 

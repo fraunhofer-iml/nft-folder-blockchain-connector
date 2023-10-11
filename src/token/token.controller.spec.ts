@@ -10,10 +10,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { of } from 'rxjs';
 
 import { TokenRestController } from './token.controller';
-import { TokenService } from '../service/token.service';
-import { GetSegmentDto } from '../../../dto/getSegment.dto';
-import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from '../../../dto/token.dto';
-import { BlockchainService } from '../../blockchain/service/blockchain.service';
+import { TokenService } from './token.service';
+import { SegmentReadDto } from '../segment/dto/segment.read.dto';
+import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from './dto/token.dto';
+import { BlockchainService } from '../shared/blockchain.service';
 
 // TODO-LG: add tests for error cases
 describe('TokenController', () => {
@@ -51,7 +51,7 @@ describe('TokenController', () => {
     0,
     '',
   );
-  const OUTPUT_GET_SEGMENTS: GetSegmentDto[] = [];
+  const OUTPUT_GET_SEGMENTS: SegmentReadDto[] = [];
   const OUTPUT_BURN_TOKEN: any = {};
   const OUTPUT_TRANSFER_TOKEN: any = {};
 

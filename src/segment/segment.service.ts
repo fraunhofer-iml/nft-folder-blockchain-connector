@@ -12,13 +12,13 @@ import TransactionReceipt from 'web3/types';
 import Contract from 'web3/eth/contract';
 import Web3 from 'web3';
 
-import { ApiConfigService } from '../../../config/apiConfig.service';
-import { BlockchainService } from '../../blockchain/service/blockchain.service';
+import { ApiConfigService } from '../config/api.config.service';
+import { BlockchainService } from '../shared/blockchain.service';
 
-import { GetSegmentDto } from '../../../dto/getSegment.dto';
-import { TokenContractInfoDto } from '../../../dto/token.dto';
-import { SegmentAbi } from '../../../abi/segment.abi';
-import { ContainerAbi } from '../../../abi/container.abi';
+import { SegmentReadDto } from './dto/segment.read.dto';
+import { TokenContractInfoDto } from '../token/dto/token.dto';
+import { SegmentAbi } from './abi/segment.abi';
+import { ContainerAbi } from './abi/container.abi';
 
 @Injectable()
 export class SegmentService {
@@ -44,7 +44,7 @@ export class SegmentService {
 
   // TODO-MP: a segmentId would be nice
   // TODO-MP: error when no segments available
-  public getAllSegments(): Observable<GetSegmentDto[]> {
+  public getAllSegments(): Observable<SegmentReadDto[]> {
     return this.blockchainService.call(this.containerContract.methods.getAllSegments()).pipe(
       mergeMap((segmentAddresses) =>
         forkJoin(segmentAddresses.map((segmentAddress) => this.getSegmentData(segmentAddress))),
@@ -57,7 +57,7 @@ export class SegmentService {
     );
   }
 
-  public getSegment(index: number): Observable<GetSegmentDto> {
+  public getSegment(index: number): Observable<SegmentReadDto> {
     return this.blockchainService.call(this.containerContract.methods.getSegment(index)).pipe(
       mergeMap((segmentAddress) => this.getSegmentData(segmentAddress)),
       map(([segmentAddress, name, tokenContractInfo]) =>
@@ -74,9 +74,9 @@ export class SegmentService {
     ]);
   }
 
-  private createSegmentObject(segmentAddress: string, segmentName: string, tokenContractInfo: any): GetSegmentDto {
+  private createSegmentObject(segmentAddress: string, segmentName: string, tokenContractInfo: any): SegmentReadDto {
     const tokens = tokenContractInfo.map(([tokenAddress, tokenId]) => new TokenContractInfoDto(tokenAddress, tokenId));
-    return new GetSegmentDto(segmentAddress, segmentName, tokens);
+    return new SegmentReadDto(segmentAddress, segmentName, tokens);
   }
 
   public addToken(index: number, tokenAddress: string, tokenId: number): Observable<TransactionReceipt> {
