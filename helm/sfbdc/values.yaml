@@ -23,7 +23,7 @@ service:
 config:
   blockchainUrl: "http://153.97.12.222:8545"
   containerAddress: "0xE67C1e1CDCA3F06a3C8A74cEbC841B11E7cbB409"
-  tokenAddress: "0x6F2C77F8a0D1D302B417bcd057b8A8324DcF9Ca7"
+  tokenAddress: "0x0516F696C539cb4cAACF7a06E9c6a786bD020ce3"
   secret:
     name: "private-keys"
     key: "sfbdc"

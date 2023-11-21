@@ -11,7 +11,7 @@ import { forkJoin, from, map, mergeMap, Observable, switchMap } from 'rxjs';
 import { TransactionObject } from 'web3/eth/types';
 import TransactionReceipt from 'web3/types';
 
-import { EventService } from './event.service';
+import { EventService, TokenInformation } from './event.service';
 import { SegmentService } from '../segment/segment.service';
 import { ApiConfigService } from '../config/api.config.service';
 import { BlockchainService } from '../shared/blockchain.service';
@@ -54,8 +54,8 @@ export class TokenService {
         const asset = new TokenAssetDto(assetInformation.assetUri, assetInformation.assetHash);
         const metadata = new TokenMetadataDto(metadataUri, metadataHash);
 
-        return from(this.eventInformationService.getMinterAddressAndLastUpdatedOn(tokenId)).pipe(
-          map(({ minterAddress, lastUpdatedOn }: { minterAddress: string; lastUpdatedOn: string }) => {
+        return from(this.eventInformationService.fetchTokenInformation(tokenId)).pipe(
+          map(({ minterAddress, createdOn, lastUpdatedOn }: TokenInformation) => {
             return new TokenGetDto(
               remoteId,
               asset,
@@ -63,6 +63,7 @@ export class TokenService {
               additionalInformation,
               ownerAddress,
               minterAddress,
+              createdOn,
               lastUpdatedOn,
               tokenId,
               this.apiConfigService.TOKEN_ADDRESS,

@@ -87,6 +87,9 @@ class TokenGetDto extends TokenMintDto {
   minterAddress: string;
 
   @ApiProperty()
+  createdOn: string;
+
+  @ApiProperty()
   lastUpdatedOn: string;
 
   @ApiProperty()
@@ -102,12 +105,14 @@ class TokenGetDto extends TokenMintDto {
     additionalInformation: string,
     ownerAddress: string,
     minterAddress: string,
+    createdOn: string,
     lastUpdatedOn: string,
     tokenId: number,
     tokenAddress: string,
   ) {
     super(remoteId, asset, metadata, additionalInformation, ownerAddress);
     this.minterAddress = minterAddress;
+    this.createdOn = createdOn;
     this.lastUpdatedOn = lastUpdatedOn;
     this.tokenId = tokenId;
     this.tokenAddress = tokenAddress;

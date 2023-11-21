@@ -48,6 +48,7 @@ describe('TokenController', () => {
     '',
     '',
     '',
+    '',
     0,
     '',
   );
