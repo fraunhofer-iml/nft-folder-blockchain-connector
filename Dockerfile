@@ -11,7 +11,7 @@ RUN apk add --no-cache git
 # Workaround for npm permission problem
 # see https://github.com/npm/cli/issues/5114#issuecomment-1196456412
 RUN mkdir /.npm
-RUN chown -R 1000860000:0 "/.npm"
+RUN chown -R 1000710000:0 "/.npm"
 RUN npm cache clean --force
 RUN npm install -g npm@8.11.0
 
