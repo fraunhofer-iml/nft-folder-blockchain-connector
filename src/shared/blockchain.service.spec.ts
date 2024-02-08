@@ -12,26 +12,32 @@ import Web3 from 'web3';
 
 import { BlockchainService } from './blockchain.service';
 import { ApiConfigService } from '../config/api.config.service';
+import { TransactionObject } from 'web3/eth/types';
+import { TokenAbi } from '../token/abi/token.abi';
+import { AbiItem } from 'web3-utils';
 
-// TODO-LG: fix and add more tests for Blockchain
 describe('BlockchainService', () => {
   let service: BlockchainService;
   let fakeApiConfigService: Partial<ApiConfigService>;
 
-  /*
-    const fakeParent = { _address: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045' };
-    function encodeABI() {
-      return '';
-    }
-    const fakeTransaction = {
-      _parent: fakeParent,
-      encodeABI: () => '',
-    };
-  */
-
   // web3 mock
   const PROVIDER = new Web3.providers.HttpProvider(global.ethereum);
   const WEB3 = new Web3(PROVIDER);
+  const INPUT_REMOTE_ID = 'testRemoteId';
+  const INPUT_TOKEN_ADDRESS = '0x1f7b7F7F6A0a32496eE805b6532f686E40568D83';
+  const contract = new WEB3.eth.Contract(TokenAbi as AbiItem[], INPUT_TOKEN_ADDRESS);
+  const contractMethods = contract.methods;
+  const OUTPUT_ACCOUNT: any = { address: 'testAddress' };
+  const SIGNED_TRANSACTION: any = { rawTransaction: 'rawTransaction' };
+  const OUTPUT_TRANSACTION_RESPONSE: any = { response: 'testResponse' };
+  const INPUT_TRANSACTION_OBJECT: TransactionObject<any> = contractMethods.getTokenId(INPUT_REMOTE_ID);
+
+  const INPUT_TRANSACTION: any = {
+    blockNumber: 0,
+  };
+  const OUTPUT_BLOCK: any = {
+    timestamp: 100,
+  };
 
   beforeEach(async () => {
     resetMocks();
@@ -40,6 +46,12 @@ describe('BlockchainService', () => {
     fakeApiConfigService = {
       PRIVATE_KEY: 'testPrivateKey',
     };
+
+    jest.spyOn(WEB3.eth.accounts, 'privateKeyToAccount').mockImplementation(() => OUTPUT_ACCOUNT);
+    jest.spyOn(WEB3.eth.accounts, 'signTransaction').mockImplementation(() => SIGNED_TRANSACTION);
+    jest.spyOn(WEB3.eth, 'sendSignedTransaction').mockImplementation(() => OUTPUT_TRANSACTION_RESPONSE);
+    jest.spyOn(WEB3.eth, 'getTransaction').mockImplementation(() => INPUT_TRANSACTION);
+    jest.spyOn(WEB3.eth, 'getBlock').mockImplementation(() => OUTPUT_BLOCK);
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -57,7 +69,15 @@ describe('BlockchainService', () => {
     service = module.get<BlockchainService>(BlockchainService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it('should send transaction', async () => {
+    expect(await service.sendTransaction(INPUT_TRANSACTION_OBJECT)).toEqual(OUTPUT_TRANSACTION_RESPONSE);
+  });
+  /*
+  it('should fetch transaction timestamp', async () => {
+    expect(await service.fetchTransactionTimestamp(undefined)).toEqual(OUTPUT_TRANSACTION_TIMESTAMP);
+  });*/
+
+  it('should derive public address from private key', async () => {
+    expect(await service.derivePublicAddressFromPrivateKey()).toEqual(OUTPUT_ACCOUNT.address);
   });
 });

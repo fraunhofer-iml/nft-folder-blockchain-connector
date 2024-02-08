@@ -46,7 +46,7 @@ export class EventService {
     return events.length === 0 ? null : events[0].returnValues.to;
   }
 
-  private async getAllPastEvents(event: string, tokenId: number) {
+  private async getAllPastEvents(event: string, tokenId: number): Promise<any> {
     return await this.tokenContract.getPastEvents(event, {
       filter: { tokenId },
       fromBlock: 'genesis',

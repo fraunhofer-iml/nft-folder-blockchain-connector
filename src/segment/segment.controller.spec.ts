@@ -7,7 +7,6 @@
  */
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { of } from 'rxjs';
 
 import { SegmentRestController } from './segment.controller';
 import { SegmentService } from './segment.service';
@@ -35,11 +34,11 @@ describe('SegmentRestController', () => {
 
   beforeEach(async () => {
     fakeService = {
-      createSegment: () => of(OUTPUT_CREATE_SEGMENT_RESPONSE),
-      getAllSegments: () => of(OUTPUT_GET_ALL_SEGMENTS),
-      getSegment: () => of(OUTPUT_GET_SEGMENT_RESPONSE),
-      addToken: () => of(OUTPUT_ADD_TOKEN),
-      removeToken: () => of(OUTPUT_REMOVE_TOKEN),
+      createSegment: () => Promise.resolve(OUTPUT_CREATE_SEGMENT_RESPONSE),
+      getAllSegments: () => Promise.resolve(OUTPUT_GET_ALL_SEGMENTS),
+      getSegment: () => Promise.resolve(OUTPUT_GET_SEGMENT_RESPONSE),
+      addToken: () => Promise.resolve(OUTPUT_ADD_TOKEN),
+      removeToken: () => Promise.resolve(OUTPUT_REMOVE_TOKEN),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -55,38 +54,23 @@ describe('SegmentRestController', () => {
     controller = module.get<SegmentRestController>(SegmentRestController);
   });
 
-  it('should create a segment for this container', (done) => {
-    controller.createSegment({ name: INPUT_SEGMENT_NAME }).subscribe((res) => {
-      expect(res).toEqual(OUTPUT_CREATE_SEGMENT_RESPONSE);
-      done();
-    });
+  it('should create a segment for this container', async () => {
+    expect(await controller.createSegment({ name: INPUT_SEGMENT_NAME })).toEqual(OUTPUT_CREATE_SEGMENT_RESPONSE);
   });
 
-  it('should get all segments of this container', (done) => {
-    controller.getAllSegments().subscribe((res) => {
-      expect(res).toEqual(OUTPUT_GET_ALL_SEGMENTS);
-      done();
-    });
+  it('should get all segments of this container', async () => {
+    expect(await controller.getAllSegments()).toEqual(OUTPUT_GET_ALL_SEGMENTS);
   });
 
-  it('should get a specific segment', (done) => {
-    controller.getSegment(INPUT_SEGMENT_INDEX).subscribe((res) => {
-      expect(res).toEqual(OUTPUT_GET_SEGMENT_RESPONSE);
-      done();
-    });
+  it('should get a specific segment', async () => {
+    expect(await controller.getSegment(INPUT_SEGMENT_INDEX)).toEqual(OUTPUT_GET_SEGMENT_RESPONSE);
   });
 
-  it('should add a token', (done) => {
-    controller.addToken(INPUT_SEGMENT_INDEX, INPUT_TOKEN).subscribe((res) => {
-      expect(res).toEqual(OUTPUT_ADD_TOKEN);
-      done();
-    });
+  it('should add a token', async () => {
+    expect(await controller.addToken(INPUT_SEGMENT_INDEX, INPUT_TOKEN)).toEqual(OUTPUT_ADD_TOKEN);
   });
 
-  it('should remove a token', (done) => {
-    controller.removeToken(INPUT_SEGMENT_INDEX, INPUT_TOKEN).subscribe((res) => {
-      expect(res).toEqual(OUTPUT_REMOVE_TOKEN);
-      done();
-    });
+  it('should remove a token', async () => {
+    expect(await controller.removeToken(INPUT_SEGMENT_INDEX, INPUT_TOKEN)).toEqual(OUTPUT_REMOVE_TOKEN);
   });
 });

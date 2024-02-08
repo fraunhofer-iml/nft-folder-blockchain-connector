@@ -7,7 +7,6 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { forkJoin, map, mergeMap, Observable, of } from 'rxjs';
 import TransactionReceipt from 'web3/types';
 import Contract from 'web3/eth/contract';
 import Web3 from 'web3';
@@ -38,40 +37,34 @@ export class SegmentService {
     return new this.blockchainService.web3.eth.Contract(SegmentAbi, segmentAddress);
   }
 
-  public createSegment(name: string): Observable<TransactionReceipt> {
+  public createSegment(name: string): Promise<TransactionReceipt> {
     return this.blockchainService.sendTransaction(this.containerContract.methods.createSegment(name));
   }
 
   // TODO-MP: a segmentId would be nice
   // TODO-MP: error when no segments available
-  public getAllSegments(): Observable<SegmentReadDto[]> {
-    return this.blockchainService.call(this.containerContract.methods.getAllSegments()).pipe(
-      mergeMap((segmentAddresses) =>
-        forkJoin(segmentAddresses.map((segmentAddress) => this.getSegmentData(segmentAddress))),
-      ),
-      map((segments: any) =>
-        segments.map(([segmentAddress, name, tokenContractInfo]) =>
-          this.createSegmentObject(segmentAddress, name, tokenContractInfo),
-        ),
-      ),
-    );
+  public async getAllSegments(): Promise<SegmentReadDto[]> {
+    const segmentAddressList = await this.blockchainService.call(this.containerContract.methods.getAllSegments());
+    const segmentList = [];
+    for (const singleSegmentAddress of segmentAddressList) {
+      const [segmentAddress, name, tokenContractInfo] = await this.getSegmentData(singleSegmentAddress);
+      segmentList.push(this.createSegmentObject(segmentAddress, name, tokenContractInfo));
+    }
+    return segmentList;
   }
 
-  public getSegment(index: number): Observable<SegmentReadDto> {
-    return this.blockchainService.call(this.containerContract.methods.getSegment(index)).pipe(
-      mergeMap((segmentAddress) => this.getSegmentData(segmentAddress)),
-      map(([segmentAddress, name, tokenContractInfo]) =>
-        this.createSegmentObject(segmentAddress, name, tokenContractInfo),
-      ),
-    );
+  public async getSegment(index: number): Promise<SegmentReadDto> {
+    const foundSegmentAddress = await this.blockchainService.call(this.containerContract.methods.getSegment(index));
+    const [segmentAddress, name, tokenContractInfo] = await this.getSegmentData(foundSegmentAddress);
+    return this.createSegmentObject(segmentAddress, name, tokenContractInfo);
   }
 
-  private getSegmentData(segmentAddress: string): Observable<[string, any, any]> {
-    return forkJoin([
-      of(segmentAddress),
-      this.blockchainService.call(this.getSegmentContract(segmentAddress).methods.getName()),
-      this.blockchainService.call(this.getSegmentContract(segmentAddress).methods.getAllTokenInformation()),
-    ]);
+  private async getSegmentData(segmentAddress: string): Promise<(string | any)[]> {
+    return [
+      segmentAddress,
+      await this.blockchainService.call(this.getSegmentContract(segmentAddress).methods.getName()),
+      await this.blockchainService.call(this.getSegmentContract(segmentAddress).methods.getAllTokenInformation()),
+    ];
   }
 
   private createSegmentObject(segmentAddress: string, segmentName: string, tokenContractInfo: any): SegmentReadDto {
@@ -79,35 +72,24 @@ export class SegmentService {
     return new SegmentReadDto(segmentAddress, segmentName, tokens);
   }
 
-  public addToken(index: number, tokenAddress: string, tokenId: number): Observable<TransactionReceipt> {
+  public async addToken(index: number, tokenAddress: string, tokenId: number): Promise<TransactionReceipt> {
     if (!Web3.utils.isAddress(tokenAddress)) {
-      this.blockchainService.handleError({ message: `'${tokenAddress}' is not an address` });
+      await this.blockchainService.handleError({ message: `'${tokenAddress}' is not an address` });
     }
-
-    return this.blockchainService
-      .call(this.containerContract.methods.getSegment(index))
-      .pipe(
-        mergeMap((segmentAddress) =>
-          this.blockchainService.sendTransaction(
-            this.getSegmentContract(segmentAddress).methods.addToken(tokenAddress, tokenId),
-          ),
-        ),
-      );
+    const segmentAddress = await this.blockchainService.call(this.containerContract.methods.getSegment(index));
+    return this.blockchainService.sendTransaction(
+      this.getSegmentContract(segmentAddress).methods.addToken(tokenAddress, tokenId),
+    );
   }
 
-  public removeToken(index: number, tokenAddress: string, tokenId: number): Observable<TransactionReceipt> {
+  public async removeToken(index: number, tokenAddress: string, tokenId: number): Promise<TransactionReceipt> {
     if (!Web3.utils.isAddress(tokenAddress)) {
-      this.blockchainService.handleError({ message: `'${tokenAddress}' is not an address` });
+      await this.blockchainService.handleError({ message: `'${tokenAddress}' is not an address` });
     }
 
-    return this.blockchainService
-      .call(this.containerContract.methods.getSegment(index))
-      .pipe(
-        mergeMap((segmentAddress) =>
-          this.blockchainService.sendTransaction(
-            this.getSegmentContract(segmentAddress).methods.removeToken(tokenAddress, tokenId),
-          ),
-        ),
-      );
+    const segmentAddress = await this.blockchainService.call(this.containerContract.methods.getSegment(index));
+    return this.blockchainService.sendTransaction(
+      this.getSegmentContract(segmentAddress).methods.removeToken(tokenAddress, tokenId),
+    );
   }
 }

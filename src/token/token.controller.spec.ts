@@ -7,7 +7,6 @@
  */
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { of } from 'rxjs';
 
 import { TokenRestController } from './token.controller';
 import { TokenService } from './token.service';
@@ -58,11 +57,12 @@ describe('TokenController', () => {
 
   beforeEach(async () => {
     fakeTokenService = {
-      mintToken: () => of(OUTPUT_MINT_TOKEN),
-      getTokenByTokenId: () => of(OUTPUT_GET_TOKEN),
-      getAllSegments: () => of(OUTPUT_GET_SEGMENTS),
-      burnToken: () => of(OUTPUT_BURN_TOKEN),
-      updateToken: () => of(OUTPUT_TRANSFER_TOKEN),
+      mintToken: () => Promise.resolve(OUTPUT_MINT_TOKEN),
+      getTokenByTokenId: () => Promise.resolve(OUTPUT_GET_TOKEN),
+      getTokenByRemoteId: () => Promise.resolve(OUTPUT_GET_TOKEN),
+      getAllSegments: () => Promise.resolve(OUTPUT_GET_SEGMENTS),
+      burnToken: () => Promise.resolve(OUTPUT_BURN_TOKEN),
+      updateToken: () => Promise.resolve(OUTPUT_TRANSFER_TOKEN),
     };
     fakeBlockchainService = {
       handleError: () => null,
@@ -85,38 +85,31 @@ describe('TokenController', () => {
     controller = module.get<TokenRestController>(TokenRestController);
   });
 
-  it('should mint a new token', (done) => {
-    controller.mintToken(INPUT_TOKEN_MINT_DTO).subscribe((res) => {
-      expect(res).toEqual(OUTPUT_MINT_TOKEN);
-      done();
-    });
+  it('should get a token for a token id', async () => {
+    expect(await controller.getToken(INPUT_TOKEN_ID)).toEqual(OUTPUT_GET_TOKEN);
   });
 
-  it('should get a token', (done) => {
-    controller.getToken(INPUT_TOKEN_ID).subscribe((res) => {
-      expect(res).toEqual(OUTPUT_GET_TOKEN);
-      done();
-    });
+  it('should get a token for a remote id', async () => {
+    expect(await controller.getToken(undefined, INPUT_REMOTE_ID)).toEqual(OUTPUT_GET_TOKEN);
   });
 
-  it('should get all segments for the token', (done) => {
-    controller.getAllSegments(INPUT_TOKEN_ID).subscribe((res) => {
-      expect(res).toEqual(OUTPUT_GET_SEGMENTS);
-      done();
-    });
+  it('should not get a token', async () => {
+    expect(await controller.getToken(undefined, undefined)).toBeUndefined();
   });
 
-  it('should burn an existing token', (done) => {
-    controller.burnToken(INPUT_TOKEN_ID).subscribe((res) => {
-      expect(res).toEqual(OUTPUT_BURN_TOKEN);
-      done();
-    });
+  it('should get all segments for the token', async () => {
+    expect(await controller.getAllSegments(INPUT_TOKEN_ID)).toEqual(OUTPUT_GET_SEGMENTS);
   });
 
-  it('should transfer a token from the current owner to a new owner', (done) => {
-    controller.updateToken(INPUT_REMOTE_ID, INPUT_TOKEN_UPDATE_DTO).subscribe((res) => {
-      expect(res).toEqual(OUTPUT_TRANSFER_TOKEN);
-      done();
-    });
+  it('should mint a new token', async () => {
+    expect(await controller.mintToken(INPUT_TOKEN_MINT_DTO)).toEqual(OUTPUT_MINT_TOKEN);
+  });
+
+  it('should transfer a token from the current owner to a new owner', async () => {
+    expect(await controller.updateToken(INPUT_REMOTE_ID, INPUT_TOKEN_UPDATE_DTO)).toEqual(OUTPUT_TRANSFER_TOKEN);
+  });
+
+  it('should burn an existing token', async () => {
+    expect(await controller.burnToken(INPUT_TOKEN_ID)).toEqual(OUTPUT_BURN_TOKEN);
   });
 });

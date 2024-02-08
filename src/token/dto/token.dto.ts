@@ -7,12 +7,18 @@
  */
 
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumberString } from 'class-validator';
+import { IsValidBlockchainAddress } from '../../shared/validator/BlockchainAddressValidator';
 
 class TokenContractInfoDto {
   @ApiProperty()
+  @IsNotEmpty()
+  @IsValidBlockchainAddress()
   tokenAddress: string;
 
   @ApiProperty()
+  @IsNotEmpty()
+  @IsNumberString()
   tokenId: string;
 
   constructor(tokenAddress: string, tokenId: string) {

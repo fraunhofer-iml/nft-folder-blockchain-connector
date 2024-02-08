@@ -7,7 +7,6 @@
  */
 
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { catchError, defer, from, map, Observable, switchMap } from 'rxjs';
 import { TxSignature } from 'web3/eth/accounts';
 import { TransactionObject } from 'web3/eth/types';
 import TransactionReceipt from 'web3/types';
@@ -20,19 +19,17 @@ export class BlockchainService {
     this.web3.eth.handleRevert = true;
   }
 
-  public sendTransaction(transactionObject: TransactionObject<any>): Observable<TransactionReceipt> {
+  public async sendTransaction(transactionObject: TransactionObject<any>): Promise<TransactionReceipt> {
     const transactionParameters = this.createTransactionParameters(transactionObject);
-
-    return defer(() =>
-      from(this.web3.eth.accounts.signTransaction(transactionParameters, this.apiConfigService.PRIVATE_KEY)),
-    ).pipe(
-      catchError(this.handleError),
-      switchMap((signedTransaction: TxSignature) => {
-        return defer(() => from(this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction))).pipe(
-          catchError(this.handleError),
-        );
-      }),
-    );
+    try {
+      const signedTransaction: TxSignature = await this.web3.eth.accounts.signTransaction(
+        transactionParameters,
+        this.apiConfigService.PRIVATE_KEY,
+      );
+      return await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction);
+    } catch (err) {
+      this.handleError(err);
+    }
   }
 
   private createTransactionParameters(transactionObject: TransactionObject<any>) {
@@ -46,13 +43,12 @@ export class BlockchainService {
     };
   }
 
-  public call(transaction): Observable<any> {
-    return defer(() => from(transaction.call())).pipe(
-      catchError(this.handleError),
-      map((res) => {
-        return res;
-      }),
-    );
+  public async call(transaction): Promise<any> {
+    try {
+      return await transaction.call();
+    } catch (err) {
+      this.handleError(err);
+    }
   }
 
   public async fetchTransactionTimestamp(transactionHash: string): Promise<number> {
@@ -69,7 +65,7 @@ export class BlockchainService {
     return block.timestamp;
   }
 
-  public handleError(error: any): Observable<any> {
+  public handleError(error: any): Promise<any> {
     let errorMessage = error.data ? error.data.reason : error.reason;
     errorMessage = errorMessage ? errorMessage : error.message;
     throw new BadRequestException(errorMessage);

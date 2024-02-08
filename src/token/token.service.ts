@@ -7,7 +7,6 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { forkJoin, from, map, mergeMap, Observable, switchMap } from 'rxjs';
 import { TransactionObject } from 'web3/eth/types';
 import TransactionReceipt from 'web3/types';
 
@@ -33,63 +32,55 @@ export class TokenService {
     this.tokenContract = new this.blockchainService.web3.eth.Contract(TokenAbi, apiConfigService.TOKEN_ADDRESS);
   }
 
-  public getTokenByRemoteId(remoteId: string): Observable<TokenGetDto> {
-    return this.getTokenId(remoteId).pipe(mergeMap((tokenId) => this.getTokenByTokenId(tokenId)));
+  public async getTokenByRemoteId(remoteId: string): Promise<TokenGetDto> {
+    const tokenId = await this.getTokenId(remoteId);
+    return this.getTokenByTokenId(tokenId);
   }
 
-  private getTokenId(remoteId: string) {
+  private getTokenId(remoteId: string): Promise<number> {
     return this.blockchainService.call(this.tokenContract.methods.getTokenId(remoteId));
   }
 
-  public getTokenByTokenId(tokenId: number): Observable<TokenGetDto> {
-    return forkJoin([
+  public async getTokenByTokenId(tokenId: number): Promise<TokenGetDto> {
+    const tokenInputPromise: Promise<any>[] = [
       this.blockchainService.call(this.tokenContract.methods.ownerOf(tokenId)),
       this.blockchainService.call(this.tokenContract.methods.getAssetInformation(tokenId)),
       this.blockchainService.call(this.tokenContract.methods.getMetadataUri(tokenId)),
       this.blockchainService.call(this.tokenContract.methods.getMetadataHash(tokenId)),
       this.blockchainService.call(this.tokenContract.methods.getRemoteId(tokenId)),
       this.blockchainService.call(this.tokenContract.methods.getAdditionalInformation(tokenId)),
-    ]).pipe(
-      switchMap(([ownerAddress, assetInformation, metadataUri, metadataHash, remoteId, additionalInformation]) => {
-        const asset = new TokenAssetDto(assetInformation.assetUri, assetInformation.assetHash);
-        const metadata = new TokenMetadataDto(metadataUri, metadataHash);
-
-        return from(this.eventInformationService.fetchTokenInformation(tokenId)).pipe(
-          map(({ minterAddress, createdOn, lastUpdatedOn }: TokenInformation) => {
-            return new TokenGetDto(
-              remoteId,
-              asset,
-              metadata,
-              additionalInformation,
-              ownerAddress,
-              minterAddress,
-              createdOn,
-              lastUpdatedOn,
-              tokenId,
-              this.apiConfigService.TOKEN_ADDRESS,
-            );
-          }),
-        );
-      }),
+    ];
+    const [ownerAddress, assetInformation, metadataUri, metadataHash, remoteId, additionalInformation] =
+      await Promise.all(tokenInputPromise);
+    const asset: TokenAssetDto = new TokenAssetDto(assetInformation.assetUri, assetInformation.assetHash);
+    const metadata: TokenMetadataDto = new TokenMetadataDto(metadataUri, metadataHash);
+    const { minterAddress, createdOn, lastUpdatedOn }: TokenInformation =
+      await this.eventInformationService.fetchTokenInformation(tokenId);
+    return new TokenGetDto(
+      remoteId,
+      asset,
+      metadata,
+      additionalInformation,
+      ownerAddress,
+      minterAddress,
+      createdOn,
+      lastUpdatedOn,
+      tokenId,
+      this.apiConfigService.TOKEN_ADDRESS,
     );
   }
 
-  public getAllSegments(id: string): Observable<SegmentReadDto[]> {
-    return this.segmentService
-      .getAllSegments()
-      .pipe(
-        map((segments) =>
-          segments.filter(
-            (segment) =>
-              segment.tokenContractInfos &&
-              segment.tokenContractInfos.length > 0 &&
-              segment.tokenContractInfos.some((token) => token.tokenId === id),
-          ),
-        ),
-      );
+  public async getAllSegments(id: string): Promise<SegmentReadDto[]> {
+    const segments: SegmentReadDto[] = await this.segmentService.getAllSegments();
+    return segments.filter(
+      (segment) =>
+        segment.tokenContractInfos &&
+        segment.tokenContractInfos.length > 0 &&
+        segment.tokenContractInfos.some((token) => token.tokenId === id),
+    );
   }
 
-  public mintToken(mintTokenDto: TokenMintDto): Observable<TransactionReceipt> {
+  public mintToken(mintTokenDto: TokenMintDto): Promise<TransactionReceipt> {
     const transactionObject: TransactionObject<any> = this.tokenContract.methods.safeMint(
       this.blockchainService.derivePublicAddressFromPrivateKey(),
       mintTokenDto.asset.uri,
@@ -102,28 +93,25 @@ export class TokenService {
     return this.blockchainService.sendTransaction(transactionObject);
   }
 
-  public updateToken(remoteId: string, tokenUpdateDto: TokenUpdateDto): Observable<TransactionReceipt> {
-    return this.getTokenId(remoteId).pipe(
-      mergeMap((tokenId) => {
-        const transactionObject: TransactionObject<any> = this.tokenContract.methods.updateToken(
-          tokenId,
-          this.getValue(tokenUpdateDto.assetUri),
-          this.getValue(tokenUpdateDto.assetHash),
-          this.getValue(tokenUpdateDto.metadataUri),
-          this.getValue(tokenUpdateDto.metadataHash),
-          this.getValue(tokenUpdateDto.additionalInformation),
-        );
-
-        return this.blockchainService.sendTransaction(transactionObject);
-      }),
+  public async updateToken(remoteId: string, tokenUpdateDto: TokenUpdateDto): Promise<TransactionReceipt> {
+    const tokenId: number = await this.getTokenId(remoteId);
+    const transactionObject: TransactionObject<any> = this.tokenContract.methods.updateToken(
+      tokenId,
+      this.getValue(tokenUpdateDto.assetUri),
+      this.getValue(tokenUpdateDto.assetHash),
+      this.getValue(tokenUpdateDto.metadataUri),
+      this.getValue(tokenUpdateDto.metadataHash),
+      this.getValue(tokenUpdateDto.additionalInformation),
     );
+
+    return this.blockchainService.sendTransaction(transactionObject);
   }
 
   private getValue(field: string): string {
     return field ? field : '';
   }
 
-  public burnToken(tokenId: string): Observable<TransactionReceipt> {
+  public burnToken(tokenId: string): Promise<TransactionReceipt> {
     return this.blockchainService.sendTransaction(this.tokenContract.methods.burn(tokenId));
   }
 }

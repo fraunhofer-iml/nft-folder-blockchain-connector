@@ -8,7 +8,6 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, resetMocks } from '@depay/web3-mock';
-import { Observable, of } from 'rxjs';
 import { AbiItem } from 'web3-utils';
 import { TransactionObject } from 'web3/eth/types';
 import TransactionReceipt from 'web3/types';
@@ -22,6 +21,7 @@ import { areMethodsEqual } from '../shared/test.utils';
 import { SegmentReadDto } from './dto/segment.read.dto';
 import { SegmentAbi } from './abi/segment.abi';
 import { ContainerAbi } from './abi/container.abi';
+import { TokenContractInfoDto } from '../token/dto/token.dto';
 
 describe('SegmentService', () => {
   let service: SegmentService;
@@ -30,14 +30,14 @@ describe('SegmentService', () => {
 
   // test input
   const INPUT_SEGMENT_NAME = 'inputSegmentName';
-  const INPUT_TOKEN_ADDRESS = 'inputTokenAddress';
+  const INPUT_TOKEN_ADDRESS = '0x1f7b7F7F6A0a32496eE805b6532f686E40568D83';
   const INPUT_TOKEN_ID = 12;
+  const INPUT_TOKEN_ADDRESS_2 = 'inputTokenAddress2';
+  const INPUT_TOKEN_ID_2 = 15;
   const INPUT_SEGMENT_INDEX = 1;
 
   // test output
   const OUTPUT_CREATE_SEGMENT: any = {};
-  const OUTPUT_GET_ALL_SEGMENTS = 'outputGetAllSegments';
-  const OUTPUT_GET_SEGMENT: SegmentReadDto = new SegmentReadDto('', '', []);
   const OUTPUT_ADD_TOKEN: any = {};
   const OUTPUT_REMOVE_TOKEN: any = {};
 
@@ -46,6 +46,14 @@ describe('SegmentService', () => {
   const WEB3 = new Web3(PROVIDER);
   const CONTAINER_ADDRESS = '0x1f7b7F7F6A0a32496eE805b6532f686E40568D83';
   const SEGMENT_ADDRESS = '0x1f7b7F7F6A0a32496eE805b6532f686E40568D83';
+
+  const TOKEN_CONTRACT_INFO = new TokenContractInfoDto(INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID.toString());
+  const TOKEN_CONTRACT_INFO_2 = new TokenContractInfoDto(INPUT_TOKEN_ADDRESS_2, INPUT_TOKEN_ID_2.toString());
+
+  const SINGLE_SEGMENT = new SegmentReadDto(SEGMENT_ADDRESS, INPUT_SEGMENT_NAME, [
+    TOKEN_CONTRACT_INFO,
+    TOKEN_CONTRACT_INFO_2,
+  ]);
 
   beforeEach(async () => {
     resetMocks();
@@ -59,30 +67,29 @@ describe('SegmentService', () => {
 
     fakeBlockchainService = {
       web3: WEB3,
-      sendTransaction: (transaction: TransactionObject<any>): Observable<TransactionReceipt> => {
+      sendTransaction: (transaction: TransactionObject<any>): Promise<TransactionReceipt> => {
         if (areMethodsEqual(transaction, containerContractMethods.createSegment(INPUT_SEGMENT_NAME))) {
-          return of(OUTPUT_CREATE_SEGMENT);
+          return Promise.resolve(OUTPUT_CREATE_SEGMENT);
+        } else if (areMethodsEqual(transaction, segmentContractMethods.addToken(INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID))) {
+          return Promise.resolve(OUTPUT_ADD_TOKEN);
         } else if (
-          areMethodsEqual(
-            transaction,
-            segmentContractMethods.addToken(INPUT_SEGMENT_INDEX, INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID),
-          )
+          areMethodsEqual(transaction, segmentContractMethods.removeToken(INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID))
         ) {
-          return of(OUTPUT_ADD_TOKEN);
-        } else if (
-          areMethodsEqual(
-            transaction,
-            segmentContractMethods.removeToken(INPUT_SEGMENT_INDEX, INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID),
-          )
-        ) {
-          return of(OUTPUT_REMOVE_TOKEN);
+          return Promise.resolve(OUTPUT_REMOVE_TOKEN);
         }
       },
-      call: (transaction: any): Observable<any> => {
+      call: (transaction: any): Promise<any> => {
         if (areMethodsEqual(transaction, containerContractMethods.getAllSegments())) {
-          return of(OUTPUT_GET_ALL_SEGMENTS);
+          return Promise.resolve([SEGMENT_ADDRESS]);
         } else if (areMethodsEqual(transaction, containerContractMethods.getSegment(INPUT_SEGMENT_INDEX))) {
-          return of(OUTPUT_GET_SEGMENT);
+          return Promise.resolve(SINGLE_SEGMENT.segmentAddress);
+        } else if (areMethodsEqual(transaction, segmentContractMethods.getName())) {
+          return Promise.resolve(INPUT_SEGMENT_NAME);
+        } else if (areMethodsEqual(transaction, segmentContractMethods.getAllTokenInformation())) {
+          return Promise.resolve([
+            [TOKEN_CONTRACT_INFO.tokenAddress, TOKEN_CONTRACT_INFO.tokenId],
+            [TOKEN_CONTRACT_INFO_2.tokenAddress, TOKEN_CONTRACT_INFO_2.tokenId],
+          ]);
         }
       },
     };
@@ -105,46 +112,25 @@ describe('SegmentService', () => {
     service = module.get<SegmentService>(SegmentService);
   });
 
-  it('should create a segment', (done) => {
-    service.createSegment(INPUT_SEGMENT_NAME).subscribe((res) => {
-      expect(res).toEqual(OUTPUT_CREATE_SEGMENT);
-      done();
-    });
+  it('should create a segment', async () => {
+    expect(await service.createSegment(INPUT_SEGMENT_NAME)).toEqual(OUTPUT_CREATE_SEGMENT);
   });
 
-  /* TODO-MP: this test fails due to pipe calls
-it('should get all segments', (done) => {
-  service.getAllSegments().subscribe((res) => {
-    // expect(res).toEqual(OUTPUT_GET_ALL_SEGMENTS);
-    done();
+  it('should get all segments', async () => {
+    expect(await service.getAllSegments()).toEqual([SINGLE_SEGMENT]);
   });
-});
- */
 
-  /* TODO-MP: this test fails due to pipe calls
-it('should get a specific segment', (done) => {
-  service.getSegment(SEGMENT_INDEX).subscribe((res) => {
-    expect(res).toEqual(OUTPUT_GET_SEGMENT);
-    done();
+  it('should get a specific segment', async () => {
+    expect(await service.getSegment(INPUT_SEGMENT_INDEX)).toEqual(SINGLE_SEGMENT);
   });
-});
- */
 
-  /* TODO-MP: this test fails due to pipe calls
-  it('should add a token to a segment', (done) => {
-    service.addToken(INPUT_SEGMENT_INDEX, INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID).subscribe((res) => {
-      expect(res).toEqual(OUTPUT_ADD_TOKEN);
-      done();
-    });
+  it('should add a token to a segment', async () => {
+    expect(await service.addToken(INPUT_SEGMENT_INDEX, INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID)).toEqual(OUTPUT_ADD_TOKEN);
   });
- */
 
-  /* TODO-MP: this test fails due to pipe calls
-  it('should remove a token from a segment', (done) => {
-    service.removeToken(INPUT_SEGMENT_INDEX, INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID).subscribe((res) => {
-      expect(res).toEqual(OUTPUT_REMOVE_TOKEN);
-      done();
-    });
+  it('should remove a token from a segment', async () => {
+    expect(await service.removeToken(INPUT_SEGMENT_INDEX, INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID)).toEqual(
+      OUTPUT_REMOVE_TOKEN,
+    );
   });
-   */
 });
