@@ -7,12 +7,11 @@
  */
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 export class SegmentCreateDto {
   @ApiProperty()
   @IsNotEmpty()
-  @IsEmail()
   name: string;
 
   constructor(name: string) {

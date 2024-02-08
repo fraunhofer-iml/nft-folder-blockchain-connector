@@ -25,8 +25,8 @@ import { TokenContractInfoDto } from '../token/dto/token.dto';
 
 describe('SegmentService', () => {
   let service: SegmentService;
-  let fakeBlockchainService: Partial<BlockchainService>;
-  let fakeApiConfigService: Partial<ApiConfigService>;
+  let mockedBlockchainService: Partial<BlockchainService>;
+  let mockedApiConfigService: Partial<ApiConfigService>;
 
   // test input
   const INPUT_SEGMENT_NAME = 'inputSegmentName';
@@ -65,7 +65,7 @@ describe('SegmentService', () => {
     const segmentContract = new WEB3.eth.Contract(SegmentAbi as AbiItem[], SEGMENT_ADDRESS);
     const segmentContractMethods = segmentContract.methods;
 
-    fakeBlockchainService = {
+    mockedBlockchainService = {
       web3: WEB3,
       sendTransaction: (transaction: TransactionObject<any>): Promise<TransactionReceipt> => {
         if (areMethodsEqual(transaction, containerContractMethods.createSegment(INPUT_SEGMENT_NAME))) {
@@ -94,17 +94,17 @@ describe('SegmentService', () => {
       },
     };
 
-    fakeApiConfigService = { CONTAINER_ADDRESS: CONTAINER_ADDRESS };
+    mockedApiConfigService = { CONTAINER_ADDRESS: CONTAINER_ADDRESS };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
           provide: BlockchainService,
-          useValue: fakeBlockchainService,
+          useValue: mockedBlockchainService,
         },
         {
           provide: ApiConfigService,
-          useValue: fakeApiConfigService,
+          useValue: mockedApiConfigService,
         },
         SegmentService,
       ],
@@ -117,11 +117,11 @@ describe('SegmentService', () => {
   });
 
   it('should get all segments', async () => {
-    expect(await service.getAllSegments()).toEqual([SINGLE_SEGMENT]);
+    expect(await service.fetchAllSegments()).toEqual([SINGLE_SEGMENT]);
   });
 
   it('should get a specific segment', async () => {
-    expect(await service.getSegment(INPUT_SEGMENT_INDEX)).toEqual(SINGLE_SEGMENT);
+    expect(await service.fetchSegment(INPUT_SEGMENT_INDEX)).toEqual(SINGLE_SEGMENT);
   });
 
   it('should add a token to a segment', async () => {

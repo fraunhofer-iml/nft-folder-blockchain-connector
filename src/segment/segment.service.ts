@@ -9,11 +9,9 @@
 import { Injectable } from '@nestjs/common';
 import TransactionReceipt from 'web3/types';
 import Contract from 'web3/eth/contract';
-import Web3 from 'web3';
 
 import { ApiConfigService } from '../config/api.config.service';
 import { BlockchainService } from '../shared/blockchain.service';
-
 import { SegmentReadDto } from './dto/segment.read.dto';
 import { TokenContractInfoDto } from '../token/dto/token.dto';
 import { SegmentAbi } from './abi/segment.abi';
@@ -41,53 +39,44 @@ export class SegmentService {
     return this.blockchainService.sendTransaction(this.containerContract.methods.createSegment(name));
   }
 
-  // TODO-MP: a segmentId would be nice
-  // TODO-MP: error when no segments available
-  public async getAllSegments(): Promise<SegmentReadDto[]> {
-    const segmentAddressList = await this.blockchainService.call(this.containerContract.methods.getAllSegments());
-    const segmentList = [];
-    for (const singleSegmentAddress of segmentAddressList) {
-      const [segmentAddress, name, tokenContractInfo] = await this.getSegmentData(singleSegmentAddress);
-      segmentList.push(this.createSegmentObject(segmentAddress, name, tokenContractInfo));
+  public async fetchAllSegments(): Promise<SegmentReadDto[]> {
+    const segmentAddresses = await this.blockchainService.call(this.containerContract.methods.getAllSegments());
+    const segments: SegmentReadDto[] = [];
+
+    for (const currentSegmentAddress of segmentAddresses) {
+      const segment: SegmentReadDto = await this.fetchSegmentData(currentSegmentAddress);
+      segments.push(segment);
     }
-    return segmentList;
+
+    return segments;
   }
 
-  public async getSegment(index: number): Promise<SegmentReadDto> {
+  public async fetchSegment(index: number): Promise<SegmentReadDto> {
     const foundSegmentAddress = await this.blockchainService.call(this.containerContract.methods.getSegment(index));
-    const [segmentAddress, name, tokenContractInfo] = await this.getSegmentData(foundSegmentAddress);
-    return this.createSegmentObject(segmentAddress, name, tokenContractInfo);
+    return await this.fetchSegmentData(foundSegmentAddress);
   }
 
-  private async getSegmentData(segmentAddress: string): Promise<(string | any)[]> {
-    return [
+  private async fetchSegmentData(segmentAddress: string): Promise<SegmentReadDto> {
+    const segmentName = await this.blockchainService.call(this.getSegmentContract(segmentAddress).methods.getName());
+    const tokenContractInfo = await this.blockchainService.call(
+      this.getSegmentContract(segmentAddress).methods.getAllTokenInformation(),
+    );
+    return new SegmentReadDto(
       segmentAddress,
-      await this.blockchainService.call(this.getSegmentContract(segmentAddress).methods.getName()),
-      await this.blockchainService.call(this.getSegmentContract(segmentAddress).methods.getAllTokenInformation()),
-    ];
+      segmentName,
+      tokenContractInfo.map(([tokenAddress, tokenId]) => new TokenContractInfoDto(tokenAddress, tokenId)),
+    );
   }
 
-  private createSegmentObject(segmentAddress: string, segmentName: string, tokenContractInfo: any): SegmentReadDto {
-    const tokens = tokenContractInfo.map(([tokenAddress, tokenId]) => new TokenContractInfoDto(tokenAddress, tokenId));
-    return new SegmentReadDto(segmentAddress, segmentName, tokens);
-  }
-
-  public async addToken(index: number, tokenAddress: string, tokenId: number): Promise<TransactionReceipt> {
-    if (!Web3.utils.isAddress(tokenAddress)) {
-      await this.blockchainService.handleError({ message: `'${tokenAddress}' is not an address` });
-    }
-    const segmentAddress = await this.blockchainService.call(this.containerContract.methods.getSegment(index));
+  public async addToken(segmentIndex: number, tokenAddress: string, tokenId: number): Promise<TransactionReceipt> {
+    const segmentAddress = await this.blockchainService.call(this.containerContract.methods.getSegment(segmentIndex));
     return this.blockchainService.sendTransaction(
       this.getSegmentContract(segmentAddress).methods.addToken(tokenAddress, tokenId),
     );
   }
 
-  public async removeToken(index: number, tokenAddress: string, tokenId: number): Promise<TransactionReceipt> {
-    if (!Web3.utils.isAddress(tokenAddress)) {
-      await this.blockchainService.handleError({ message: `'${tokenAddress}' is not an address` });
-    }
-
-    const segmentAddress = await this.blockchainService.call(this.containerContract.methods.getSegment(index));
+  public async removeToken(segmentIndex: number, tokenAddress: string, tokenId: number): Promise<TransactionReceipt> {
+    const segmentAddress = await this.blockchainService.call(this.containerContract.methods.getSegment(segmentIndex));
     return this.blockchainService.sendTransaction(
       this.getSegmentContract(segmentAddress).methods.removeToken(tokenAddress, tokenId),
     );

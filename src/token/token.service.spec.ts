@@ -30,10 +30,10 @@ import { EventService, TokenInformation } from './event.service';
 
 describe('TokenService', () => {
   let service: TokenService;
-  let fakeBlockchainService: Partial<BlockchainService>;
-  let fakeApiConfigService: Partial<ApiConfigService>;
-  let fakeEventInformationService: Partial<EventService>;
-  let fakeSegmentService: Partial<SegmentService>;
+  let mockedBlockchainService: Partial<BlockchainService>;
+  let mockedApiConfigService: Partial<ApiConfigService>;
+  let mockedEventInformationService: Partial<EventService>;
+  let mockedSegmentService: Partial<SegmentService>;
 
   // test input
   const INPUT_TOKEN_ID = 12;
@@ -82,7 +82,7 @@ describe('TokenService', () => {
   const WEB3 = new Web3(PROVIDER);
 
   beforeEach(async () => {
-    fakeApiConfigService = {
+    mockedApiConfigService = {
       TOKEN_ADDRESS: INPUT_TOKEN_ADDRESS,
     };
 
@@ -92,7 +92,7 @@ describe('TokenService', () => {
     const contract = new WEB3.eth.Contract(TokenAbi as AbiItem[], INPUT_TOKEN_ADDRESS);
     const contractMethods = contract.methods;
 
-    fakeBlockchainService = {
+    mockedBlockchainService = {
       web3: WEB3,
       sendTransaction: (transactionObject) => {
         if (
@@ -141,16 +141,16 @@ describe('TokenService', () => {
           return Promise.resolve(INPUT_TOKEN_ID);
         } else if (areMethodsEqual(transaction, contractMethods.ownerOf(INPUT_TOKEN_ID))) {
           return Promise.resolve(TOKEN_GET_DTO.ownerAddress);
-        } else if (areMethodsEqual(transaction, contractMethods.getAssetInformation(INPUT_TOKEN_ID))) {
-          return Promise.resolve({ assetUri: TOKEN_GET_DTO.asset.uri, assetHash: TOKEN_GET_DTO.asset.hash });
-        } else if (areMethodsEqual(transaction, contractMethods.getMetadataUri(INPUT_TOKEN_ID))) {
-          return Promise.resolve(TOKEN_GET_DTO.metadata.uri);
-        } else if (areMethodsEqual(transaction, contractMethods.getMetadataHash(INPUT_TOKEN_ID))) {
-          return Promise.resolve(TOKEN_GET_DTO.metadata.hash);
+        } else if (areMethodsEqual(transaction, contractMethods.getToken(INPUT_TOKEN_ID))) {
+          return Promise.resolve({
+            assetUri: TOKEN_GET_DTO.asset.uri,
+            assetHash: TOKEN_GET_DTO.asset.hash,
+            metadataUri: TOKEN_GET_DTO.metadata.uri,
+            metadataHash: TOKEN_GET_DTO.metadata.hash,
+            additionalInformation: TOKEN_GET_DTO.additionalInformation,
+          });
         } else if (areMethodsEqual(transaction, contractMethods.getRemoteId(INPUT_TOKEN_ID))) {
           return Promise.resolve(TOKEN_GET_DTO.remoteId);
-        } else if (areMethodsEqual(transaction, contractMethods.getAdditionalInformation(INPUT_TOKEN_ID))) {
-          return Promise.resolve(TOKEN_GET_DTO.additionalInformation);
         }
       },
       derivePublicAddressFromPrivateKey(): any {
@@ -158,13 +158,13 @@ describe('TokenService', () => {
       },
     };
 
-    fakeSegmentService = {
-      getAllSegments(): any {
+    mockedSegmentService = {
+      fetchAllSegments(): any {
         return Promise.resolve(OUTPUT_GET_SEGMENTS);
       },
     };
 
-    fakeEventInformationService = {
+    mockedEventInformationService = {
       fetchTokenInformation(tokenId): Promise<TokenInformation> {
         if (INPUT_TOKEN_ID == tokenId) {
           return Promise.resolve(TOKEN_GET_DTO);
@@ -176,20 +176,20 @@ describe('TokenService', () => {
       providers: [
         {
           provide: BlockchainService,
-          useValue: fakeBlockchainService,
+          useValue: mockedBlockchainService,
         },
         {
           provide: ApiConfigService,
-          useValue: fakeApiConfigService,
+          useValue: mockedApiConfigService,
         },
         {
           provide: EventService,
-          useValue: fakeEventInformationService,
+          useValue: mockedEventInformationService,
         },
         TokenService,
         {
           provide: SegmentService,
-          useValue: fakeSegmentService,
+          useValue: mockedSegmentService,
         },
       ],
     }).compile();
@@ -205,7 +205,7 @@ describe('TokenService', () => {
   });
 
   it('should get all segments for the token', async () => {
-    expect(await service.getAllSegments(INPUT_TOKEN_ID.toString())).toEqual(OUTPUT_GET_SEGMENTS);
+    expect(await service.getAllSegments(INPUT_TOKEN_ID)).toEqual(OUTPUT_GET_SEGMENTS);
   });
 
   it('should mint a new token', async () => {
@@ -221,6 +221,6 @@ describe('TokenService', () => {
   });
 
   it('should burn an existing token', async () => {
-    expect(await service.burnToken(INPUT_TOKEN_ID.toString())).toEqual(OUTPUT_BURN_TOKEN);
+    expect(await service.burnToken(INPUT_TOKEN_ID)).toEqual(OUTPUT_BURN_TOKEN);
   });
 });

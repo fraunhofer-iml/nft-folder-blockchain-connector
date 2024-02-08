@@ -394,7 +394,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -427,7 +426,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -447,7 +445,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -467,7 +464,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -487,7 +483,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -519,7 +514,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -539,7 +533,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -559,7 +552,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -579,7 +571,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -599,7 +590,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -619,7 +609,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -644,7 +633,45 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'getToken',
+    outputs: [
+      {
+        internalType: 'string',
+        name: 'assetUri',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'assetHash',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'metadataUri',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'metadataHash',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'additionalInformation',
+        type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     inputs: [
@@ -664,7 +691,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -689,7 +715,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -714,7 +739,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [],
@@ -728,7 +752,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [],
@@ -742,7 +765,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -762,7 +784,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
@@ -785,6 +806,49 @@ export const TokenAbi = [
   {
     inputs: [],
     name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
+      },
+      {
+        internalType: 'string',
+        name: 'assetUri',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'assetHash',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'metadataUri',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'metadataHash',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'remoteId',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'additionalInformation',
+        type: 'string',
+      },
+    ],
+    name: 'safeMint',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -966,7 +1030,6 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [],
@@ -980,7 +1043,25 @@ export const TokenAbi = [
     ],
     stateMutability: 'view',
     type: 'function',
-    constant: true,
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'tokenURI',
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     inputs: [
@@ -1014,49 +1095,6 @@ export const TokenAbi = [
       },
     ],
     name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'receiver',
-        type: 'address',
-      },
-      {
-        internalType: 'string',
-        name: 'assetUri',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'assetHash',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'metadataUri',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'metadataHash',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'remoteId',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'additionalInformation',
-        type: 'string',
-      },
-    ],
-    name: 'safeMint',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -1098,25 +1136,5 @@ export const TokenAbi = [
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'tokenId',
-        type: 'uint256',
-      },
-    ],
-    name: 'tokenURI',
-    outputs: [
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-    constant: true,
   },
 ];

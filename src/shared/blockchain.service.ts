@@ -39,16 +39,20 @@ export class BlockchainService {
       to: transactionObject._parent._address,
       from: this.web3.eth.accounts.privateKeyToAccount(this.apiConfigService.PRIVATE_KEY).address,
       data: transactionObject.encodeABI(),
-      gas: 6721975, // London fork is implemented in Quorum and Ganache, really?
+      gas: 6721975,
     };
   }
 
-  public async call(transaction): Promise<any> {
+  public async call(transaction: TransactionObject<any>): Promise<any> {
     try {
       return await transaction.call();
     } catch (err) {
       this.handleError(err);
     }
+  }
+
+  public derivePublicAddressFromPrivateKey(): any {
+    return this.web3.eth.accounts.privateKeyToAccount(this.apiConfigService.PRIVATE_KEY).address;
   }
 
   public async fetchTransactionTimestamp(transactionHash: string): Promise<number> {
@@ -65,13 +69,9 @@ export class BlockchainService {
     return block.timestamp;
   }
 
-  public handleError(error: any): Promise<any> {
+  public handleError(error: any) {
     let errorMessage = error.data ? error.data.reason : error.reason;
     errorMessage = errorMessage ? errorMessage : error.message;
     throw new BadRequestException(errorMessage);
-  }
-
-  public derivePublicAddressFromPrivateKey(): any {
-    return this.web3.eth.accounts.privateKeyToAccount(this.apiConfigService.PRIVATE_KEY).address;
   }
 }

@@ -72,10 +72,6 @@ describe('BlockchainService', () => {
   it('should send transaction', async () => {
     expect(await service.sendTransaction(INPUT_TRANSACTION_OBJECT)).toEqual(OUTPUT_TRANSACTION_RESPONSE);
   });
-  /*
-  it('should fetch transaction timestamp', async () => {
-    expect(await service.fetchTransactionTimestamp(undefined)).toEqual(OUTPUT_TRANSACTION_TIMESTAMP);
-  });*/
 
   it('should derive public address from private key', async () => {
     expect(await service.derivePublicAddressFromPrivateKey()).toEqual(OUTPUT_ACCOUNT.address);

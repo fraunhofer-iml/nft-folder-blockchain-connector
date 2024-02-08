@@ -8,15 +8,14 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { SegmentRestController } from './segment.controller';
+import { SegmentController } from './segment.controller';
 import { SegmentService } from './segment.service';
-
 import { SegmentReadDto } from './dto/segment.read.dto';
 import { TokenContractInfoDto } from '../token/dto/token.dto';
 
 describe('SegmentRestController', () => {
-  let controller: SegmentRestController;
-  let fakeService: Partial<SegmentService>;
+  let controller: SegmentController;
+  let mockedService: Partial<SegmentService>;
 
   // test input
   const INPUT_SEGMENT_NAME = 'inputSegmentName';
@@ -33,10 +32,10 @@ describe('SegmentRestController', () => {
   const OUTPUT_REMOVE_TOKEN: any = {};
 
   beforeEach(async () => {
-    fakeService = {
+    mockedService = {
       createSegment: () => Promise.resolve(OUTPUT_CREATE_SEGMENT_RESPONSE),
-      getAllSegments: () => Promise.resolve(OUTPUT_GET_ALL_SEGMENTS),
-      getSegment: () => Promise.resolve(OUTPUT_GET_SEGMENT_RESPONSE),
+      fetchAllSegments: () => Promise.resolve(OUTPUT_GET_ALL_SEGMENTS),
+      fetchSegment: () => Promise.resolve(OUTPUT_GET_SEGMENT_RESPONSE),
       addToken: () => Promise.resolve(OUTPUT_ADD_TOKEN),
       removeToken: () => Promise.resolve(OUTPUT_REMOVE_TOKEN),
     };
@@ -45,13 +44,13 @@ describe('SegmentRestController', () => {
       providers: [
         {
           provide: SegmentService,
-          useValue: fakeService,
+          useValue: mockedService,
         },
       ],
-      controllers: [SegmentRestController],
+      controllers: [SegmentController],
     }).compile();
 
-    controller = module.get<SegmentRestController>(SegmentRestController);
+    controller = module.get<SegmentController>(SegmentController);
   });
 
   it('should create a segment for this container', async () => {

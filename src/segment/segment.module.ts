@@ -8,15 +8,14 @@
 
 import { Module } from '@nestjs/common';
 
-import { SegmentRestController } from './segment.controller';
-
+import { SegmentController } from './segment.controller';
 import { SegmentService } from './segment.service';
 import { ApiConfigService } from '../config/api.config.service';
 import { SharedModule } from '../shared/shared.module';
 
 @Module({
   imports: [SharedModule],
-  controllers: [SegmentRestController],
+  controllers: [SegmentController],
   providers: [SegmentService, ApiConfigService],
 })
 export class SegmentModule {}
