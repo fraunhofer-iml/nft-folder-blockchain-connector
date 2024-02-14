@@ -4,21 +4,33 @@
 # For details on the licensing terms, see the LICENSE file.
 # SPDX-License-Identifier: OLFL-1.3
 
-FROM node:18.16.0-alpine3.18
+################
+# Dependencies #
+################
+FROM node:20-alpine3.19 as dependencies
 
-RUN apk add --no-cache git
+RUN apk add --no-cache libc6-compat
 
-# Workaround for npm permission problem
-# see https://github.com/npm/cli/issues/5114#issuecomment-1196456412
-RUN mkdir /.npm
-RUN chown -R 1000710000:0 "/.npm"
-RUN npm cache clean --force
-RUN npm install -g npm@8.11.0
+WORKDIR /usr/src/app
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install --production --ignore-scripts
 
-WORKDIR /app
-COPY dist /app/dist
-COPY package.json .
-RUN npm install
+##########
+# Runner #
+##########
+FROM node:20-alpine3.19 as runner
+RUN apk add --no-cache dumb-init
+ENV NODE_ENV production
+
+WORKDIR /usr/src/app
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+COPY --from=dependencies /usr/src/app/package.json ./package.json
+COPY dist/ .
+
+RUN chown -R node:node .
+USER node
 
 EXPOSE 3000
-CMD [ "npm", "run", "start:prod" ]
+
+CMD ["dumb-init", "node", "main.js"]

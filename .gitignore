@@ -2,8 +2,8 @@
 .idea
 .vscode
 
-# Created by https://www.toptal.com/developers/gitignore/api/git,linux,node
-# Edit at https://www.toptal.com/developers/gitignore?templates=git,linux,node
+# Created by https://www.toptal.com/developers/gitignore/api/git,node,linux,helm
+# Edit at https://www.toptal.com/developers/gitignore?templates=git,node,linux,helm
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:
@@ -19,6 +19,10 @@
 *_BASE_*.txt
 *_LOCAL_*.txt
 *_REMOTE_*.txt
+
+### Helm ###
+# Chart dependencies
+**/charts/*.tgz
 
 ### Linux ###
 *~
@@ -111,6 +115,7 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
+.env
 .env.development.local
 .env.test.local
 .env.production.local
@@ -174,4 +179,4 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
-# End of https://www.toptal.com/developers/gitignore/api/git,linux,node
+# End of https://www.toptal.com/developers/gitignore/api/git,node,linux,helm

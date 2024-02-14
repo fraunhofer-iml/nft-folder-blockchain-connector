@@ -20,7 +20,8 @@
   "scripts": {
     "prepare": "husky install",
     "build": "nest build",
-    "clean-install": "rm -rf dist node_modules; npm install",
+    "clean": "rm -rf dist node_modules",
+    "clean-install": "npm run clean; npm install",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
