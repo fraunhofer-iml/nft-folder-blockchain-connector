@@ -7,11 +7,11 @@
  */
 
 import {
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
+  registerDecorator,
   ValidationArguments,
   ValidationOptions,
-  registerDecorator,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
 } from 'class-validator';
 import { isAddress } from 'web3-utils';
 

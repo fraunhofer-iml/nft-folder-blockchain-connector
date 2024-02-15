@@ -8,13 +8,14 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, resetMocks } from '@depay/web3-mock';
+import { AbiItem } from 'web3-utils';
+import { TransactionObject } from 'web3/eth/types';
 import Web3 from 'web3';
 
 import { BlockchainService } from './blockchain.service';
 import { ApiConfigService } from '../config/api.config.service';
-import { TransactionObject } from 'web3/eth/types';
+
 import { TokenAbi } from '../token/abi/token.abi';
-import { AbiItem } from 'web3-utils';
 
 describe('BlockchainService', () => {
   let service: BlockchainService;

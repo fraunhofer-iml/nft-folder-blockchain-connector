@@ -10,9 +10,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { TokenRestController } from './token.controller';
 import { TokenService } from './token.service';
-import { SegmentReadDto } from '../segment/dto/segment.read.dto';
-import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from './dto/token.dto';
 import { BlockchainService } from '../shared/blockchain.service';
+
+import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from './dto/token.dto';
+import { SegmentReadDto } from '../segment/dto/segment.read.dto';
 
 // TODO-LG: add tests for error cases
 describe('TokenController', () => {
@@ -94,7 +95,9 @@ describe('TokenController', () => {
   });
 
   it('should not get a token', async () => {
-    expect(await controller.getToken(undefined, undefined)).toBeUndefined();
+    controller
+      .getToken(undefined, undefined)
+      .catch((reason) => expect(reason).toEqual({ message: 'Neither a tokenId nor a remoteId was specified' }));
   });
 
   it('should get all segments for the token', async () => {

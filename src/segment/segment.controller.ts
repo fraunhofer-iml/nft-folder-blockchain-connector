@@ -11,6 +11,7 @@ import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } 
 import TransactionReceipt from 'web3/types';
 
 import { SegmentService } from './segment.service';
+
 import { TokenContractInfoDto } from '../token/dto/token.dto';
 import { SegmentCreateDto } from './dto/segment.create.dto';
 import { SegmentReadDto } from './dto/segment.read.dto';

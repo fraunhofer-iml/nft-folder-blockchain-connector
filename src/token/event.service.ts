@@ -10,6 +10,7 @@ import { Injectable } from '@nestjs/common';
 
 import { ApiConfigService } from '../config/api.config.service';
 import { BlockchainService } from '../shared/blockchain.service';
+
 import { TokenAbi } from './abi/token.abi';
 
 interface EventInformation {
@@ -31,7 +32,7 @@ export class EventService {
     private readonly apiConfigService: ApiConfigService,
     private readonly blockchainService: BlockchainService,
   ) {
-    this.tokenContract = new this.blockchainService.web3.eth.Contract(TokenAbi, apiConfigService.TOKEN_ADDRESS);
+    this.tokenContract = new this.blockchainService.web3.eth.Contract(TokenAbi, this.apiConfigService.TOKEN_ADDRESS);
   }
 
   public async fetchTokenInformation(tokenId: number): Promise<TokenInformation> {

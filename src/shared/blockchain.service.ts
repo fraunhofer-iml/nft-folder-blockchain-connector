@@ -15,7 +15,10 @@ import { ApiConfigService } from '../config/api.config.service';
 
 @Injectable()
 export class BlockchainService {
-  constructor(@Inject('Web3Service') public readonly web3: any, private readonly apiConfigService: ApiConfigService) {
+  constructor(
+    @Inject('Web3Service') public readonly web3: any,
+    private readonly apiConfigService: ApiConfigService,
+  ) {
     this.web3.eth.handleRevert = true;
   }
 
@@ -29,6 +32,7 @@ export class BlockchainService {
       return await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction);
     } catch (err) {
       this.handleError(err);
+      return Promise.reject(err);
     }
   }
 

@@ -12,6 +12,7 @@ import Contract from 'web3/eth/contract';
 
 import { ApiConfigService } from '../config/api.config.service';
 import { BlockchainService } from '../shared/blockchain.service';
+
 import { SegmentReadDto } from './dto/segment.read.dto';
 import { TokenContractInfoDto } from '../token/dto/token.dto';
 import { SegmentAbi } from './abi/segment.abi';

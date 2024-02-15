@@ -1,22 +1,22 @@
-├─ MIT: 824
-├─ ISC: 89
+├─ MIT: 842
+├─ ISC: 95
 ├─ LGPL-3.0: 42
-├─ Apache-2.0: 27
+├─ Apache-2.0: 26
 ├─ BSD-3-Clause: 26
 ├─ BSD-2-Clause: 18
 ├─ MPL-2.0: 15
 ├─ Unlicense: 5
 ├─ UNKNOWN: 3
 ├─ (MIT OR Apache-2.0): 2
-├─ 0BSD: 2
+├─ BlueOak-1.0.0: 2
 ├─ (MIT OR CC0-1.0): 2
 ├─ Python-2.0: 1
 ├─ UNLICENSED: 1
 ├─ CC-BY-4.0: 1
 ├─ (AFL-2.1 OR BSD-3-Clause): 1
 ├─ Public Domain: 1
-├─ BlueOak-1.0.0: 1
 ├─ (MIT AND BSD-3-Clause): 1
 ├─ CC-BY-3.0: 1
 ├─ CC0-1.0: 1
-└─ (MIT AND CC-BY-3.0): 1
+├─ (MIT AND CC-BY-3.0): 1
+└─ 0BSD: 1

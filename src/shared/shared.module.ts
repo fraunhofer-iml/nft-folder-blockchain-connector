@@ -7,9 +7,10 @@
  */
 
 import { Module } from '@nestjs/common';
+
 import { BlockchainService } from './blockchain.service';
-import { ApiConfigService } from '../config/api.config.service';
 import { Web3Service } from './web3.service';
+import { ApiConfigService } from '../config/api.config.service';
 
 @Module({
   providers: [BlockchainService, Web3Service, ApiConfigService],

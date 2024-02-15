@@ -12,10 +12,11 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 
 import { BlockchainService } from '../shared/blockchain.service';
+import { EventService } from './event.service';
 import { ApiConfigService } from '../config/api.config.service';
+
 import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto } from './dto/token.dto';
 import { TokenAbi } from './abi/token.abi';
-import { EventService } from './event.service';
 
 describe('EventService', () => {
   let service: EventService;

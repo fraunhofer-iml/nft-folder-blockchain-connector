@@ -9,7 +9,6 @@
 import { Module } from '@nestjs/common';
 
 import { TokenRestController } from './token.controller';
-
 import { TokenService } from './token.service';
 import { EventService } from './event.service';
 import { SegmentService } from '../segment/segment.service';

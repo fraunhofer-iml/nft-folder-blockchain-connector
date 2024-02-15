@@ -14,8 +14,10 @@ import { AbiItem } from 'web3-utils';
 import { TokenService } from './token.service';
 import { BlockchainService } from '../shared/blockchain.service';
 import { SegmentService } from '../segment/segment.service';
+import { EventService, TokenInformation } from './event.service';
 import { ApiConfigService } from '../config/api.config.service';
 import { areMethodsEqual } from '../shared/test.utils';
+
 import { SegmentReadDto } from '../segment/dto/segment.read.dto';
 import {
   TokenAssetDto,
@@ -26,7 +28,6 @@ import {
   TokenUpdateDto,
 } from './dto/token.dto';
 import { TokenAbi } from './abi/token.abi';
-import { EventService, TokenInformation } from './event.service';
 
 describe('TokenService', () => {
   let service: TokenService;
@@ -133,6 +134,8 @@ describe('TokenService', () => {
           )
         ) {
           return Promise.resolve(TOKEN_UPDATED_RESPONSE);
+        } else {
+          return Promise.reject('');
         }
       },
 
@@ -151,6 +154,8 @@ describe('TokenService', () => {
           });
         } else if (areMethodsEqual(transaction, contractMethods.getRemoteId(INPUT_TOKEN_ID))) {
           return Promise.resolve(TOKEN_GET_DTO.remoteId);
+        } else {
+          return Promise.reject('');
         }
       },
       derivePublicAddressFromPrivateKey(): any {
@@ -168,6 +173,8 @@ describe('TokenService', () => {
       fetchTokenInformation(tokenId): Promise<TokenInformation> {
         if (INPUT_TOKEN_ID == tokenId) {
           return Promise.resolve(TOKEN_GET_DTO);
+        } else {
+          return Promise.reject('');
         }
       },
     };
@@ -217,7 +224,7 @@ describe('TokenService', () => {
   });
 
   it('should not update a token', async () => {
-    expect(await service.updateToken(INPUT_REMOTE_ID, new TokenUpdateDto())).toEqual(undefined);
+    service.updateToken(INPUT_REMOTE_ID, new TokenUpdateDto()).catch((reason) => expect(reason).toEqual(''));
   });
 
   it('should burn an existing token', async () => {

@@ -6,7 +6,7 @@
  * SPDX-License-Identifier: OLFL-1.3
  */
 
-export function areMethodsEqual(transactionA, transactionB) {
+export function areMethodsEqual(transactionA: any, transactionB: any) {
   return (
     transactionA._method.name == transactionB._method.name &&
     transactionA.arguments.toString() == transactionB.arguments.toString()

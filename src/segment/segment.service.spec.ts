@@ -76,6 +76,8 @@ describe('SegmentService', () => {
           areMethodsEqual(transaction, segmentContractMethods.removeToken(INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID))
         ) {
           return Promise.resolve(OUTPUT_REMOVE_TOKEN);
+        } else {
+          return Promise.reject('');
         }
       },
       call: (transaction: any): Promise<any> => {
@@ -90,6 +92,8 @@ describe('SegmentService', () => {
             [TOKEN_CONTRACT_INFO.tokenAddress, TOKEN_CONTRACT_INFO.tokenId],
             [TOKEN_CONTRACT_INFO_2.tokenAddress, TOKEN_CONTRACT_INFO_2.tokenId],
           ]);
+        } else {
+          return Promise.reject('');
         }
       },
     };

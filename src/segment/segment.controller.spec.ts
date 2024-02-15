@@ -10,6 +10,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { SegmentController } from './segment.controller';
 import { SegmentService } from './segment.service';
+
 import { SegmentReadDto } from './dto/segment.read.dto';
 import { TokenContractInfoDto } from '../token/dto/token.dto';
 

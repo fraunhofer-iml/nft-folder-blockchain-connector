@@ -18,7 +18,10 @@ import { SegmentReadDto } from '../segment/dto/segment.read.dto';
 @Controller('tokens')
 @ApiTags('Tokens')
 export class TokenRestController {
-  constructor(private readonly tokenService: TokenService, private readonly blockchainService: BlockchainService) {}
+  constructor(
+    private readonly tokenService: TokenService,
+    private readonly blockchainService: BlockchainService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Creates a new token' })
@@ -58,7 +61,9 @@ export class TokenRestController {
     } else if (remoteId) {
       return this.tokenService.getTokenByRemoteId(remoteId);
     } else {
-      this.blockchainService.handleError({ message: 'Neither a tokenId nor a remoteId was specified' });
+      const errorMessage = { message: 'Neither a tokenId nor a remoteId was specified' };
+      this.blockchainService.handleError(errorMessage);
+      return Promise.reject(errorMessage);
     }
   }
 

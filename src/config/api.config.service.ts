@@ -8,6 +8,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
 import { ConfigObject } from './entity/config.object';
 
 @Injectable()
