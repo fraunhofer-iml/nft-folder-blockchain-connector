@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/description: "This namespace provides the Blockchain Connector of the project NFT Folder."
+    openshift.io/display-name: "Blockchain Connector"
+  labels:
+    app: blockchain-connector
+  name: blockchain-connector

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "app.fullname" . }}
+data:
+  BLOCKCHAIN_URL: "{{ .Values.configMap.blockchainUrl }}"
+  CONTAINER_ADDRESS: "{{ .Values.configMap.containerAddress }}"
+  TOKEN_ADDRESS: "{{ .Values.configMap.tokenAddress }}"

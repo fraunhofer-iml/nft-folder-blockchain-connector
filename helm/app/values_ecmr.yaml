@@ -1,0 +1,7 @@
+fullnameOverride: "ecmr"
+
+configMap:
+  containerAddress: "0x99738579FDFc0e100cD68ed6ABF87929613589A4"
+
+route:
+  host: "ecmr-nft-folder.apps.blockchain-europe.iml.fraunhofer.de"

@@ -1,0 +1,7 @@
+fullnameOverride: "sfbdc"
+
+configMap:
+  containerAddress: "0xE67C1e1CDCA3F06a3C8A74cEbC841B11E7cbB409"
+
+route:
+  host: "sfbdc-nft-folder.apps.blockchain-europe.iml.fraunhofer.de"

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ include "app.fullname" . }}
+  name: {{ include "app.fullname" . }}
+  namespace: {{ .Values.namespaceName }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "app.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "app.fullname" . }}
+    spec:
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: {{ include "app.fullname" . }}
+            - secretRef:
+                name: {{ include "app.fullname" . }}
+          image: "{{ .Values.image.registry }}/{{ .Values.image.projectName }}/{{ .Values.namespaceName }}:{{ .Values.image.tag}}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          name: {{ include "app.fullname" . }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+              name: {{ .Values.service.portName }}
+              protocol: {{ .Values.service.protocol }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
