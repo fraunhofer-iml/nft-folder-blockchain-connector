@@ -1,5 +1,5 @@
-├─ MIT: 842
-├─ ISC: 95
+├─ MIT: 841
+├─ ISC: 94
 ├─ LGPL-3.0: 42
 ├─ Apache-2.0: 26
 ├─ BSD-3-Clause: 26

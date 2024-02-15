@@ -8,7 +8,7 @@ stages:
   - build
   - analyze
   - test
-  # - license
+  - license
   - archive
   - deploy
 
@@ -28,13 +28,8 @@ default:
         - package-lock.json
     paths:
       - .npm
-    policy: pull
-  image: node:18.16.0-alpine3.18
+  image: node:20-alpine3.19
   timeout: 20 minutes
-
-.pull-push-cache:
-  cache:
-    policy: pull-push
 
 #############
 ### build ###
@@ -42,7 +37,6 @@ default:
 
 install-dependencies:
   stage: build
-  extends: .pull-push-cache
   script:
     - $NPM_CI
   rules:
@@ -99,14 +93,12 @@ run-unit-tests:
 ### license ###
 ###############
 
-# TODO-MP: check EXCLUDED_PACKAGES && EXCLUDED_LICENSES
-# TODO-MP: --exclude "LGPL-3.0" results in an exception :-(
-.create-npm-licenses-list:
+create-npm-licenses-list:
   stage: license
   variables:
     LICENSES_LIST: "npm-licenses-list.csv"
     LICENSES_OVERRIDES: "third-party-licenses/npm-licenses-overrides.txt"
-    EXCLUDED_PACKAGES: "argparse@2.0.1;jsonify@0.0.1;oboe@2.1.5;path-scurry@1.6.3;precond@0.2.3;semaphore@1.1.0"
+    EXCLUDED_PACKAGES: ""
   before_script:
     - $NPM_CI
     - >
@@ -119,9 +111,8 @@ run-unit-tests:
       --production
       --unknown
       --csv
-      --excludePrivatePackages
       --excludePackages "${EXCLUDED_PACKAGES}"
-      --exclude "LGPL-3.0"
+      --excludePrivatePackages
       --onlyAllow "${NPM_LICENSE_CHECKER_WHITELIST}"
       --out "${LICENSES_LIST}"
     - >
@@ -137,10 +128,9 @@ run-unit-tests:
       - $LICENSES_LIST
   rules:
     - if: $CI_MERGE_REQUEST_IID
-    - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-.publish-all-licenses-list:
+publish-all-licenses-list:
   stage: license
   needs:
     - "create-npm-licenses-list"
@@ -159,7 +149,7 @@ run-unit-tests:
     paths:
       - public
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: $CI_MERGE_REQUEST_IID
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 ###############
@@ -190,19 +180,15 @@ deploy-ecmr-to-okd:
   image: $OPENSHIFT_IMAGE
   script:
     - oc login --server="$BE_OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN" --insecure-skip-tls-verify
-    - cd helm/ecmr
-    - sh ./okd_deploy.sh
+    - sh ./helm/okd_deploy.sh -r ecmr
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: manual
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d-ecmr+$/'
 
 deploy-sfbdc-to-okd:
   stage: deploy
   image: $OPENSHIFT_IMAGE
   script:
     - oc login --server="$BE_OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN" --insecure-skip-tls-verify
-    - cd helm/sfbdc
-    - sh ./okd_deploy.sh
+    - sh ./helm/okd_deploy.sh -r sfbdc
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: manual
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d-sfbdc+$/'
