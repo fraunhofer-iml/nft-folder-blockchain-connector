@@ -6,8 +6,8 @@
 
 stages:
   - build
-  - analyze
   - test
+  - analyze
   - license
   - archive
   - deploy
@@ -42,6 +42,23 @@ install-dependencies:
   rules:
     - when: always
 
+############
+### test ###
+############
+
+run-unit-tests:
+  stage: test
+  before_script:
+    - $NPM_CI
+  script:
+    - npm run test:cov
+  artifacts:
+    paths:
+      - coverage/
+    expire_in: 2 hours
+  rules:
+    - when: on_success
+
 ###############
 ### analyze ###
 ###############
@@ -73,19 +90,6 @@ run-sonar-scanner:
       -Dproject.settings=sonar.properties
       -Dsonar.host.url="${SONAR_HOST_URL}"
       -Dsonar.login="${SONAR_TOKEN}"
-  rules:
-    - when: on_success
-
-############
-### test ###
-############
-
-run-unit-tests:
-  stage: test
-  before_script:
-    - $NPM_CI
-  script:
-    - npm run test
   rules:
     - when: on_success
 
@@ -126,28 +130,6 @@ create-npm-licenses-list:
     expire_in: 1 hour
     paths:
       - $LICENSES_LIST
-  rules:
-    - if: $CI_MERGE_REQUEST_IID
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
-publish-all-licenses-list:
-  stage: license
-  needs:
-    - "create-npm-licenses-list"
-  before_script:
-    - mkdir -p public
-  script:
-    - >
-      for file in *licenses-list.csv; do
-        mv "$file" public/
-        echo -e "\n\nGenerated on branch ${CI_COMMIT_BRANCH} for commit ${CI_COMMIT_SHA} @ ${CI_COMMIT_TIMESTAMP}" >> public/"$file"
-      done
-    - echo "Publishing the lists of dependencies and their licenses on GitLab Pages ..."
-  artifacts:
-    name: "all-licenses-list"
-    expose_as: 'All Licenses List'
-    paths:
-      - public
   rules:
     - if: $CI_MERGE_REQUEST_IID
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

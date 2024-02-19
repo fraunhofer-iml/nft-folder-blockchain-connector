@@ -99,6 +99,17 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      ".*\\.module\\.ts$",
+      ".*\\.abi\\.ts$",
+      "/main\\.ts$",
+      "/entity/config.object\\.ts$",
+      "/api.config.service\\.ts$",
+      "/web3.service\\.ts$",
+      "/blockchain.service\\.ts$",
+      "/event.service\\.ts$"
+    ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }
