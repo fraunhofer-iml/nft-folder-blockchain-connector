@@ -55,7 +55,7 @@ run-unit-tests:
   artifacts:
     paths:
       - coverage/
-    expire_in: 2 hours
+    expire_in: 1 hour
   rules:
     - when: on_success
 
@@ -112,11 +112,9 @@ create-npm-licenses-list:
   script:
     - >
       npx license-checker
-      --production
       --unknown
       --csv
       --excludePackages "${EXCLUDED_PACKAGES}"
-      --excludePrivatePackages
       --onlyAllow "${NPM_LICENSE_CHECKER_WHITELIST}"
       --out "${LICENSES_LIST}"
     - >
