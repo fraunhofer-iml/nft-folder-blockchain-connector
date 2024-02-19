@@ -24,6 +24,41 @@ export const TokenAbi = [
     type: 'constructor',
   },
   {
+    inputs: [],
+    name: 'NotASegment',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'RemoteIdAlreadyExist',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'RemoteIdDoesNotExist',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'TokenAlreadyInSegment',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'TokenDoesNotExistInSegment',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'TokenIdDoesNotExist',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'WrongSegmentIndex',
+    type: 'error',
+  },
+  {
     anonymous: false,
     inputs: [
       {
