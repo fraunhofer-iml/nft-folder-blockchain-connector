@@ -1,73 +1,47 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+<div id="top"></div>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# NFT Folder - Blockchain Connector
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+[[_TOC_]]
 
-## Description
+## 📄 Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+The **NFT Folder** project enables the tokenization, structuring and secure storage of assets as Non-Fungible Tokens
+(NFTs) on the blockchain. With tamper-proof and traceable documentation of changes, NFT Folder ensures the integrity and
+authenticity of digital assets, making it a valuable tool for various industries.
 
-## Installation
+The **NFT Folder** project comprises a suite of essential components, including the blockchain connector and three smart
+contracts, each fulfilling a unique role in the tokenization and management of assets:
 
-```bash
-$ npm install
-```
+- The **Blockchain Connector**, implemented with NestJS, serves as the bridge between an application and the smart
+  contracts. It facilitates seamless communication and interaction with the blockchain, enabling secure and efficient
+  operations for managing NFTs.
+- The **Container** smart contract provides the foundational structure for organizing and managing collections of NFTs
+  within the "NFT Folder" ecosystem. Each organization is assigned a single container, which serves as the root entity
+  for their assets.
+- The **Segment** smart contract complements the container contract by enabling the subdivision of assets into logical
+  segments. Organizations can create an arbitrary number of segments within their container, allowing for finer-grained
+  control and organization of their NFTs.
+- The **Token** smart contract, written in Solidity and based on the ERC-721 standard, serves as the backbone of the
+  **NFT Folder**. It enables the minting and burning of unique NFTs within segments, providing interoperability with
+  other ERC721-compliant platforms and services.
 
-## Running the app
+<div style="text-align: right">(<a href="#top">back to top</a>)</div>
 
-```bash
-# development
-$ npm run start
+## 📖 Documentation
 
-# watch mode
-$ npm run start:dev
+For comprehensive documentation, please visit our
+dedicated [repository](https://gitlab.cc-asp.fraunhofer.de/silicon-economy/base/blockchainbroker/ethereum/projects/nft-folder/documentation).
+Here, you'll find detailed information, guides, and resources to help you understand and utilize the **NFT Folder**
+project effectively.
 
-# production mode
-$ npm run start:prod
-```
+<div style="text-align: right">(<a href="#top">back to top</a>)</div>
 
-## Test
+## 🚀 Running the NFT Folder locally
 
-```bash
-# unit tests
-$ npm run test
+To set up and run the NFT Folder locally, please consult
+the [Tutorial section](https://gitlab.cc-asp.fraunhofer.de/silicon-economy/base/blockchainbroker/ethereum/projects/nft-folder/documentation/-/blob/main/chapter12.adoc)
+in our documentation. This section provides step-by-step instructions to guide you through the process of installing and
+configuring the NFT Folder environment on your local machine.
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+<div style="text-align: right">(<a href="#top">back to top</a>)</div>
