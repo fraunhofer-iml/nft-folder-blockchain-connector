@@ -1,7 +1,7 @@
 {
-  "name": "blockchain-connector",
+  "name": "@nft-folder/blockchain-connector",
   "version": "1.0.0",
-  "description": "Blockchain Connector",
+  "description": "Blockchain Connector of the NFT Folder project",
   "author": {
     "name": "Fraunhofer Institute for Material Flow and Logistics",
     "url": "https://www.iml.fraunhofer.de/en.html",
@@ -19,7 +19,7 @@
   "scripts": {
     "prepare": "husky install",
     "build": "nest build",
-    "clean": "rm -rf dist node_modules",
+    "clean": "rm -rf coverage/ dist/ node_modules/",
     "clean-install": "npm run clean; npm install",
     "start": "nest start",
     "start:dev": "nest start --watch",
