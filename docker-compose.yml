@@ -10,24 +10,11 @@ services:
     build:
       context: ./
     image: nft-folder/blockchain-connector
-    container_name: blockchain-connector-local
+    container_name: blockchain-connector
     network_mode: host
     restart: always
     environment:
-      BLOCKCHAIN_URL: ${LOCAL_BLOCKCHAIN_URL}
-      PRIVATE_KEY: ${LOCAL_PRIVATE_KEY}
-      CONTAINER_ADDRESS: ${LOCAL_CONTAINER_ADDRESS}
-      TOKEN_ADDRESS: ${LOCAL_TOKEN_ADDRESS}
-  dev:
-    build:
-      context: ./
-    image: nft-folder/blockchain-connector
-    container_name: blockchain-connector-dev
-    ports:
-      - '3002:3000'
-    restart: always
-    environment:
-      BLOCKCHAIN_URL: ${DEV_BLOCKCHAIN_URL}
-      PRIVATE_KEY: ${DEV_PRIVATE_KEY}
-      CONTAINER_ADDRESS: ${DEV_CONTAINER_ADDRESS}
-      TOKEN_ADDRESS: ${DEV_TOKEN_ADDRESS}
+      BLOCKCHAIN_URL: ${BLOCKCHAIN_URL}
+      PRIVATE_KEY: ${PRIVATE_KEY}
+      CONTAINER_ADDRESS: ${CONTAINER_ADDRESS}
+      TOKEN_ADDRESS: ${TOKEN_ADDRESS}
