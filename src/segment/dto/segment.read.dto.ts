@@ -7,7 +7,7 @@
  */
 
 import { ApiProperty } from '@nestjs/swagger';
-import { TokenContractInfoDto } from '../../token/dto/token.dto';
+import { TokenInformationDto } from '../../token/dto/token.dto';
 
 export class SegmentReadDto {
   @ApiProperty()
@@ -17,11 +17,11 @@ export class SegmentReadDto {
   segmentName: string;
 
   @ApiProperty()
-  tokenContractInfos: TokenContractInfoDto[];
+  tokenInformation: TokenInformationDto[];
 
-  constructor(segmentAddress: string, segmentName: string, tokenContractInfos: TokenContractInfoDto[]) {
+  constructor(segmentAddress: string, segmentName: string, tokenInformation: TokenInformationDto[]) {
     this.segmentAddress = segmentAddress;
     this.segmentName = segmentName;
-    this.tokenContractInfos = tokenContractInfos;
+    this.tokenInformation = tokenInformation;
   }
 }

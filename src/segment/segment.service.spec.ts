@@ -7,26 +7,16 @@
  */
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { mock, resetMocks } from '@depay/web3-mock';
-import { AbiItem } from 'web3-utils';
-import { TransactionObject } from 'web3/eth/types';
-import TransactionReceipt from 'web3/types';
-import Web3 from 'web3';
+import { ethers } from 'ethers';
 
 import { SegmentService } from './segment.service';
 import { ApiConfigService } from '../config/api.config.service';
 import { BlockchainService } from '../shared/blockchain.service';
-import { areMethodsEqual } from '../shared/test.utils';
-
 import { SegmentReadDto } from './dto/segment.read.dto';
-import { SegmentAbi } from './abi/segment.abi';
-import { ContainerAbi } from './abi/container.abi';
-import { TokenContractInfoDto } from '../token/dto/token.dto';
+import { TokenInformationDto } from '../token/dto/token.dto';
 
 describe('SegmentService', () => {
   let service: SegmentService;
-  let mockedBlockchainService: Partial<BlockchainService>;
-  let mockedApiConfigService: Partial<ApiConfigService>;
 
   // test input
   const INPUT_SEGMENT_NAME = 'inputSegmentName';
@@ -37,87 +27,72 @@ describe('SegmentService', () => {
   const INPUT_SEGMENT_INDEX = 1;
 
   // test output
-  const OUTPUT_CREATE_SEGMENT: any = {};
+  const OUTPUT_SEGMENT: any = {};
   const OUTPUT_ADD_TOKEN: any = {};
   const OUTPUT_REMOVE_TOKEN: any = {};
 
-  // web3 mock
-  const PROVIDER = new Web3.providers.HttpProvider(global.ethereum);
-  const WEB3 = new Web3(PROVIDER);
+  // ethers mock
   const CONTAINER_ADDRESS = '0x1f7b7F7F6A0a32496eE805b6532f686E40568D83';
   const SEGMENT_ADDRESS = '0x1f7b7F7F6A0a32496eE805b6532f686E40568D83';
 
-  const TOKEN_CONTRACT_INFO = new TokenContractInfoDto(INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID.toString());
-  const TOKEN_CONTRACT_INFO_2 = new TokenContractInfoDto(INPUT_TOKEN_ADDRESS_2, INPUT_TOKEN_ID_2.toString());
+  const TOKEN_CONTRACT_INFO_1 = new TokenInformationDto(INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID.toString());
+  const TOKEN_CONTRACT_INFO_2 = new TokenInformationDto(INPUT_TOKEN_ADDRESS_2, INPUT_TOKEN_ID_2.toString());
 
   const SINGLE_SEGMENT = new SegmentReadDto(SEGMENT_ADDRESS, INPUT_SEGMENT_NAME, [
-    TOKEN_CONTRACT_INFO,
+    TOKEN_CONTRACT_INFO_1,
     TOKEN_CONTRACT_INFO_2,
   ]);
 
   beforeEach(async () => {
-    resetMocks();
-    mock({ blockchain: 'ethereum', accounts: { return: ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'] } });
-
-    const containerContract = new WEB3.eth.Contract(ContainerAbi as AbiItem[], CONTAINER_ADDRESS);
-    const containerContractMethods = containerContract.methods;
-
-    const segmentContract = new WEB3.eth.Contract(SegmentAbi as AbiItem[], SEGMENT_ADDRESS);
-    const segmentContractMethods = segmentContract.methods;
-
-    mockedBlockchainService = {
-      web3: WEB3,
-      sendTransaction: (transaction: TransactionObject<any>): Promise<TransactionReceipt> => {
-        if (areMethodsEqual(transaction, containerContractMethods.createSegment(INPUT_SEGMENT_NAME))) {
-          return Promise.resolve(OUTPUT_CREATE_SEGMENT);
-        } else if (areMethodsEqual(transaction, segmentContractMethods.addToken(INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID))) {
-          return Promise.resolve(OUTPUT_ADD_TOKEN);
-        } else if (
-          areMethodsEqual(transaction, segmentContractMethods.removeToken(INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID))
-        ) {
-          return Promise.resolve(OUTPUT_REMOVE_TOKEN);
-        } else {
-          return Promise.reject('');
-        }
-      },
-      call: (transaction: any): Promise<any> => {
-        if (areMethodsEqual(transaction, containerContractMethods.getAllSegments())) {
-          return Promise.resolve([SEGMENT_ADDRESS]);
-        } else if (areMethodsEqual(transaction, containerContractMethods.getSegment(INPUT_SEGMENT_INDEX))) {
-          return Promise.resolve(SINGLE_SEGMENT.segmentAddress);
-        } else if (areMethodsEqual(transaction, segmentContractMethods.getName())) {
-          return Promise.resolve(INPUT_SEGMENT_NAME);
-        } else if (areMethodsEqual(transaction, segmentContractMethods.getAllTokenInformation())) {
-          return Promise.resolve([
-            [TOKEN_CONTRACT_INFO.tokenAddress, TOKEN_CONTRACT_INFO.tokenId],
-            [TOKEN_CONTRACT_INFO_2.tokenAddress, TOKEN_CONTRACT_INFO_2.tokenId],
-          ]);
-        } else {
-          return Promise.reject('');
-        }
-      },
-    };
-
-    mockedApiConfigService = { CONTAINER_ADDRESS: CONTAINER_ADDRESS };
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
           provide: BlockchainService,
-          useValue: mockedBlockchainService,
+          useValue: {
+            provider: ethers.getDefaultProvider(),
+            getContract() {
+              return {
+                createSegment: jest.fn().mockImplementation(() => {
+                  return Promise.resolve(OUTPUT_SEGMENT);
+                }),
+                getAllSegments: jest.fn().mockImplementation(() => {
+                  return Promise.resolve([SEGMENT_ADDRESS]);
+                }),
+                getSegment: jest.fn().mockImplementation(() => {
+                  return Promise.resolve(SINGLE_SEGMENT.segmentAddress);
+                }),
+                getAllTokenInformation: jest.fn().mockImplementation(() => {
+                  return Promise.resolve([
+                    [TOKEN_CONTRACT_INFO_1.tokenAddress, TOKEN_CONTRACT_INFO_1.tokenId],
+                    [TOKEN_CONTRACT_INFO_2.tokenAddress, TOKEN_CONTRACT_INFO_2.tokenId],
+                  ]);
+                }),
+                getName: jest.fn().mockImplementation(() => {
+                  return INPUT_SEGMENT_NAME;
+                }),
+                addToken: jest.fn().mockImplementation(() => {
+                  return Promise.resolve(OUTPUT_ADD_TOKEN);
+                }),
+                removeToken: jest.fn().mockImplementation(() => {
+                  return Promise.resolve(OUTPUT_REMOVE_TOKEN);
+                }),
+              };
+            },
+          },
         },
         {
           provide: ApiConfigService,
-          useValue: mockedApiConfigService,
+          useValue: { CONTAINER_ADDRESS: CONTAINER_ADDRESS },
         },
         SegmentService,
       ],
     }).compile();
+
     service = module.get<SegmentService>(SegmentService);
   });
 
   it('should create a segment', async () => {
-    expect(await service.createSegment(INPUT_SEGMENT_NAME)).toEqual(OUTPUT_CREATE_SEGMENT);
+    expect(await service.createSegment(INPUT_SEGMENT_NAME)).toEqual(OUTPUT_SEGMENT);
   });
 
   it('should get all segments', async () => {

@@ -7,10 +7,10 @@
  */
 
 import { Injectable } from '@nestjs/common';
+import { Contract, EventLog } from 'ethers';
 
 import { ApiConfigService } from '../config/api.config.service';
 import { BlockchainService } from '../shared/blockchain.service';
-
 import { TokenAbi } from './abi/token.abi';
 
 interface EventInformation {
@@ -26,13 +26,13 @@ export interface TokenInformation {
 
 @Injectable()
 export class EventService {
-  private tokenContract: any;
+  private tokenContract: Contract;
 
   constructor(
     private readonly apiConfigService: ApiConfigService,
     private readonly blockchainService: BlockchainService,
   ) {
-    this.tokenContract = new this.blockchainService.web3.eth.Contract(TokenAbi, this.apiConfigService.TOKEN_ADDRESS);
+    this.tokenContract = this.blockchainService.getContract(this.apiConfigService.TOKEN_ADDRESS, TokenAbi);
   }
 
   public async fetchTokenInformation(tokenId: number): Promise<TokenInformation> {
@@ -44,27 +44,16 @@ export class EventService {
 
   private async fetchMinterAddress(tokenId: number): Promise<string> {
     const events = await this.getAllPastEvents('Transfer', tokenId);
-    return events.length === 0 ? null : events[0].returnValues.to;
-  }
-
-  private async getAllPastEvents(event: string, tokenId: number): Promise<any> {
-    return await this.tokenContract.getPastEvents(event, {
-      filter: { tokenId },
-      fromBlock: 'genesis',
-      toBlock: 'latest',
-    });
+    return events.length === 0 ? null : events[0].args.to;
   }
 
   private async fetchCreatedOn(tokenId: number): Promise<string> {
-    const transactionHash: string = await this.fetchTransactionHashFromFirstTransferEvent(tokenId);
+    const events = await this.getAllPastEvents('Transfer', tokenId);
+    const transactionHash: string = events.length === 0 ? '' : events[0].transactionHash;
+
     const timestamp: number = await this.blockchainService.fetchTransactionTimestamp(transactionHash);
     const timestampInSeconds: Date = new Date(timestamp * 1000);
     return timestampInSeconds.toISOString();
-  }
-
-  private async fetchTransactionHashFromFirstTransferEvent(tokenId: number): Promise<string> {
-    const events = await this.getAllPastEvents('Transfer', tokenId);
-    return events.length === 0 ? '' : events[0].transactionHash;
   }
 
   private async fetchLastUpdatedOn(tokenId: number): Promise<string> {
@@ -84,6 +73,36 @@ export class EventService {
     );
     const timestampInSeconds: Date = new Date(timestamp * 1000);
     return timestampInSeconds.toISOString();
+  }
+
+  private async getAllPastEvents(event: string, tokenId: number): Promise<Array<EventLog>> {
+    let filter: any;
+
+    if (event === 'Transfer') {
+      filter = this.tokenContract.filters.Transfer(null, null, tokenId);
+    }
+
+    if (event === 'AssetUriSet') {
+      filter = this.tokenContract.filters.AssetUriSet(null, null, null, null, tokenId);
+    }
+
+    if (event === 'AssetHashSet') {
+      filter = this.tokenContract.filters.AssetHashSet(null, null, null, null, tokenId);
+    }
+
+    if (event === 'MetadataUriSet') {
+      filter = this.tokenContract.filters.MetadataUriSet(null, null, null, null, tokenId);
+    }
+
+    if (event === 'MetadataHashSet') {
+      filter = this.tokenContract.filters.MetadataHashSet(null, null, null, null, tokenId);
+    }
+
+    if (event === 'AdditionalInformationSet') {
+      filter = this.tokenContract.filters.AdditionalInformationSet(null, null, null, null, tokenId);
+    }
+
+    return (await this.tokenContract.queryFilter(filter)) as EventLog[];
   }
 
   private async fetchEventInformationFromLastEvent(tokenId: number, event: string): Promise<EventInformation> {

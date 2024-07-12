@@ -12,7 +12,7 @@ import TransactionReceipt from 'web3/types';
 
 import { SegmentService } from './segment.service';
 
-import { TokenContractInfoDto } from '../token/dto/token.dto';
+import { TokenInformationDto } from '../token/dto/token.dto';
 import { SegmentCreateDto } from './dto/segment.create.dto';
 import { SegmentReadDto } from './dto/segment.read.dto';
 
@@ -72,8 +72,8 @@ export class SegmentController {
       'The specified index has not the correct format, there is no Segment at the specified index, the token does not exist or the token has already been added to the segment.',
   })
   @ApiParam({ name: 'index', type: String })
-  @ApiBody({ type: TokenContractInfoDto, description: 'Contains the address and id of the token' })
-  public addToken(@Param('index') index: number, @Body() dto: TokenContractInfoDto): Promise<TransactionReceipt> {
+  @ApiBody({ type: TokenInformationDto, description: 'Contains the address and id of the token' })
+  public addToken(@Param('index') index: number, @Body() dto: TokenInformationDto): Promise<TransactionReceipt> {
     return this.service.addToken(index, dto.tokenAddress, Number(dto.tokenId));
   }
 
@@ -89,8 +89,8 @@ export class SegmentController {
       'The specified index has not the correct format, there is no Segment at the specified index, the token does not exist or the token is not part of the segment.',
   })
   @ApiParam({ name: 'index', type: String })
-  @ApiBody({ type: TokenContractInfoDto, description: 'Contains the address and id of the token' })
-  public removeToken(@Param('index') index: number, @Body() dto: TokenContractInfoDto): Promise<TransactionReceipt> {
+  @ApiBody({ type: TokenInformationDto, description: 'Contains the address and id of the token' })
+  public removeToken(@Param('index') index: number, @Body() dto: TokenInformationDto): Promise<TransactionReceipt> {
     return this.service.removeToken(index, dto.tokenAddress, Number(dto.tokenId));
   }
 }

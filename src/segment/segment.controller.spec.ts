@@ -12,7 +12,7 @@ import { SegmentController } from './segment.controller';
 import { SegmentService } from './segment.service';
 
 import { SegmentReadDto } from './dto/segment.read.dto';
-import { TokenContractInfoDto } from '../token/dto/token.dto';
+import { TokenInformationDto } from '../token/dto/token.dto';
 
 describe('SegmentRestController', () => {
   let controller: SegmentController;
@@ -23,7 +23,7 @@ describe('SegmentRestController', () => {
   const INPUT_TOKEN_ADDRESS = 'testTokenAddress1';
   const INPUT_TOKEN_ID = '2223932';
   const INPUT_SEGMENT_INDEX = 1;
-  const INPUT_TOKEN = new TokenContractInfoDto(INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID);
+  const INPUT_TOKEN = new TokenInformationDto(INPUT_TOKEN_ADDRESS, INPUT_TOKEN_ID);
 
   // test output
   const OUTPUT_CREATE_SEGMENT_RESPONSE: any = {};

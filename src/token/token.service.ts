@@ -7,14 +7,12 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { TransactionObject } from 'web3/eth/types';
 import TransactionReceipt from 'web3/types';
 
 import { EventService } from './event.service';
 import { SegmentService } from '../segment/segment.service';
 import { ApiConfigService } from '../config/api.config.service';
 import { BlockchainService } from '../shared/blockchain.service';
-
 import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from './dto/token.dto';
 import { SegmentReadDto } from '../segment/dto/segment.read.dto';
 import { TokenAbi } from './abi/token.abi';
@@ -29,80 +27,101 @@ export class TokenService {
     private readonly apiConfigService: ApiConfigService,
     private readonly blockchainService: BlockchainService,
   ) {
-    this.tokenContract = new this.blockchainService.web3.eth.Contract(TokenAbi, apiConfigService.TOKEN_ADDRESS);
+    this.tokenContract = this.blockchainService.getContract(this.apiConfigService.TOKEN_ADDRESS, TokenAbi);
   }
 
-  public mintToken(mintTokenDto: TokenMintDto): Promise<TransactionReceipt> {
-    const transactionObject: TransactionObject<any> = this.tokenContract.methods.safeMint(
-      this.blockchainService.derivePublicAddressFromPrivateKey(),
-      mintTokenDto.asset.uri,
-      mintTokenDto.asset.hash,
-      mintTokenDto.metadata.uri,
-      mintTokenDto.metadata.hash,
-      mintTokenDto.remoteId,
-      mintTokenDto.additionalInformation,
-    );
-    return this.blockchainService.sendTransaction(transactionObject);
+  public async mintToken(mintTokenDto: TokenMintDto): Promise<TransactionReceipt> {
+    try {
+      return await this.tokenContract.safeMint(
+        this.blockchainService.returnSignerAddress(),
+        mintTokenDto.asset.uri,
+        mintTokenDto.asset.hash,
+        mintTokenDto.metadata.uri,
+        mintTokenDto.metadata.hash,
+        mintTokenDto.remoteId,
+        mintTokenDto.additionalInformation,
+      );
+    } catch (err) {
+      this.blockchainService.handleError(err);
+      return Promise.reject(err);
+    }
   }
 
   public async getTokenByRemoteId(remoteId: string): Promise<TokenGetDto> {
-    const tokenId = await this.getTokenId(remoteId);
+    const tokenId: number = Number(await this.getTokenId(remoteId));
     return this.getTokenByTokenId(tokenId);
   }
 
-  private getTokenId(remoteId: string): Promise<number> {
-    return this.blockchainService.call(this.tokenContract.methods.getTokenId(remoteId));
+  private async getTokenId(remoteId: string): Promise<number> {
+    try {
+      return await this.tokenContract.getTokenId(remoteId);
+    } catch (err) {
+      return Promise.reject(err);
+    }
   }
 
   public async getTokenByTokenId(tokenId: number): Promise<TokenGetDto> {
-    const remoteId = await this.blockchainService.call(this.tokenContract.methods.getRemoteId(tokenId));
-    const token = await this.blockchainService.call(this.tokenContract.methods.getToken(tokenId));
-    const ownerAddress = await this.blockchainService.call(this.tokenContract.methods.ownerOf(tokenId));
-    const tokenInformation = await this.eventInformationService.fetchTokenInformation(tokenId);
+    try {
+      const remoteId = await this.tokenContract.getRemoteId(tokenId);
+      const token = await this.tokenContract.getToken(tokenId);
+      const ownerAddress = await this.tokenContract.ownerOf(tokenId);
 
-    return new TokenGetDto(
-      remoteId,
-      new TokenAssetDto(token.assetUri, token.assetHash),
-      new TokenMetadataDto(token.metadataUri, token.metadataHash),
-      token.additionalInformation,
-      ownerAddress,
-      tokenInformation.minterAddress,
-      tokenInformation.createdOn,
-      tokenInformation.lastUpdatedOn,
-      tokenId,
-      this.apiConfigService.TOKEN_ADDRESS,
-    );
+      const tokenInformation = await this.eventInformationService.fetchTokenInformation(tokenId);
+      return new TokenGetDto(
+        remoteId,
+        new TokenAssetDto(token.assetUri, token.assetHash),
+        new TokenMetadataDto(token.metadataUri, token.metadataHash),
+        token.additionalInformation,
+        ownerAddress,
+        tokenInformation.minterAddress,
+        tokenInformation.createdOn,
+        tokenInformation.lastUpdatedOn,
+        Number(tokenId),
+        this.apiConfigService.TOKEN_ADDRESS,
+      );
+    } catch (err) {
+      this.blockchainService.handleError(err);
+      return Promise.reject(err);
+    }
   }
 
   public async getAllSegments(tokenId: number): Promise<SegmentReadDto[]> {
     const segments: SegmentReadDto[] = await this.segmentService.fetchAllSegments();
     return segments.filter(
       (segment) =>
-        segment.tokenContractInfos &&
-        segment.tokenContractInfos.length > 0 &&
-        segment.tokenContractInfos.some((token) => token.tokenId === String(tokenId)),
+        segment.tokenInformation &&
+        segment.tokenInformation.length > 0 &&
+        segment.tokenInformation.some((token) => token.tokenId === tokenId.toString()),
     );
   }
 
   public async updateToken(remoteId: string, tokenUpdateDto: TokenUpdateDto): Promise<TransactionReceipt> {
-    const tokenId: number = await this.getTokenId(remoteId);
-    const transactionObject: TransactionObject<any> = this.tokenContract.methods.updateToken(
-      tokenId,
-      this.getValue(tokenUpdateDto.assetUri),
-      this.getValue(tokenUpdateDto.assetHash),
-      this.getValue(tokenUpdateDto.metadataUri),
-      this.getValue(tokenUpdateDto.metadataHash),
-      this.getValue(tokenUpdateDto.additionalInformation),
-    );
-
-    return this.blockchainService.sendTransaction(transactionObject);
+    try {
+      const tokenId: number = await this.getTokenId(remoteId);
+      return await this.tokenContract.updateToken(
+        tokenId,
+        this.getValue(tokenUpdateDto.assetUri),
+        this.getValue(tokenUpdateDto.assetHash),
+        this.getValue(tokenUpdateDto.metadataUri),
+        this.getValue(tokenUpdateDto.metadataHash),
+        this.getValue(tokenUpdateDto.additionalInformation),
+      );
+    } catch (err) {
+      this.blockchainService.handleError(err);
+      return Promise.reject(err);
+    }
   }
 
   private getValue(field: string): string {
     return field ? field : '';
   }
 
-  public burnToken(tokenId: number): Promise<TransactionReceipt> {
-    return this.blockchainService.sendTransaction(this.tokenContract.methods.burn(tokenId));
+  public async burnToken(tokenId: number): Promise<TransactionReceipt> {
+    try {
+      return await this.tokenContract.burn(tokenId);
+    } catch (err) {
+      this.blockchainService.handleError(err);
+      return Promise.reject(err);
+    }
   }
 }

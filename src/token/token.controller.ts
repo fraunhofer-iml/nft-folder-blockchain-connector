@@ -55,11 +55,14 @@ export class TokenRestController {
     required: false,
     description: 'The remoteId of the Token to be returned',
   })
-  public getToken(@Query('tokenId') tokenId?: number, @Query('remoteId') remoteId?: string): Promise<TokenGetDto> {
+  public async getToken(
+    @Query('tokenId') tokenId?: number,
+    @Query('remoteId') remoteId?: string,
+  ): Promise<TokenGetDto> {
     if (tokenId) {
       return this.tokenService.getTokenByTokenId(tokenId);
     } else if (remoteId) {
-      return this.tokenService.getTokenByRemoteId(remoteId);
+      return await this.tokenService.getTokenByRemoteId(remoteId);
     } else {
       const errorMessage = { message: 'Neither a tokenId nor a remoteId was specified' };
       this.blockchainService.handleError(errorMessage);

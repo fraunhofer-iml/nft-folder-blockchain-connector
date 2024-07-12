@@ -29,6 +29,58 @@ export const SegmentAbi = [
     type: 'constructor',
   },
   {
+    inputs: [],
+    name: 'IndexExceedsTokenInformationLength',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
+      },
+    ],
+    name: 'OwnableInvalidOwner',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
+      },
+    ],
+    name: 'OwnableUnauthorizedAccount',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'SegmentNameIsEmpty',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'SenderIsNotContainer',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'TokenAddressIsZero',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'TokenDoesNotExistInSegment',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'TokenExistsInSegment',
+    type: 'error',
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -98,39 +150,6 @@ export const SegmentAbi = [
     type: 'event',
   },
   {
-    inputs: [],
-    name: 'owner',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'renounceOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'newOwner',
-        type: 'address',
-      },
-    ],
-    name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
     inputs: [
       {
         internalType: 'address',
@@ -149,21 +168,28 @@ export const SegmentAbi = [
     type: 'function',
   },
   {
-    inputs: [
+    inputs: [],
+    name: 'getAllTokenInformation',
+    outputs: [
       {
-        internalType: 'address',
-        name: 'tokenAddress',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'tokenId',
-        type: 'uint256',
+        components: [
+          {
+            internalType: 'address',
+            name: 'tokenAddress',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenId',
+            type: 'uint256',
+          },
+        ],
+        internalType: 'struct Segment.TokenInformation[]',
+        name: '',
+        type: 'tuple[]',
       },
     ],
-    name: 'removeToken',
-    outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -194,24 +220,12 @@ export const SegmentAbi = [
   },
   {
     inputs: [],
-    name: 'getAllTokenInformation',
+    name: 'getNumberOfTokenInformation',
     outputs: [
       {
-        components: [
-          {
-            internalType: 'address',
-            name: 'tokenAddress',
-            type: 'address',
-          },
-          {
-            internalType: 'uint256',
-            name: 'tokenId',
-            type: 'uint256',
-          },
-        ],
-        internalType: 'struct Segment.TokenInformation[]',
+        internalType: 'uint256',
         name: '',
-        type: 'tuple[]',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -249,19 +263,6 @@ export const SegmentAbi = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'getNumberOfTokenInformation',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [
       {
         internalType: 'address',
@@ -283,6 +284,57 @@ export const SegmentAbi = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'owner',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'removeToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
+    ],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
 ];

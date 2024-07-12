@@ -13,7 +13,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { isAddress } from 'web3-utils';
+import { isAddress } from 'ethers';
 
 @ValidatorConstraint({ name: 'IsValidBlockchainAddress', async: false })
 export class BlockchainAddressValidator implements ValidatorConstraintInterface {

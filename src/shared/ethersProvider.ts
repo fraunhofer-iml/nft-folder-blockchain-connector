@@ -7,14 +7,12 @@
  */
 
 import { ConfigService } from '@nestjs/config';
-import Web3 from 'web3';
+import { JsonRpcProvider } from 'ethers';
 
-export const Web3Service = {
-  provide: 'Web3Service',
+export const EthersProvider = {
+  provide: 'EthersProvider',
   useFactory: async (apiConfigService: ConfigService) => {
-    const web3 = new Web3(apiConfigService.get<string>('BLOCKCHAIN_URL'));
-    web3.eth.handleRevert = true;
-    return web3;
+    return new JsonRpcProvider(apiConfigService.get<string>('BLOCKCHAIN_URL'));
   },
   inject: [ConfigService],
 };

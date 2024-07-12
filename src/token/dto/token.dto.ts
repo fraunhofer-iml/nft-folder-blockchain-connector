@@ -11,7 +11,7 @@ import { IsNotEmpty, IsNumberString } from 'class-validator';
 
 import { IsValidBlockchainAddress } from '../../shared/validator/BlockchainAddressValidator';
 
-class TokenContractInfoDto {
+class TokenInformationDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsValidBlockchainAddress()
@@ -143,4 +143,4 @@ class TokenUpdateDto {
   additionalInformation?: string;
 }
 
-export { TokenContractInfoDto, TokenAssetDto, TokenMetadataDto, TokenMintDto, TokenGetDto, TokenUpdateDto };
+export { TokenInformationDto, TokenAssetDto, TokenMetadataDto, TokenMintDto, TokenGetDto, TokenUpdateDto };

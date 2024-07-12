@@ -7,13 +7,13 @@
  */
 
 import { Module } from '@nestjs/common';
+import { EthersProvider } from './ethersProvider';
 
 import { BlockchainService } from './blockchain.service';
-import { Web3Service } from './web3.service';
 import { ApiConfigService } from '../config/api.config.service';
 
 @Module({
-  providers: [BlockchainService, Web3Service, ApiConfigService],
-  exports: [BlockchainService, Web3Service],
+  providers: [BlockchainService, EthersProvider, ApiConfigService],
+  exports: [BlockchainService, EthersProvider],
 })
 export class SharedModule {}

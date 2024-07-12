@@ -54,12 +54,11 @@
     "@truffle/hdwallet-provider": "^2.1.15",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "ethers": "^6.13.1",
     "license-checker-rseidelsohn": "^4.3.0",
-    "reflect-metadata": "^0.2.1",
-    "web3": "^1.9.0"
+    "reflect-metadata": "^0.2.1"
   },
   "devDependencies": {
-    "@depay/web3-mock": "^14.17.0",
     "@nestjs/cli": "^10.3.2",
     "@nestjs/schematics": "^10.1.1",
     "@nestjs/testing": "^10.3.3",

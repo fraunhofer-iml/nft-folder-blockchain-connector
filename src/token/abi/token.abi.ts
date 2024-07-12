@@ -10,6 +10,11 @@ export const TokenAbi = [
   {
     inputs: [
       {
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
+      },
+      {
         internalType: 'string',
         name: 'name',
         type: 'string',
@@ -24,13 +29,133 @@ export const TokenAbi = [
     type: 'constructor',
   },
   {
-    inputs: [],
-    name: 'NotASegment',
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'sender',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
+      },
+    ],
+    name: 'ERC721IncorrectOwner',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'operator',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'ERC721InsufficientApproval',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'approver',
+        type: 'address',
+      },
+    ],
+    name: 'ERC721InvalidApprover',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'operator',
+        type: 'address',
+      },
+    ],
+    name: 'ERC721InvalidOperator',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
+      },
+    ],
+    name: 'ERC721InvalidOwner',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
+      },
+    ],
+    name: 'ERC721InvalidReceiver',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'sender',
+        type: 'address',
+      },
+    ],
+    name: 'ERC721InvalidSender',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'ERC721NonexistentToken',
     type: 'error',
   },
   {
     inputs: [],
-    name: 'RemoteIdAlreadyExist',
+    name: 'IndexExceedsSegmentLengthForToken',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
+      },
+    ],
+    name: 'OwnableInvalidOwner',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
+      },
+    ],
+    name: 'OwnableUnauthorizedAccount',
     type: 'error',
   },
   {
@@ -40,7 +165,17 @@ export const TokenAbi = [
   },
   {
     inputs: [],
-    name: 'TokenAlreadyInSegment',
+    name: 'RemoteIdExists',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'SenderIsNotSegment',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'TokenDoesNotExist',
     type: 'error',
   },
   {
@@ -50,12 +185,7 @@ export const TokenAbi = [
   },
   {
     inputs: [],
-    name: 'TokenIdDoesNotExist',
-    type: 'error',
-  },
-  {
-    inputs: [],
-    name: 'WrongSegmentIndex',
+    name: 'TokenExistsInSegment',
     type: 'error',
   },
   {
@@ -224,6 +354,25 @@ export const TokenAbi = [
     inputs: [
       {
         indexed: false,
+        internalType: 'uint256',
+        name: '_fromTokenId',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: '_toTokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'BatchMetadataUpdate',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: 'string',
         name: 'oldMetadataHash',
         type: 'string',
@@ -254,6 +403,19 @@ export const TokenAbi = [
       },
     ],
     name: 'MetadataHashSet',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: '_tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'MetadataUpdate',
     type: 'event',
   },
   {
