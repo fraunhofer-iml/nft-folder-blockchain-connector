@@ -7,7 +7,17 @@
  */
 
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import TransactionReceipt from 'web3/types';
 
 import { TokenService } from './token.service';
@@ -24,11 +34,17 @@ export class TokenRestController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Creates a new token' })
-  @ApiBody({ type: TokenMintDto, description: 'Contains all relevant information for the creation of a token' })
-  @ApiResponse({ status: 201, description: 'The Token has been successfully created.' })
-  @ApiResponse({
-    status: 400,
+  @ApiBody({
+    type: TokenMintDto,
+    description: 'Contains all relevant information for the creation of a token',
+  })
+  @ApiOperation({
+    summary: 'Creates a new token',
+  })
+  @ApiCreatedResponse({
+    description: 'The Token has been successfully created.',
+  })
+  @ApiBadRequestResponse({
     description: 'The input does not have the correct format or a token with this remoteId already exists.',
   })
   public mintToken(@Body() dto: TokenMintDto): Promise<TransactionReceipt> {
@@ -38,22 +54,28 @@ export class TokenRestController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Returns the token with the specified tokenId or remoteId' })
-  @ApiOkResponse({
-    description: 'The token for the specified tokenId or remoteId',
-    type: TokenGetDto,
-    isArray: false,
+  @ApiQuery({
+    name: 'tokenId',
+    type: Number,
+    required: false,
+    description: 'The id of the Token to be returned',
   })
-  @ApiResponse({
-    status: 400,
-    description: 'A token with the specified tokenId or remoteId does not exist.',
-  })
-  @ApiQuery({ name: 'tokenId', type: Number, required: false, description: 'The id of the Token to be returned' })
   @ApiQuery({
     name: 'remoteId',
     type: String,
     required: false,
     description: 'The remoteId of the Token to be returned',
+  })
+  @ApiOperation({
+    summary: 'Returns the token with the specified tokenId or remoteId',
+  })
+  @ApiOkResponse({
+    description: 'The token for the specified tokenId or remoteId',
+    type: TokenGetDto,
+    isArray: false,
+  })
+  @ApiNotFoundResponse({
+    description: 'A token with the specified tokenId or remoteId does not exist.',
   })
   public async getToken(
     @Query('tokenId') tokenId?: number,
@@ -71,8 +93,14 @@ export class TokenRestController {
   }
 
   @Get(':tokenId/segments')
-  @ApiParam({ name: 'tokenId', type: Number, description: 'The id of the token whose segments are to be returned' })
-  @ApiOperation({ summary: 'Returns all segments which contain the specific token' })
+  @ApiParam({
+    name: 'tokenId',
+    type: Number,
+    description: 'The id of the token whose segments are to be returned',
+  })
+  @ApiOperation({
+    summary: 'Returns all segments which contain the specific token',
+  })
   @ApiOkResponse({
     description: 'The list of segments that contain the specified token',
     type: SegmentReadDto,
@@ -83,11 +111,17 @@ export class TokenRestController {
   }
 
   @Patch(':remoteId')
-  @ApiOperation({ summary: 'Updates the token with the specified tokenId or remoteId' })
-  @ApiBody({ type: TokenUpdateDto, description: 'Contains the new properties of the Token' })
-  @ApiResponse({ status: 200, description: 'The Token has been successfully updated.' })
-  @ApiResponse({
-    status: 400,
+  @ApiBody({
+    type: TokenUpdateDto,
+    description: 'Contains the new properties of the Token',
+  })
+  @ApiOperation({
+    summary: 'Updates the token with the specified tokenId or remoteId',
+  })
+  @ApiOkResponse({
+    description: 'The Token has been successfully updated.',
+  })
+  @ApiNotFoundResponse({
     description: 'A token with the specified remoteId does not exist.',
   })
   public updateToken(@Param('remoteId') remoteId: string, @Body() dto: TokenUpdateDto): Promise<TransactionReceipt> {
@@ -95,11 +129,18 @@ export class TokenRestController {
   }
 
   @Delete(':tokenId')
-  @ApiOperation({ summary: 'Burns the token with the specified id' })
-  @ApiParam({ name: 'tokenId', type: Number, description: 'The id of the Token to be removed' })
-  @ApiResponse({ status: 200, description: 'The Token has been successfully removed.' })
-  @ApiResponse({
-    status: 400,
+  @ApiParam({
+    name: 'tokenId',
+    type: Number,
+    description: 'The id of the Token to be burned',
+  })
+  @ApiOperation({
+    summary: 'Burns the token with the specified id',
+  })
+  @ApiOkResponse({
+    description: 'The Token has been successfully burned.',
+  })
+  @ApiNotFoundResponse({
     description:
       'A token with the specified remoteId does not exist or the current user is not the owner of the token with the specified id.',
   })

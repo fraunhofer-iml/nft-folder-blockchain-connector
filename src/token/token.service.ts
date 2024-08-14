@@ -56,6 +56,7 @@ export class TokenService {
     try {
       return await this.tokenContract.getTokenId(remoteId);
     } catch (err) {
+      this.blockchainService.handleError(err);
       return Promise.reject(err);
     }
   }

@@ -6,10 +6,19 @@
  * SPDX-License-Identifier: OLFL-1.3
  */
 
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { Block, Contract, TransactionResponse, Wallet } from 'ethers';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { Block, Contract, ErrorDescription, TransactionResponse, Wallet } from 'ethers';
 
 import { ApiConfigService } from '../config/api.config.service';
+import { ALREADY_EXISTS_CUSTOM_ERRORS, NOT_ALLOWED_CUSTOM_ERRORS, NOT_FOUND_CUSTOM_ERRORS } from './error.const';
 
 @Injectable()
 export class BlockchainService {
@@ -60,12 +69,41 @@ export class BlockchainService {
 
   public handleError(error: any): void {
     const encodedErrorData = error.info?.error?.data;
-    const decodedErrorData = encodedErrorData ? this.contractInstances[0].interface.parseError(encodedErrorData) : null;
+    const decodedErrorData: ErrorDescription = encodedErrorData
+      ? this.contractInstances[0].interface.parseError(encodedErrorData)
+      : null;
 
     const callError = error?.revert?.name;
-    const transactionError = decodedErrorData?.name;
+    const transactionError: string = decodedErrorData?.name;
     const errorMessage = callError ? callError : transactionError;
 
-    throw new BadRequestException(errorMessage);
+    if (errorMessage) {
+      this.handleBlockchainError(errorMessage);
+    } else {
+      this.handleConnectionError(error);
+    }
+  }
+
+  private handleBlockchainError(errorMessage: any) {
+    if (NOT_FOUND_CUSTOM_ERRORS.includes(errorMessage)) {
+      throw new NotFoundException(errorMessage);
+    } else if (ALREADY_EXISTS_CUSTOM_ERRORS.includes(errorMessage)) {
+      throw new ConflictException(errorMessage);
+    } else if (NOT_ALLOWED_CUSTOM_ERRORS.includes(errorMessage)) {
+      throw new ForbiddenException(errorMessage);
+    } else {
+      throw new BadRequestException(errorMessage);
+    }
+  }
+
+  private handleConnectionError(error: any) {
+    switch (error.code) {
+      case 'ECONNREFUSED':
+        throw new InternalServerErrorException('Cannot connect to Blockchain.');
+      case 'BAD_DATA':
+        throw new InternalServerErrorException('Cannot find a Smart Contract at this address.');
+      default:
+        throw new InternalServerErrorException(error.code);
+    }
   }
 }
