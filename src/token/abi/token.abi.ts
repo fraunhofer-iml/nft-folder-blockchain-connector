@@ -873,17 +873,36 @@ export const TokenAbi = [
   {
     inputs: [
       {
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
+      },
+    ],
+    name: 'getTokenIdsForOwner',
+    outputs: [
+      {
+        internalType: 'uint256[]',
+        name: '',
+        type: 'uint256[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'string',
         name: 'remoteId',
         type: 'string',
       },
     ],
-    name: 'getTokenId',
+    name: 'getTokenIdsForRemoteId',
     outputs: [
       {
-        internalType: 'uint256',
+        internalType: 'uint256[]',
         name: '',
-        type: 'uint256',
+        type: 'uint256[]',
       },
     ],
     stateMutability: 'view',

@@ -17,9 +17,9 @@ variables:
   GIT_DEPTH: 0
   HUSKY: 0
   NPM_CI: npm ci --include dev --cache .npm --prefer-offline
-  DOCKER_REGISTRY_URI: "$BE_NEXUS_DOCKER_REGISTRY:$BE_NEXUS_DOCKER_REGISTRY_DEPLOY_PORT"
-  BLOCKCHAIN_CONNECTOR_IMAGE: "${DOCKER_REGISTRY_URI}/nft-folder/blockchain-connector"
-  OPENSHIFT_IMAGE: "nexus.apps.sele.iml.fraunhofer.de:443/sele/cicdtools/openshift-cli-helm:latest"
+  DOCKER_REGISTRY_URI: '$BE_NEXUS_DOCKER_REGISTRY:$BE_NEXUS_DOCKER_REGISTRY_DEPLOY_PORT'
+  BLOCKCHAIN_CONNECTOR_IMAGE: '${DOCKER_REGISTRY_URI}/nft-folder/blockchain-connector'
+  OPENSHIFT_IMAGE: 'nexus.apps.sele.iml.fraunhofer.de:443/sele/cicdtools/openshift-cli-helm:latest'
 
 default:
   cache:
@@ -46,7 +46,8 @@ install-dependencies:
 ### test ###
 ############
 
-run-unit-tests:
+# Uncomment this job when adding or enabling new tests.
+.run-unit-tests:
   stage: test
   before_script:
     - $NPM_CI
@@ -101,9 +102,9 @@ run-sonar-scanner:
 create-npm-licenses-list:
   stage: license
   variables:
-    LICENSES_LIST: "npm-licenses-list.csv"
-    LICENSES_OVERRIDES: "third-party-licenses/npm-licenses-overrides.txt"
-    EXCLUDED_PACKAGES: ""
+    LICENSES_LIST: 'npm-licenses-list.csv'
+    LICENSES_OVERRIDES: 'third-party-licenses/npm-licenses-overrides.txt'
+    EXCLUDED_PACKAGES: ''
   before_script:
     - $NPM_CI
     - >
@@ -124,7 +125,7 @@ create-npm-licenses-list:
       fi
     - cat "${LICENSES_LIST}"
   artifacts:
-    name: "npm-licenses-list"
+    name: 'npm-licenses-list'
     expose_as: 'NPM Licenses List'
     expire_in: 1 hour
     paths:

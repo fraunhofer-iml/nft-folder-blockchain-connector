@@ -6,7 +6,7 @@
  * SPDX-License-Identifier: OLFL-1.3
  */
 
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -21,17 +21,13 @@ import {
 import TransactionReceipt from 'web3/types';
 
 import { TokenService } from './token.service';
-import { BlockchainService } from '../shared/blockchain.service';
 import { TokenGetDto, TokenMintDto, TokenUpdateDto } from './dto/token.dto';
 import { SegmentReadDto } from '../segment/dto/segment.read.dto';
 
 @Controller('tokens')
 @ApiTags('Tokens')
 export class TokenRestController {
-  constructor(
-    private readonly tokenService: TokenService,
-    private readonly blockchainService: BlockchainService,
-  ) {}
+  constructor(private readonly tokenService: TokenService) {}
 
   @Post()
   @ApiBody({
@@ -54,17 +50,30 @@ export class TokenRestController {
   }
 
   @Get()
-  @ApiQuery({
-    name: 'tokenId',
-    type: Number,
-    required: false,
-    description: 'The id of the Token to be returned',
+  @ApiOperation({
+    summary: 'Returns all tokens that correspond to the provided remoteId or ownerAddress or a combination of both',
+  })
+  @ApiOkResponse({
+    description: 'The found tokens',
+    type: TokenGetDto,
+    isArray: true,
   })
   @ApiQuery({
     name: 'remoteId',
     type: String,
     required: false,
-    description: 'The remoteId of the Token to be returned',
+    description: 'The remoteId of the tokens to be returned',
+  })
+  public async getTokensByRemoteIdAndOwner(@Query('remoteId') remoteId?: string): Promise<TokenGetDto[]> {
+    return await this.tokenService.getTokensByRemoteIdAndOwner(remoteId);
+  }
+
+  @Get(':tokenId')
+  @ApiParam({
+    name: 'tokenId',
+    type: Number,
+    required: false,
+    description: 'The id of the Token to be returned',
   })
   @ApiOperation({
     summary: 'Returns the token with the specified tokenId or remoteId',
@@ -75,28 +84,19 @@ export class TokenRestController {
     isArray: false,
   })
   @ApiNotFoundResponse({
-    description: 'A token with the specified tokenId or remoteId does not exist.',
+    description: 'A token with the specified tokenId does not exist.',
   })
-  public async getToken(
-    @Query('tokenId') tokenId?: number,
-    @Query('remoteId') remoteId?: string,
-  ): Promise<TokenGetDto> {
-    if (tokenId) {
-      return this.tokenService.getTokenByTokenId(tokenId);
-    } else if (remoteId) {
-      return await this.tokenService.getTokenByRemoteId(remoteId);
-    } else {
-      const errorMessage = { message: 'Neither a tokenId nor a remoteId was specified' };
-      this.blockchainService.handleError(errorMessage);
-      return Promise.reject(errorMessage);
-    }
+  public async getTokenByTokenId(@Param('tokenId') tokenId: string): Promise<TokenGetDto> {
+    const parsedTokenId = this.parseTokenId(tokenId);
+    return this.tokenService.getTokenByTokenId(parsedTokenId);
   }
 
   @Get(':tokenId/segments')
   @ApiParam({
     name: 'tokenId',
     type: Number,
-    description: 'The id of the token whose segments are to be returned',
+    required: true,
+    description: 'The id of the token whose segments to be returned',
   })
   @ApiOperation({
     summary: 'Returns all segments which contain the specific token',
@@ -106,32 +106,44 @@ export class TokenRestController {
     type: SegmentReadDto,
     isArray: true,
   })
-  public getAllSegments(@Param('tokenId') tokenId: number): Promise<SegmentReadDto[]> {
-    return this.tokenService.getAllSegments(tokenId);
+  public getSegmentsByTokenId(@Param('tokenId') tokenId: string): Promise<SegmentReadDto[]> {
+    const parsedTokenId = this.parseTokenId(tokenId);
+    return this.tokenService.getSegmentsByTokenId(parsedTokenId);
   }
 
-  @Patch(':remoteId')
+  @Patch(':tokenId')
+  @ApiParam({
+    name: 'tokenId',
+    type: Number,
+    required: true,
+    description: 'The id of the token to be updated',
+  })
   @ApiBody({
     type: TokenUpdateDto,
     description: 'Contains the new properties of the Token',
   })
   @ApiOperation({
-    summary: 'Updates the token with the specified tokenId or remoteId',
+    summary: 'Updates the token with the specified tokenId',
   })
   @ApiOkResponse({
     description: 'The Token has been successfully updated.',
   })
   @ApiNotFoundResponse({
-    description: 'A token with the specified remoteId does not exist.',
+    description: 'A token with the specified tokenId does not exist.',
   })
-  public updateToken(@Param('remoteId') remoteId: string, @Body() dto: TokenUpdateDto): Promise<TransactionReceipt> {
-    return this.tokenService.updateToken(remoteId, dto);
+  public updateTokenByTokenId(
+    @Param('tokenId') tokenId: string,
+    @Body() dto: TokenUpdateDto,
+  ): Promise<TransactionReceipt> {
+    const parsedTokenId = this.parseTokenId(tokenId);
+    return this.tokenService.updateTokenByTokenId(parsedTokenId, dto);
   }
 
   @Delete(':tokenId')
   @ApiParam({
     name: 'tokenId',
     type: Number,
+    required: true,
     description: 'The id of the Token to be burned',
   })
   @ApiOperation({
@@ -144,7 +156,18 @@ export class TokenRestController {
     description:
       'A token with the specified remoteId does not exist or the current user is not the owner of the token with the specified id.',
   })
-  public burnToken(@Param('tokenId') tokenId: number): Promise<TransactionReceipt> {
-    return this.tokenService.burnToken(tokenId);
+  public burnTokenByTokenId(@Param('tokenId') tokenId: string): Promise<TransactionReceipt> {
+    const parsedTokenId = this.parseTokenId(tokenId);
+    return this.tokenService.burnTokenByTokenId(parsedTokenId);
+  }
+
+  private parseTokenId(tokenId: string) {
+    const parsedTokenId = Number(tokenId);
+
+    if (isNaN(parsedTokenId) || parsedTokenId < 0) {
+      throw new BadRequestException('Invalid tokenId provided. It must be a positive integer.');
+    }
+
+    return parsedTokenId;
   }
 }

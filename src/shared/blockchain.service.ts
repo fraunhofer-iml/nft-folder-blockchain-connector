@@ -103,7 +103,7 @@ export class BlockchainService {
       case 'BAD_DATA':
         throw new InternalServerErrorException('Cannot find a Smart Contract at this address.');
       default:
-        throw new InternalServerErrorException(error.code);
+        throw new InternalServerErrorException(error.code ?? error);
     }
   }
 }

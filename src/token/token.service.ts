@@ -9,7 +9,7 @@
 import { Injectable } from '@nestjs/common';
 import TransactionReceipt from 'web3/types';
 
-import { EventService } from './event.service';
+import { EventService, TokenInformation } from './event.service';
 import { SegmentService } from '../segment/segment.service';
 import { ApiConfigService } from '../config/api.config.service';
 import { BlockchainService } from '../shared/blockchain.service';
@@ -47,14 +47,23 @@ export class TokenService {
     }
   }
 
-  public async getTokenByRemoteId(remoteId: string): Promise<TokenGetDto> {
-    const tokenId: number = Number(await this.getTokenId(remoteId));
-    return this.getTokenByTokenId(tokenId);
+  public async getTokensByRemoteIdAndOwner(remoteId?: string): Promise<TokenGetDto[]> {
+    const tokenIds: number[] = await this.getTokenIdsByRemoteIdAndOwner(remoteId);
+    return await Promise.all(tokenIds.map((tokenId) => this.getTokenByTokenId(Number(tokenId))));
   }
 
-  private async getTokenId(remoteId: string): Promise<number> {
+  private async getTokenIdsByRemoteIdAndOwner(remoteId: string): Promise<number[]> {
+    const ownerAddress = this.blockchainService.returnSignerAddress();
+
     try {
-      return await this.tokenContract.getTokenId(remoteId);
+      const tokenIdsForOwner: number[] = await this.tokenContract.getTokenIdsForOwner(ownerAddress);
+
+      if (remoteId == null) {
+        return tokenIdsForOwner;
+      }
+
+      const tokenIdsForRemoteId: number[] = await this.tokenContract.getTokenIdsForRemoteId(remoteId);
+      return tokenIdsForRemoteId.filter((tokenId: number) => tokenIdsForOwner.includes(tokenId));
     } catch (err) {
       this.blockchainService.handleError(err);
       return Promise.reject(err);
@@ -66,8 +75,8 @@ export class TokenService {
       const remoteId = await this.tokenContract.getRemoteId(tokenId);
       const token = await this.tokenContract.getToken(tokenId);
       const ownerAddress = await this.tokenContract.ownerOf(tokenId);
+      const tokenInformation: TokenInformation = await this.eventInformationService.fetchTokenInformation(tokenId);
 
-      const tokenInformation = await this.eventInformationService.fetchTokenInformation(tokenId);
       return new TokenGetDto(
         remoteId,
         new TokenAssetDto(token.assetUri, token.assetHash),
@@ -77,7 +86,7 @@ export class TokenService {
         tokenInformation.minterAddress,
         tokenInformation.createdOn,
         tokenInformation.lastUpdatedOn,
-        Number(tokenId),
+        tokenId,
         this.apiConfigService.TOKEN_ADDRESS,
       );
     } catch (err) {
@@ -86,19 +95,18 @@ export class TokenService {
     }
   }
 
-  public async getAllSegments(tokenId: number): Promise<SegmentReadDto[]> {
+  public async getSegmentsByTokenId(tokenId: number): Promise<SegmentReadDto[]> {
     const segments: SegmentReadDto[] = await this.segmentService.fetchAllSegments();
     return segments.filter(
-      (segment) =>
+      (segment: SegmentReadDto) =>
         segment.tokenInformation &&
         segment.tokenInformation.length > 0 &&
         segment.tokenInformation.some((token) => token.tokenId === tokenId.toString()),
     );
   }
 
-  public async updateToken(remoteId: string, tokenUpdateDto: TokenUpdateDto): Promise<TransactionReceipt> {
+  public async updateTokenByTokenId(tokenId: number, tokenUpdateDto: TokenUpdateDto): Promise<TransactionReceipt> {
     try {
-      const tokenId: number = await this.getTokenId(remoteId);
       return await this.tokenContract.updateToken(
         tokenId,
         this.getValue(tokenUpdateDto.assetUri),
@@ -117,7 +125,7 @@ export class TokenService {
     return field ? field : '';
   }
 
-  public async burnToken(tokenId: number): Promise<TransactionReceipt> {
+  public async burnTokenByTokenId(tokenId: number): Promise<TransactionReceipt> {
     try {
       return await this.tokenContract.burn(tokenId);
     } catch (err) {
