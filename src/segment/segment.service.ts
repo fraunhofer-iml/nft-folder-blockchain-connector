@@ -7,95 +7,107 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import TransactionReceipt from 'web3/types';
-import { Contract } from 'ethers';
+import { Contract, TransactionReceipt } from 'ethers';
 
-import { ApiConfigService } from '../config/api.config.service';
-import { BlockchainService } from '../shared/blockchain.service';
+import { BlockchainService } from 'src/shared/blockchain.service';
+import { ConfigurationService } from 'src/configuration/configuration.service';
 import { SegmentReadDto } from './dto/segment.read.dto';
-import { TokenInformationDto } from '../token/dto/token.dto';
-import { ContainerAbi } from './abi/container.abi';
-import { SegmentAbi } from './abi/segment.abi';
+import { TokenInformationDto } from 'src/token/dto/token.dto';
 
 @Injectable()
 export class SegmentService {
-  private containerContract: Contract;
+  private containerInstance: Contract;
+  private segmentAbi: string;
 
   constructor(
     private readonly blockchainService: BlockchainService,
-    private readonly apiConfigService: ApiConfigService,
+    private readonly configurationService: ConfigurationService,
   ) {
-    this.containerContract = this.blockchainService.getContract(this.apiConfigService.CONTAINER_ADDRESS, ContainerAbi);
+    this.containerInstance = this.blockchainService.getContractInstance(
+      this.configurationService.getGeneralConfiguration().containerAddress,
+      this.configurationService.getGeneralConfiguration().containerAbi,
+    );
+
+    this.segmentAbi = this.configurationService.getGeneralConfiguration().segmentAbi;
   }
 
   public async createSegment(name: string): Promise<TransactionReceipt> {
     try {
-      return await this.containerContract.createSegment(name);
+      return await this.containerInstance.createSegment(name);
     } catch (err) {
-      this.blockchainService.handleError(err);
+      this.blockchainService.handleError(err, this.containerInstance.target.toString());
       return Promise.reject(err);
     }
   }
 
   public async fetchAllSegments(): Promise<SegmentReadDto[]> {
     try {
-      const segmentAddresses = await this.containerContract.getAllSegments();
-      const segments: SegmentReadDto[] = [];
+      const segmentReadDtos: SegmentReadDto[] = [];
+      const segmentAddresses: string[] = await this.containerInstance.getAllSegments();
 
-      for (const currentSegmentAddress of segmentAddresses) {
-        const segment: SegmentReadDto = await this.fetchSegmentData(currentSegmentAddress);
-        segments.push(segment);
+      for (const segmentAddress of segmentAddresses) {
+        const segmentReadDto: SegmentReadDto = await this.fetchSegmentData(segmentAddress);
+        segmentReadDtos.push(segmentReadDto);
       }
 
-      return segments;
+      return segmentReadDtos;
     } catch (err) {
-      this.blockchainService.handleError(err);
+      this.blockchainService.handleError(err, this.containerInstance.target.toString());
       return Promise.reject(err);
     }
   }
 
   public async fetchSegment(index: number): Promise<SegmentReadDto> {
     try {
-      const foundSegmentAddress = await this.containerContract.getSegment(index);
-      return await this.fetchSegmentData(foundSegmentAddress);
+      const segmentAddress: string = await this.containerInstance.getSegment(index);
+      return await this.fetchSegmentData(segmentAddress);
     } catch (err) {
-      this.blockchainService.handleError(err);
+      this.blockchainService.handleError(err, this.containerInstance.target.toString());
       return Promise.reject(err);
     }
   }
 
   private async fetchSegmentData(segmentAddress: string): Promise<SegmentReadDto> {
-    const segmentName = await this.getSegmentContract(segmentAddress).getName();
+    try {
+      const segmentName: string = await this.getSegmentInstance(segmentAddress).getName();
 
-    const tokenInformation = await this.getSegmentContract(segmentAddress).getAllTokenInformation();
-    const tokenInformationDto = tokenInformation.map(
-      ([tokenAddress, tokenId]) => new TokenInformationDto(tokenAddress, Number(tokenId).toString()),
-    );
+      const tokenInformation = await this.getSegmentInstance(segmentAddress).getAllTokenInformation();
+      const tokenInformationDto: TokenInformationDto[] = tokenInformation.map(
+        ([tokenAddress, tokenId]) => new TokenInformationDto(tokenAddress, Number(tokenId).toString()),
+      );
 
-    return new SegmentReadDto(segmentAddress, segmentName, tokenInformationDto);
+      return new SegmentReadDto(segmentAddress, segmentName, tokenInformationDto);
+    } catch (err) {
+      this.blockchainService.handleError(err, segmentAddress);
+      return Promise.reject(err);
+    }
   }
 
   public async addToken(segmentIndex: number, tokenAddress: string, tokenId: number): Promise<TransactionReceipt> {
+    let segmentAddress: string;
+
     try {
-      const segmentAddress = await this.containerContract.getSegment(segmentIndex);
-      return await this.getSegmentContract(segmentAddress).addToken(tokenAddress, tokenId);
+      segmentAddress = await this.containerInstance.getSegment(segmentIndex);
+      return await this.getSegmentInstance(segmentAddress).addToken(tokenAddress, tokenId);
     } catch (err) {
-      this.blockchainService.handleError(err);
+      this.blockchainService.handleError(err, segmentAddress);
       return Promise.reject(err);
     }
   }
 
   public async removeToken(segmentIndex: number, tokenAddress: string, tokenId: number): Promise<TransactionReceipt> {
+    let segmentAddress: string;
+
     try {
-      const segmentAddress = await this.containerContract.getSegment(segmentIndex);
-      return await this.getSegmentContract(segmentAddress).removeToken(tokenAddress, tokenId);
+      segmentAddress = await this.containerInstance.getSegment(segmentIndex);
+      return await this.getSegmentInstance(segmentAddress).removeToken(tokenAddress, tokenId);
     } catch (err) {
-      this.blockchainService.handleError(err);
+      this.blockchainService.handleError(err, segmentAddress);
       return Promise.reject(err);
     }
   }
 
-  private getSegmentContract(segmentAddress: string): Contract {
-    return this.blockchainService.getContract(segmentAddress, SegmentAbi);
+  private getSegmentInstance(segmentAddress: string): Contract {
+    return this.blockchainService.getContractInstance(segmentAddress, this.segmentAbi);
   }
 }

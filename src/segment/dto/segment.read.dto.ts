@@ -7,7 +7,8 @@
  */
 
 import { ApiProperty } from '@nestjs/swagger';
-import { TokenInformationDto } from '../../token/dto/token.dto';
+
+import { TokenInformationDto } from 'src/token/dto/token.dto';
 
 export class SegmentReadDto {
   @ApiProperty()

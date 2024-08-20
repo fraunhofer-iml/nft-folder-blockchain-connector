@@ -7,32 +7,35 @@
  */
 
 import { Injectable } from '@nestjs/common';
+import { Contract } from 'ethers';
 import TransactionReceipt from 'web3/types';
 
+import { BlockchainService } from 'src/shared/blockchain.service';
+import { ConfigurationService } from 'src/configuration/configuration.service';
 import { EventService, TokenInformation } from './event.service';
-import { SegmentService } from '../segment/segment.service';
-import { ApiConfigService } from '../config/api.config.service';
-import { BlockchainService } from '../shared/blockchain.service';
+import { SegmentReadDto } from 'src/segment/dto/segment.read.dto';
+import { SegmentService } from 'src/segment/segment.service';
 import { TokenAssetDto, TokenGetDto, TokenMetadataDto, TokenMintDto, TokenUpdateDto } from './dto/token.dto';
-import { SegmentReadDto } from '../segment/dto/segment.read.dto';
-import { TokenAbi } from './abi/token.abi';
 
 @Injectable()
 export class TokenService {
-  private tokenContract: any;
+  private tokenInstance: Contract;
 
   constructor(
+    private readonly blockchainService: BlockchainService,
+    private readonly configurationService: ConfigurationService,
     private readonly eventInformationService: EventService,
     private readonly segmentService: SegmentService,
-    private readonly apiConfigService: ApiConfigService,
-    private readonly blockchainService: BlockchainService,
   ) {
-    this.tokenContract = this.blockchainService.getContract(this.apiConfigService.TOKEN_ADDRESS, TokenAbi);
+    this.tokenInstance = this.blockchainService.getContractInstance(
+      this.configurationService.getGeneralConfiguration().tokenAddress,
+      this.configurationService.getGeneralConfiguration().tokenAbi,
+    );
   }
 
   public async mintToken(mintTokenDto: TokenMintDto): Promise<TransactionReceipt> {
     try {
-      return await this.tokenContract.safeMint(
+      return await this.tokenInstance.safeMint(
         this.blockchainService.returnSignerAddress(),
         mintTokenDto.asset.uri,
         mintTokenDto.asset.hash,
@@ -42,7 +45,7 @@ export class TokenService {
         mintTokenDto.additionalInformation,
       );
     } catch (err) {
-      this.blockchainService.handleError(err);
+      this.blockchainService.handleError(err, this.tokenInstance.target.toString());
       return Promise.reject(err);
     }
   }
@@ -53,28 +56,28 @@ export class TokenService {
   }
 
   private async getTokenIdsByRemoteIdAndOwner(remoteId: string): Promise<number[]> {
-    const ownerAddress = this.blockchainService.returnSignerAddress();
+    const ownerAddress: string = this.blockchainService.returnSignerAddress();
 
     try {
-      const tokenIdsForOwner: number[] = await this.tokenContract.getTokenIdsForOwner(ownerAddress);
+      const tokenIdsForOwner: number[] = await this.tokenInstance.getTokenIdsByOwner(ownerAddress);
 
       if (remoteId == null) {
         return tokenIdsForOwner;
       }
 
-      const tokenIdsForRemoteId: number[] = await this.tokenContract.getTokenIdsForRemoteId(remoteId);
+      const tokenIdsForRemoteId: number[] = await this.tokenInstance.getTokenIdsByRemoteId(remoteId);
       return tokenIdsForRemoteId.filter((tokenId: number) => tokenIdsForOwner.includes(tokenId));
     } catch (err) {
-      this.blockchainService.handleError(err);
+      this.blockchainService.handleError(err, this.tokenInstance.target.toString());
       return Promise.reject(err);
     }
   }
 
   public async getTokenByTokenId(tokenId: number): Promise<TokenGetDto> {
     try {
-      const remoteId = await this.tokenContract.getRemoteId(tokenId);
-      const token = await this.tokenContract.getToken(tokenId);
-      const ownerAddress = await this.tokenContract.ownerOf(tokenId);
+      const remoteId: string = await this.tokenInstance.getRemoteIdByTokenId(tokenId);
+      const token = await this.tokenInstance.getToken(tokenId);
+      const ownerAddress: string = await this.tokenInstance.ownerOf(tokenId);
       const tokenInformation: TokenInformation = await this.eventInformationService.fetchTokenInformation(tokenId);
 
       return new TokenGetDto(
@@ -87,10 +90,10 @@ export class TokenService {
         tokenInformation.createdOn,
         tokenInformation.lastUpdatedOn,
         tokenId,
-        this.apiConfigService.TOKEN_ADDRESS,
+        this.configurationService.getGeneralConfiguration().tokenAddress,
       );
     } catch (err) {
-      this.blockchainService.handleError(err);
+      this.blockchainService.handleError(err, this.tokenInstance.target.toString());
       return Promise.reject(err);
     }
   }
@@ -107,7 +110,7 @@ export class TokenService {
 
   public async updateTokenByTokenId(tokenId: number, tokenUpdateDto: TokenUpdateDto): Promise<TransactionReceipt> {
     try {
-      return await this.tokenContract.updateToken(
+      return await this.tokenInstance.updateToken(
         tokenId,
         this.getValue(tokenUpdateDto.assetUri),
         this.getValue(tokenUpdateDto.assetHash),
@@ -116,20 +119,20 @@ export class TokenService {
         this.getValue(tokenUpdateDto.additionalInformation),
       );
     } catch (err) {
-      this.blockchainService.handleError(err);
+      this.blockchainService.handleError(err, this.tokenInstance.target.toString());
       return Promise.reject(err);
     }
   }
 
   private getValue(field: string): string {
-    return field ? field : '';
+    return field || '';
   }
 
   public async burnTokenByTokenId(tokenId: number): Promise<TransactionReceipt> {
     try {
-      return await this.tokenContract.burn(tokenId);
+      return await this.tokenInstance.burn(tokenId);
     } catch (err) {
-      this.blockchainService.handleError(err);
+      this.blockchainService.handleError(err, this.tokenInstance.target.toString());
       return Promise.reject(err);
     }
   }

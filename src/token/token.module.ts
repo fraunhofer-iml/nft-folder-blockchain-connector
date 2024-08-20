@@ -12,12 +12,12 @@ import { TokenRestController } from './token.controller';
 import { TokenService } from './token.service';
 import { EventService } from './event.service';
 import { SegmentService } from '../segment/segment.service';
-import { ApiConfigService } from '../config/api.config.service';
 import { SharedModule } from '../shared/shared.module';
+import { ConfigurationModule } from 'src/configuration/configuration.module';
 
 @Module({
-  imports: [SharedModule],
+  imports: [ConfigurationModule, SharedModule],
   controllers: [TokenRestController],
-  providers: [TokenService, EventService, SegmentService, ApiConfigService],
+  providers: [TokenService, EventService, SegmentService],
 })
 export class TokenModule {}

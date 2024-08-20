@@ -7,18 +7,12 @@
  */
 
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 
 import { SegmentModule } from './segment/segment.module';
 import { TokenModule } from './token/token.module';
+import { ConfigurationModule } from './configuration/configuration.module';
 
 @Module({
-  imports: [
-    SegmentModule,
-    TokenModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-  ],
+  imports: [SegmentModule, TokenModule, ConfigurationModule],
 })
 export class AppModule {}

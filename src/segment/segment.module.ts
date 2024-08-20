@@ -10,12 +10,12 @@ import { Module } from '@nestjs/common';
 
 import { SegmentController } from './segment.controller';
 import { SegmentService } from './segment.service';
-import { ApiConfigService } from '../config/api.config.service';
 import { SharedModule } from '../shared/shared.module';
+import { ConfigurationModule } from 'src/configuration/configuration.module';
 
 @Module({
-  imports: [SharedModule],
+  imports: [ConfigurationModule, SharedModule],
   controllers: [SegmentController],
-  providers: [SegmentService, ApiConfigService],
+  providers: [SegmentService],
 })
 export class SegmentModule {}

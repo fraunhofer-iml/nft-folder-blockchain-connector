@@ -17,16 +17,16 @@ import {
 } from '@nestjs/common';
 import { Block, Contract, ErrorDescription, TransactionResponse, Wallet } from 'ethers';
 
-import { ApiConfigService } from '../config/api.config.service';
+import { ConfigurationService } from 'src/configuration/configuration.service';
 import { ALREADY_EXISTS_CUSTOM_ERRORS, NOT_ALLOWED_CUSTOM_ERRORS, NOT_FOUND_CUSTOM_ERRORS } from './error.const';
 
 @Injectable()
 export class BlockchainService {
-  private contractInstances: Contract[] = [];
+  private contractInstances: { [address: string]: Contract } = {};
 
   constructor(
     @Inject('EthersProvider') public readonly provider: any,
-    private readonly apiConfigService: ApiConfigService,
+    private readonly configurationService: ConfigurationService,
   ) {}
 
   public returnSignerAddress(): string {
@@ -34,18 +34,17 @@ export class BlockchainService {
   }
 
   private returnSignerWallet(): Wallet {
-    return new Wallet(this.apiConfigService.PRIVATE_KEY, this.provider);
+    return new Wallet(this.configurationService.getGeneralConfiguration().privateKey, this.provider);
   }
 
-  public getContract(contractAddress: string, abi: any): Contract {
+  public getContractInstance(contractAddress: string, abi: any): Contract {
     const wallet: Wallet = this.returnSignerWallet();
 
-    let contractInstance = this.contractInstances.find((contract: Contract) => contract.target === contractAddress);
+    let contractInstance: Contract = this.contractInstances[contractAddress];
 
     if (!contractInstance) {
       contractInstance = new Contract(contractAddress, abi, wallet);
-
-      this.contractInstances.push(contractInstance);
+      this.contractInstances[contractAddress] = contractInstance;
     }
 
     return contractInstance;
@@ -67,14 +66,21 @@ export class BlockchainService {
     return block.timestamp;
   }
 
-  public handleError(error: any): void {
-    const encodedErrorData = error.info?.error?.data;
-    const decodedErrorData: ErrorDescription = encodedErrorData
-      ? this.contractInstances[0].interface.parseError(encodedErrorData)
-      : null;
+  public handleError(error: any, contractAddress: string): void {
+    const contractInstance: Contract = this.contractInstances[contractAddress];
+
+    if (!contractInstance) {
+      throw new InternalServerErrorException(`Contract instance not found for address ${contractAddress}`);
+    }
 
     const callError = error?.revert?.name;
-    const transactionError: string = decodedErrorData?.name;
+
+    const encodedTransactionError = error.info?.error?.data;
+    const decodedTransactionError: ErrorDescription = encodedTransactionError
+      ? contractInstance.interface.parseError(encodedTransactionError)
+      : null;
+    const transactionError: string = decodedTransactionError?.name;
+
     const errorMessage = callError ? callError : transactionError;
 
     if (errorMessage) {
@@ -98,10 +104,12 @@ export class BlockchainService {
 
   private handleConnectionError(error: any) {
     switch (error.code) {
-      case 'ECONNREFUSED':
-        throw new InternalServerErrorException('Cannot connect to Blockchain.');
       case 'BAD_DATA':
         throw new InternalServerErrorException('Cannot find a Smart Contract at this address.');
+      case 'CALL_EXCEPTION':
+        throw new InternalServerErrorException('An unknown CALL_EXCEPTION occurred.');
+      case 'ECONNREFUSED':
+        throw new InternalServerErrorException('Cannot connect to Blockchain.');
       default:
         throw new InternalServerErrorException(error.code ?? error);
     }

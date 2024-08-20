@@ -9,9 +9,8 @@
 import { Injectable } from '@nestjs/common';
 import { Contract, EventLog } from 'ethers';
 
-import { ApiConfigService } from '../config/api.config.service';
-import { BlockchainService } from '../shared/blockchain.service';
-import { TokenAbi } from './abi/token.abi';
+import { BlockchainService } from 'src/shared/blockchain.service';
+import { ConfigurationService } from 'src/configuration/configuration.service';
 
 interface EventInformation {
   blockNumber: number;
@@ -29,10 +28,13 @@ export class EventService {
   private tokenContract: Contract;
 
   constructor(
-    private readonly apiConfigService: ApiConfigService,
+    private readonly configurationService: ConfigurationService,
     private readonly blockchainService: BlockchainService,
   ) {
-    this.tokenContract = this.blockchainService.getContract(this.apiConfigService.TOKEN_ADDRESS, TokenAbi);
+    this.tokenContract = this.blockchainService.getContractInstance(
+      this.configurationService.getGeneralConfiguration().tokenAddress,
+      this.configurationService.getGeneralConfiguration().tokenAbi,
+    );
   }
 
   public async fetchTokenInformation(tokenId: number): Promise<TokenInformation> {
@@ -43,12 +45,12 @@ export class EventService {
   }
 
   private async fetchMinterAddress(tokenId: number): Promise<string> {
-    const events = await this.getAllPastEvents('Transfer', tokenId);
+    const events: EventLog[] = await this.getAllPastEvents('Transfer', tokenId);
     return events.length === 0 ? null : events[0].args.to;
   }
 
   private async fetchCreatedOn(tokenId: number): Promise<string> {
-    const events = await this.getAllPastEvents('Transfer', tokenId);
+    const events: EventLog[] = await this.getAllPastEvents('Transfer', tokenId);
     const transactionHash: string = events.length === 0 ? '' : events[0].transactionHash;
 
     const timestamp: number = await this.blockchainService.fetchTransactionTimestamp(transactionHash);
@@ -75,7 +77,7 @@ export class EventService {
     return timestampInSeconds.toISOString();
   }
 
-  private async getAllPastEvents(event: string, tokenId: number): Promise<Array<EventLog>> {
+  private async getAllPastEvents(event: string, tokenId: number): Promise<EventLog[]> {
     let filter: any;
 
     if (event === 'Transfer') {
