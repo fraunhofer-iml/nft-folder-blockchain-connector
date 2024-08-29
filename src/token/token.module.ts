@@ -8,16 +8,28 @@
 
 import { Module } from '@nestjs/common';
 
-import { TokenRestController } from './token.controller';
-import { TokenService } from './token.service';
-import { EventService } from './event.service';
-import { SegmentService } from '../segment/segment.service';
-import { SharedModule } from '../shared/shared.module';
 import { ConfigurationModule } from 'src/configuration/configuration.module';
+import { SharedModule } from '../shared/shared.module';
+import { TokenRestController } from './token.controller';
+import { TokenBaseService } from './token-base.services';
+import { TokenCreateService } from './token-create.service';
+import { TokenReadService } from './token-read.service';
+import { TokenUpdateService } from './token-update.service';
+import { TokenDeleteService } from './token-delete.service';
+import { SegmentService } from '../segment/segment.service';
+import { EventService } from './event.service';
 
 @Module({
   imports: [ConfigurationModule, SharedModule],
   controllers: [TokenRestController],
-  providers: [TokenService, EventService, SegmentService],
+  providers: [
+    TokenBaseService,
+    TokenCreateService,
+    TokenReadService,
+    TokenUpdateService,
+    TokenDeleteService,
+    EventService,
+    SegmentService,
+  ],
 })
 export class TokenModule {}

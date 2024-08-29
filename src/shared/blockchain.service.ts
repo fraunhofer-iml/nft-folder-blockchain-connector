@@ -13,6 +13,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { Block, Contract, ErrorDescription, TransactionResponse, Wallet } from 'ethers';
@@ -22,12 +23,18 @@ import { ALREADY_EXISTS_CUSTOM_ERRORS, NOT_ALLOWED_CUSTOM_ERRORS, NOT_FOUND_CUST
 
 @Injectable()
 export class BlockchainService {
+  private readonly logger = new Logger(BlockchainService.name);
+  private readonly blockTime: number;
   private contractInstances: { [address: string]: Contract } = {};
 
   constructor(
     @Inject('EthersProvider') public readonly provider: any,
     private readonly configurationService: ConfigurationService,
-  ) {}
+  ) {
+    // We need to wait for a transaction to be validated in a block, so we can get its logs
+    // To be sure the transaction is validated, we wait a little bit longer (100ms)
+    this.blockTime = this.configurationService.getGeneralConfiguration().blockTime + 100;
+  }
 
   public returnSignerAddress(): string {
     return this.returnSignerWallet().address;
@@ -50,7 +57,7 @@ export class BlockchainService {
     return contractInstance;
   }
 
-  public async fetchTransactionTimestamp(transactionHash: string): Promise<number> {
+  public async fetchTransactionTimestamp(transactionHash: string): Promise<string> {
     const transaction: TransactionResponse = await this.provider.getTransaction(transactionHash);
 
     if (!transaction || !transaction.blockNumber) {
@@ -63,10 +70,17 @@ export class BlockchainService {
       throw new BadRequestException('Block not found or timestamp is missing.');
     }
 
-    return block.timestamp;
+    const timestamp: Date = new Date(block.timestamp * 1000);
+    return timestamp.toISOString();
+  }
+
+  public async waitForTheNextBlock(): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, this.blockTime));
   }
 
   public handleError(error: any, contractAddress: string): void {
+    this.logger.error(error);
+
     const contractInstance: Contract = this.contractInstances[contractAddress];
 
     if (!contractInstance) {
@@ -111,7 +125,11 @@ export class BlockchainService {
       case 'ECONNREFUSED':
         throw new InternalServerErrorException('Cannot connect to Blockchain.');
       default:
-        throw new InternalServerErrorException(error.code ?? error);
+        if (error.code || error.message) {
+          throw new InternalServerErrorException(error.code || error.message);
+        } else {
+          throw new InternalServerErrorException('An unknown error occurred.');
+        }
     }
   }
 }

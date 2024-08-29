@@ -13,6 +13,7 @@ export const GENERAL_CONFIG_IDENTIFIER = 'general';
 export interface GeneralConfiguration {
   privateKey: string;
   blockchainUrl: string;
+  blockTime: number;
   containerAddress: string;
   tokenAddress: string;
   containerAbi: string;
@@ -23,6 +24,7 @@ export interface GeneralConfiguration {
 export default registerAs(GENERAL_CONFIG_IDENTIFIER, () => ({
   privateKey: process.env.PRIVATE_KEY || '',
   blockchainUrl: process.env.BLOCKCHAIN_URL || '',
+  blockTime: parseInt(process.env.BLOCK_TIME, 10) || 0,
   containerAddress: process.env.CONTAINER_ADDRESS || '',
   tokenAddress: process.env.TOKEN_ADDRESS || '',
   containerAbi: process.env.CONTAINER_ABI || '',

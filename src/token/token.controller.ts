@@ -18,20 +18,29 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import TransactionReceipt from 'web3/types';
 
-import { TokenService } from './token.service';
-import { TokenGetDto, TokenMintDto, TokenUpdateDto } from './dto/token.dto';
-import { SegmentReadDto } from '../segment/dto/segment.read.dto';
+import { TokenCreateService } from './token-create.service';
+import { TokenReadService } from './token-read.service';
+import { TokenUpdateService } from './token-update.service';
+import { TokenDeleteService } from './token-delete.service';
+import TokenCreateDto from './dto/token-create.dto';
+import TokenReadDto from './dto/token-read.dto';
+import TokenUpdateDto from './dto/token-update.dto';
+import { SegmentReadDto } from 'src/segment/dto/segment.read.dto';
 
 @Controller('tokens')
 @ApiTags('Tokens')
 export class TokenRestController {
-  constructor(private readonly tokenService: TokenService) {}
+  constructor(
+    private readonly tokenCreateService: TokenCreateService,
+    private readonly tokenReadService: TokenReadService,
+    private readonly tokenUpdateService: TokenUpdateService,
+    private readonly tokenDeleteService: TokenDeleteService,
+  ) {}
 
   @Post()
   @ApiBody({
-    type: TokenMintDto,
+    type: TokenCreateDto,
     description: 'Contains all relevant information for the creation of a token',
   })
   @ApiOperation({
@@ -43,10 +52,10 @@ export class TokenRestController {
   @ApiBadRequestResponse({
     description: 'The input does not have the correct format or a token with this remoteId already exists.',
   })
-  public mintToken(@Body() dto: TokenMintDto): Promise<TransactionReceipt> {
-    const dtoWithDefaultValues = TokenMintDto.createWithDefaultValues();
+  public createToken(@Body() dto: TokenCreateDto): Promise<TokenReadDto> {
+    const dtoWithDefaultValues = TokenCreateDto.createWithDefaultValues();
     Object.assign(dtoWithDefaultValues, dto);
-    return this.tokenService.mintToken(dtoWithDefaultValues);
+    return this.tokenCreateService.createToken(dtoWithDefaultValues);
   }
 
   @Get()
@@ -55,7 +64,7 @@ export class TokenRestController {
   })
   @ApiOkResponse({
     description: 'The found tokens',
-    type: TokenGetDto,
+    type: TokenReadDto,
     isArray: true,
   })
   @ApiQuery({
@@ -64,8 +73,8 @@ export class TokenRestController {
     required: false,
     description: 'The remoteId of the tokens to be returned',
   })
-  public async getTokensByRemoteIdAndOwner(@Query('remoteId') remoteId?: string): Promise<TokenGetDto[]> {
-    return await this.tokenService.getTokensByRemoteIdAndOwner(remoteId);
+  public async getTokensByRemoteIdAndOwner(@Query('remoteId') remoteId?: string): Promise<TokenReadDto[]> {
+    return await this.tokenReadService.getTokensByRemoteIdAndOwner(remoteId);
   }
 
   @Get(':tokenId')
@@ -80,15 +89,15 @@ export class TokenRestController {
   })
   @ApiOkResponse({
     description: 'The token for the specified tokenId or remoteId',
-    type: TokenGetDto,
+    type: TokenReadDto,
     isArray: false,
   })
   @ApiNotFoundResponse({
     description: 'A token with the specified tokenId does not exist.',
   })
-  public async getTokenByTokenId(@Param('tokenId') tokenId: string): Promise<TokenGetDto> {
+  public async getTokenByTokenId(@Param('tokenId') tokenId: string): Promise<TokenReadDto> {
     const parsedTokenId = this.parseTokenId(tokenId);
-    return this.tokenService.getTokenByTokenId(parsedTokenId);
+    return this.tokenReadService.getTokenByTokenId(parsedTokenId);
   }
 
   @Get(':tokenId/segments')
@@ -108,7 +117,7 @@ export class TokenRestController {
   })
   public getSegmentsByTokenId(@Param('tokenId') tokenId: string): Promise<SegmentReadDto[]> {
     const parsedTokenId = this.parseTokenId(tokenId);
-    return this.tokenService.getSegmentsByTokenId(parsedTokenId);
+    return this.tokenReadService.getSegmentsByTokenId(parsedTokenId);
   }
 
   @Patch(':tokenId')
@@ -131,12 +140,9 @@ export class TokenRestController {
   @ApiNotFoundResponse({
     description: 'A token with the specified tokenId does not exist.',
   })
-  public updateTokenByTokenId(
-    @Param('tokenId') tokenId: string,
-    @Body() dto: TokenUpdateDto,
-  ): Promise<TransactionReceipt> {
+  public updateTokenByTokenId(@Param('tokenId') tokenId: string, @Body() dto: TokenUpdateDto): Promise<TokenReadDto> {
     const parsedTokenId = this.parseTokenId(tokenId);
-    return this.tokenService.updateTokenByTokenId(parsedTokenId, dto);
+    return this.tokenUpdateService.updateTokenByTokenId(parsedTokenId, dto);
   }
 
   @Delete(':tokenId')
@@ -147,18 +153,18 @@ export class TokenRestController {
     description: 'The id of the Token to be burned',
   })
   @ApiOperation({
-    summary: 'Burns the token with the specified id',
+    summary: 'Burns the token with the specified tokenId',
   })
   @ApiOkResponse({
     description: 'The Token has been successfully burned.',
   })
   @ApiNotFoundResponse({
     description:
-      'A token with the specified remoteId does not exist or the current user is not the owner of the token with the specified id.',
+      'A token with the specified remoteId does not exist or the current user is not the owner of the token with the specified tokenId.',
   })
-  public burnTokenByTokenId(@Param('tokenId') tokenId: string): Promise<TransactionReceipt> {
+  public burnTokenByTokenId(@Param('tokenId') tokenId: string): Promise<void> {
     const parsedTokenId = this.parseTokenId(tokenId);
-    return this.tokenService.burnTokenByTokenId(parsedTokenId);
+    return this.tokenDeleteService.burnTokenByTokenId(parsedTokenId);
   }
 
   private parseTokenId(tokenId: string) {

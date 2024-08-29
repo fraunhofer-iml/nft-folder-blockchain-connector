@@ -53,9 +53,7 @@ export class EventService {
     const events: EventLog[] = await this.getAllPastEvents('Transfer', tokenId);
     const transactionHash: string = events.length === 0 ? '' : events[0].transactionHash;
 
-    const timestamp: number = await this.blockchainService.fetchTransactionTimestamp(transactionHash);
-    const timestampInSeconds: Date = new Date(timestamp * 1000);
-    return timestampInSeconds.toISOString();
+    return this.blockchainService.fetchTransactionTimestamp(transactionHash);
   }
 
   private async fetchLastUpdatedOn(tokenId: number): Promise<string> {
@@ -70,11 +68,9 @@ export class EventService {
       { blockNumber: -1, transactionHash: '' },
     );
 
-    const timestamp: number = await this.blockchainService.fetchTransactionTimestamp(
+    return await this.blockchainService.fetchTransactionTimestamp(
       eventInformationWithHighestBlockNumber.transactionHash,
     );
-    const timestampInSeconds: Date = new Date(timestamp * 1000);
-    return timestampInSeconds.toISOString();
   }
 
   private async getAllPastEvents(event: string, tokenId: number): Promise<EventLog[]> {

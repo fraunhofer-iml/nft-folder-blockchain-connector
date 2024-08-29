@@ -12,7 +12,7 @@ import { Contract, TransactionReceipt } from 'ethers';
 import { BlockchainService } from 'src/shared/blockchain.service';
 import { ConfigurationService } from 'src/configuration/configuration.service';
 import { SegmentReadDto } from './dto/segment.read.dto';
-import { TokenInformationDto } from 'src/token/dto/token.dto';
+import TokenInformationDto from 'src/token/dto/token.information.dto';
 
 @Injectable()
 export class SegmentService {

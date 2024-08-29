@@ -8,12 +8,12 @@
 
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { TransactionReceipt } from 'ethers';
 
 import { SegmentService } from './segment.service';
-import { TokenInformationDto } from '../token/dto/token.dto';
 import { SegmentCreateDto } from './dto/segment.create.dto';
 import { SegmentReadDto } from './dto/segment.read.dto';
-import { TransactionReceipt } from 'ethers';
+import TokenInformationDto from 'src/token/dto/token.information.dto';
 
 @Controller('segments')
 @ApiTags('Segments')

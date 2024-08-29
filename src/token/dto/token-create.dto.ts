@@ -1,0 +1,37 @@
+/**
+ * Copyright Open Logistics Foundation
+ *
+ * Licensed under the Open Logistics Foundation License 1.3.
+ * For details on the licensing terms, see the LICENSE file.
+ * SPDX-License-Identifier: OLFL-1.3
+ */
+
+import { ApiProperty } from '@nestjs/swagger';
+
+import TokenAssetDto from './token.asset.dto';
+import TokenMetadataDto from './token.metadata.dto';
+
+export default class TokenCreateDto {
+  @ApiProperty()
+  remoteId: string;
+
+  @ApiProperty()
+  asset: TokenAssetDto;
+
+  @ApiProperty()
+  metadata: TokenMetadataDto;
+
+  @ApiProperty()
+  additionalInformation: string;
+
+  constructor(remoteId: string, asset: TokenAssetDto, metadata: TokenMetadataDto, additionalInformation: string) {
+    this.remoteId = remoteId;
+    this.asset = asset;
+    this.metadata = metadata;
+    this.additionalInformation = additionalInformation;
+  }
+
+  static createWithDefaultValues(): TokenCreateDto {
+    return new TokenCreateDto('', new TokenAssetDto('', ''), new TokenMetadataDto('', ''), '');
+  }
+}
