@@ -81,7 +81,7 @@ export class TokenRestController {
   @ApiParam({
     name: 'tokenId',
     type: Number,
-    required: false,
+    required: true,
     description: 'The id of the Token to be returned',
   })
   @ApiOperation({
@@ -98,6 +98,46 @@ export class TokenRestController {
   public async getTokenByTokenId(@Param('tokenId') tokenId: string): Promise<TokenReadDto> {
     const parsedTokenId = this.parseTokenId(tokenId);
     return this.tokenReadService.getTokenByTokenId(parsedTokenId);
+  }
+
+  @Get(':tokenId/confirmed-parent-ids')
+  @ApiParam({
+    name: 'tokenId',
+    type: Number,
+    required: true,
+    description: 'The id of the token whose confirmed parent ids are to be returned',
+  })
+  @ApiOperation({
+    summary: 'Returns the confirmed parent ids of a token',
+  })
+  @ApiOkResponse({
+    description: 'The confirmed parent ids of the specified token',
+    type: Number,
+    isArray: true,
+  })
+  public async getConfirmedParentIdsByTokenId(@Param('tokenId') tokenId: string): Promise<number[]> {
+    const parsedTokenId: number = this.parseTokenId(tokenId);
+    return this.tokenReadService.getConfirmedParentIds(parsedTokenId);
+  }
+
+  @Get(':tokenId/unconfirmed-parent-ids')
+  @ApiParam({
+    name: 'tokenId',
+    type: Number,
+    required: true,
+    description: 'The id of the token whose unconfirmed parent ids are to be returned',
+  })
+  @ApiOperation({
+    summary: 'Returns the unconfirmed parent ids of a token',
+  })
+  @ApiOkResponse({
+    description: 'The unconfirmed parent ids of the specified token',
+    type: Number,
+    isArray: true,
+  })
+  public async getUnconfirmedParentIdsByTokenId(@Param('tokenId') tokenId: string): Promise<number[]> {
+    const parsedTokenId: number = this.parseTokenId(tokenId);
+    return this.tokenReadService.getUnconfirmedParentIds(parsedTokenId);
   }
 
   @Get(':tokenId/segments')

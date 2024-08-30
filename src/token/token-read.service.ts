@@ -17,6 +17,7 @@ import TokenReadDto from './dto/token-read.dto';
 import TokenAssetDto from './dto/token.asset.dto';
 import TokenMetadataDto from './dto/token.metadata.dto';
 import { SegmentReadDto } from 'src/segment/dto/segment.read.dto';
+import TokenHierarchyDto from './dto/token.hierarchy.dto';
 
 @Injectable()
 export class TokenReadService extends TokenBaseService {
@@ -52,6 +53,26 @@ export class TokenReadService extends TokenBaseService {
     }
   }
 
+  public async getConfirmedParentIds(tokenId: number): Promise<number[]> {
+    try {
+      const parentIds: number[] = await this.tokenInstance.getConfirmedParentIds(tokenId);
+      return parentIds.map((parentId: number) => Number(parentId));
+    } catch (err) {
+      this.handleError(err);
+      return Promise.reject(err);
+    }
+  }
+
+  public async getUnconfirmedParentIds(tokenId: number): Promise<number[]> {
+    try {
+      const parentIds: number[] = await this.tokenInstance.getUnconfirmedParentIds(tokenId);
+      return parentIds.map((parentId: number) => Number(parentId));
+    } catch (err) {
+      this.handleError(err);
+      return Promise.reject(err);
+    }
+  }
+
   public async getTokenByTokenId(tokenId: number): Promise<TokenReadDto> {
     try {
       const remoteId: string = await this.tokenInstance.getRemoteIdByTokenId(tokenId);
@@ -64,6 +85,13 @@ export class TokenReadService extends TokenBaseService {
         new TokenAssetDto(token.assetUri, token.assetHash),
         new TokenMetadataDto(token.metadataUri, token.metadataHash),
         token.additionalInformation,
+        new TokenHierarchyDto(
+          token.node.active,
+          Number(token.node.predecessorId),
+          Number(token.node.successorId),
+          token.node.childIds.map((childId: number) => Number(childId)),
+          token.node.parentIds.map((parentId: number) => Number(parentId)),
+        ),
         ownerAddress,
         tokenInformation.minterAddress,
         tokenInformation.createdOn,

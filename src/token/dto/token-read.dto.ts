@@ -11,8 +11,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import TokenAssetDto from './token.asset.dto';
 import TokenMetadataDto from './token.metadata.dto';
 import TokenCreateDto from './token-create.dto';
+import TokenHierarchyDto from './token.hierarchy.dto';
 
 export default class TokenReadDto extends TokenCreateDto {
+  @ApiProperty()
+  tokenHierarchy: TokenHierarchyDto;
+
   @ApiProperty()
   ownerAddress: string;
 
@@ -36,6 +40,7 @@ export default class TokenReadDto extends TokenCreateDto {
     asset: TokenAssetDto,
     metadata: TokenMetadataDto,
     additionalInformation: string,
+    tokenHierarchy: TokenHierarchyDto,
     ownerAddress: string,
     minterAddress: string,
     createdOn: string,
@@ -44,6 +49,7 @@ export default class TokenReadDto extends TokenCreateDto {
     tokenAddress: string,
   ) {
     super(remoteId, asset, metadata, additionalInformation);
+    this.tokenHierarchy = tokenHierarchy;
     this.ownerAddress = ownerAddress;
     this.minterAddress = minterAddress;
     this.createdOn = createdOn;

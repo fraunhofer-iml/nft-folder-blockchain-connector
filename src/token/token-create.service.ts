@@ -82,6 +82,7 @@ export class TokenCreateService extends TokenBaseService {
       txTimestamp, // createdOn and lastUpdatedOn are the same
       Number(decodedLogs[0].args[1]),
       this.configurationService.getGeneralConfiguration().tokenAddress,
+      null,
     );
   }
 }
