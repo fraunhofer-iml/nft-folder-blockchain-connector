@@ -76,13 +76,13 @@ export class TokenCreateService extends TokenBaseService {
       new TokenAssetDto(decodedLogs[0].args[3], decodedLogs[0].args[4]),
       new TokenMetadataDto(decodedLogs[0].args[5], decodedLogs[0].args[6]),
       decodedLogs[0].args[7],
+      null,
       decodedLogs[0].args[0],
       decodedLogs[0].args[0], // receiver is minter
       txTimestamp,
       txTimestamp, // createdOn and lastUpdatedOn are the same
       Number(decodedLogs[0].args[1]),
       this.configurationService.getGeneralConfiguration().tokenAddress,
-      null,
     );
   }
 }
