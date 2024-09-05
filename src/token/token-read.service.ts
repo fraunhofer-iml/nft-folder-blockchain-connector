@@ -85,13 +85,15 @@ export class TokenReadService extends TokenBaseService {
         new TokenAssetDto(token.assetUri, token.assetHash),
         new TokenMetadataDto(token.metadataUri, token.metadataHash),
         token.additionalInformation,
-        new TokenHierarchyDto(
-          token.node.active,
-          Number(token.node.predecessorId),
-          Number(token.node.successorId),
-          token.node.childIds.map((childId: number) => Number(childId)),
-          token.node.parentIds.map((parentId: number) => Number(parentId)),
-        ),
+        token.node.exists
+          ? new TokenHierarchyDto(
+              token.node.active,
+              Number(token.node.predecessorId) === 1.157920892373162e77 ? null : Number(token.node.predecessorId),
+              Number(token.node.successorId) === 1.157920892373162e77 ? null : Number(token.node.successorId),
+              token.node.childIds.map((childId: number) => Number(childId)),
+              token.node.parentIds.map((parentId: number) => Number(parentId)),
+            )
+          : undefined,
         ownerAddress,
         tokenInformation.minterAddress,
         tokenInformation.createdOn,

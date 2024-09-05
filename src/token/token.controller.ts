@@ -43,8 +43,14 @@ export class TokenRestController {
     type: TokenCreateDto,
     description: 'Contains all relevant information for the creation of a token',
   })
+  @ApiQuery({
+    name: 'appendToHierarchy',
+    type: Boolean,
+    required: true,
+    description: 'Whether the token should be appended to a hierarchy or not',
+  })
   @ApiOperation({
-    summary: 'Creates a new token',
+    summary: 'Creates a new token and either appends it to a hierarchy or not',
   })
   @ApiCreatedResponse({
     description: 'The Token has been successfully created.',
@@ -52,10 +58,11 @@ export class TokenRestController {
   @ApiBadRequestResponse({
     description: 'The input does not have the correct format or a token with this remoteId already exists.',
   })
-  public createToken(@Body() dto: TokenCreateDto): Promise<TokenReadDto> {
-    const dtoWithDefaultValues = TokenCreateDto.createWithDefaultValues();
-    Object.assign(dtoWithDefaultValues, dto);
-    return this.tokenCreateService.createToken(dtoWithDefaultValues);
+  public createToken(
+    @Body() dto: TokenCreateDto,
+    @Query('appendToHierarchy') appendToHierarchy: string,
+  ): Promise<TokenReadDto> {
+    return this.tokenCreateService.createToken(dto, appendToHierarchy === 'true');
   }
 
   @Get()

@@ -15,7 +15,7 @@ import TokenHierarchyDto from './token.hierarchy.dto';
 
 export default class TokenReadDto extends TokenCreateDto {
   @ApiProperty()
-  tokenHierarchy: TokenHierarchyDto;
+  hierarchy: TokenHierarchyDto;
 
   @ApiProperty()
   ownerAddress: string;
@@ -40,7 +40,7 @@ export default class TokenReadDto extends TokenCreateDto {
     asset: TokenAssetDto,
     metadata: TokenMetadataDto,
     additionalInformation: string,
-    tokenHierarchy: TokenHierarchyDto,
+    hierarchy: TokenHierarchyDto,
     ownerAddress: string,
     minterAddress: string,
     createdOn: string,
@@ -48,8 +48,8 @@ export default class TokenReadDto extends TokenCreateDto {
     tokenId: number,
     tokenAddress: string,
   ) {
-    super(remoteId, asset, metadata, additionalInformation);
-    this.tokenHierarchy = tokenHierarchy;
+    super(remoteId, asset, metadata, additionalInformation, undefined); // parentIds not needed here
+    this.hierarchy = hierarchy;
     this.ownerAddress = ownerAddress;
     this.minterAddress = minterAddress;
     this.createdOn = createdOn;

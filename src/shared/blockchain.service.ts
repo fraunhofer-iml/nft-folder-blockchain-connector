@@ -100,7 +100,7 @@ export class BlockchainService {
     if (errorMessage) {
       this.handleBlockchainError(errorMessage);
     } else {
-      this.handleConnectionError(error);
+      this.handleOtherError(error);
     }
   }
 
@@ -116,7 +116,7 @@ export class BlockchainService {
     }
   }
 
-  private handleConnectionError(error: any) {
+  private handleOtherError(error: any) {
     switch (error.code) {
       case 'BAD_DATA':
         throw new InternalServerErrorException('Cannot find a Smart Contract at this address.');

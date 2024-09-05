@@ -24,14 +24,20 @@ export default class TokenCreateDto {
   @ApiProperty()
   additionalInformation: string;
 
-  constructor(remoteId: string, asset: TokenAssetDto, metadata: TokenMetadataDto, additionalInformation: string) {
+  @ApiProperty({ type: [Number] })
+  parentIds: number[];
+
+  constructor(
+    remoteId: string = '',
+    asset: TokenAssetDto = new TokenAssetDto('', ''),
+    metadata: TokenMetadataDto = new TokenMetadataDto('', ''),
+    additionalInformation: string = '',
+    parentIds: number[],
+  ) {
     this.remoteId = remoteId;
     this.asset = asset;
     this.metadata = metadata;
     this.additionalInformation = additionalInformation;
-  }
-
-  static createWithDefaultValues(): TokenCreateDto {
-    return new TokenCreateDto('', new TokenAssetDto('', ''), new TokenMetadataDto('', ''), '');
+    this.parentIds = parentIds;
   }
 }

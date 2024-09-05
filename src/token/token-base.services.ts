@@ -6,7 +6,7 @@
  * SPDX-License-Identifier: OLFL-1.3
  */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Contract } from 'ethers';
 
 import { BlockchainService } from 'src/shared/blockchain.service';
@@ -14,6 +14,7 @@ import { ConfigurationService } from 'src/configuration/configuration.service';
 
 @Injectable()
 export class TokenBaseService {
+  private readonly logger = new Logger(BlockchainService.name);
   protected tokenInstance: Contract;
 
   constructor(
@@ -29,7 +30,12 @@ export class TokenBaseService {
   }
 
   protected handleError(err: any): void {
-    const targetAddress = this.tokenInstance?.target?.toString() || 'Unknown';
-    this.blockchainService.handleError(err, targetAddress);
+    try {
+      const targetAddress = this.tokenInstance?.target?.toString() || 'Unknown';
+      this.blockchainService.handleError(err, targetAddress);
+    } catch (handledError) {
+      this.logger.error(handledError);
+      throw handledError;
+    }
   }
 }
