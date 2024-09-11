@@ -12,17 +12,19 @@ import { Interface, JsonRpcProvider, LogDescription, TransactionReceipt, Transac
 import { TokenBaseService } from './token-base.services';
 import { BlockchainService } from 'src/shared/blockchain.service';
 import { ConfigurationService } from 'src/configuration/configuration.service';
-import TokenCreateDto from './dto/token-create.dto';
-import TokenReadDto from './dto/token-read.dto';
-import TokenAssetDto from './dto/token.asset.dto';
-import TokenMetadataDto from './dto/token.metadata.dto';
-import TokenHierarchyDto from './dto/token.hierarchy.dto';
+import TokenCreateDto from '../dto/token-create.dto';
+import TokenReadDto from '../dto/token-read.dto';
+import TokenAssetDto from '../dto/token.asset.dto';
+import TokenMetadataDto from '../dto/token.metadata.dto';
+import TokenHierarchyDto from '../dto/token.hierarchy.dto';
+import { EventService } from './event.service';
 
 @Injectable()
 export class TokenCreateService extends TokenBaseService {
   constructor(
     protected readonly blockchainService: BlockchainService,
     protected readonly configurationService: ConfigurationService,
+    private readonly eventService: EventService,
     @Inject('EthersProvider') protected readonly ethersProvider: JsonRpcProvider,
   ) {
     super(blockchainService, configurationService);
@@ -66,30 +68,19 @@ export class TokenCreateService extends TokenBaseService {
   }
 
   private async createDto(transactionReceipt: TransactionReceipt): Promise<TokenReadDto> {
-    const decodedLogs: LogDescription[] = this.decodeLogs(transactionReceipt);
+    const contractInterface = new Interface(this.tokenInstance.interface.fragments);
+    const decodedLogs: LogDescription[] = this.eventService.decodeLogs(contractInterface, transactionReceipt, [
+      'TokenMinted',
+      'TokenAppendedToHierarchy',
+    ]);
+    this.logger.log(
+      `Token '${decodedLogs?.[0]?.args[1]}' was minted | ${decodedLogs?.[0]?.args} | ${decodedLogs?.[1]?.args}`,
+    );
+
     const transactionTimestamp: string = await this.blockchainService.fetchTransactionTimestamp(
       transactionReceipt.hash,
     );
     return this.assembleDto(decodedLogs, transactionTimestamp);
-  }
-
-  private decodeLogs(transactionReceipt: TransactionReceipt): LogDescription[] {
-    const tokenInterface = new Interface(this.tokenInstance.interface.fragments);
-
-    const decodedLogs: LogDescription[] = transactionReceipt.logs
-      .map((encodedLog: any) => {
-        const decodedLog = tokenInterface.parseLog(encodedLog);
-        return decodedLog.name === 'TokenMinted' || decodedLog.name === 'TokenAppendedToHierarchy' ? decodedLog : null;
-      })
-      .filter((decodedLog: any) => {
-        return decodedLog !== null && decodedLog !== undefined;
-      });
-
-    if (decodedLogs.length === 0) {
-      throw new Error("No 'TokenMinted' or 'TokenAppendedToHierarchy' event found in transaction receipt logs");
-    }
-
-    return decodedLogs;
   }
 
   private assembleDto(decodedLogs: LogDescription[], transactionTimestamp: string): TokenReadDto {

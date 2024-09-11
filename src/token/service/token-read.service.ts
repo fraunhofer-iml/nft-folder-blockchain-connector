@@ -13,11 +13,11 @@ import { BlockchainService } from 'src/shared/blockchain.service';
 import { ConfigurationService } from 'src/configuration/configuration.service';
 import { EventService, TokenInformation } from './event.service';
 import { SegmentService } from 'src/segment/segment.service';
-import TokenReadDto from './dto/token-read.dto';
-import TokenAssetDto from './dto/token.asset.dto';
-import TokenMetadataDto from './dto/token.metadata.dto';
 import { SegmentReadDto } from 'src/segment/dto/segment.read.dto';
-import TokenHierarchyDto from './dto/token.hierarchy.dto';
+import TokenReadDto from '../dto/token-read.dto';
+import TokenAssetDto from '../dto/token.asset.dto';
+import TokenMetadataDto from '../dto/token.metadata.dto';
+import TokenHierarchyDto from '../dto/token.hierarchy.dto';
 
 @Injectable()
 export class TokenReadService extends TokenBaseService {
@@ -30,12 +30,12 @@ export class TokenReadService extends TokenBaseService {
     super(blockchainService, configurationService);
   }
 
-  public async getTokensByRemoteIdAndOwner(remoteId?: string): Promise<TokenReadDto[]> {
-    const tokenIds: number[] = await this.getTokenIdsByRemoteIdAndOwner(remoteId);
-    return await Promise.all(tokenIds.map((tokenId) => this.getTokenByTokenId(Number(tokenId))));
+  public async getTokens(remoteId?: string): Promise<TokenReadDto[]> {
+    const tokenIds: number[] = await this.getTokenIds(remoteId);
+    return await Promise.all(tokenIds.map((tokenId) => this.getToken(Number(tokenId))));
   }
 
-  private async getTokenIdsByRemoteIdAndOwner(remoteId: string): Promise<number[]> {
+  private async getTokenIds(remoteId: string): Promise<number[]> {
     const ownerAddress: string = this.blockchainService.returnSignerAddress();
 
     try {
@@ -53,27 +53,7 @@ export class TokenReadService extends TokenBaseService {
     }
   }
 
-  public async getConfirmedParentIds(tokenId: number): Promise<number[]> {
-    try {
-      const parentIds: number[] = await this.tokenInstance.getConfirmedParentIds(tokenId);
-      return parentIds.map((parentId: number) => Number(parentId));
-    } catch (err) {
-      this.handleError(err);
-      return Promise.reject(err);
-    }
-  }
-
-  public async getUnconfirmedParentIds(tokenId: number): Promise<number[]> {
-    try {
-      const parentIds: number[] = await this.tokenInstance.getUnconfirmedParentIds(tokenId);
-      return parentIds.map((parentId: number) => Number(parentId));
-    } catch (err) {
-      this.handleError(err);
-      return Promise.reject(err);
-    }
-  }
-
-  public async getTokenByTokenId(tokenId: number): Promise<TokenReadDto> {
+  public async getToken(tokenId: number): Promise<TokenReadDto> {
     try {
       const remoteId: string = await this.tokenInstance.getRemoteIdByTokenId(tokenId);
       const token = await this.tokenInstance.getToken(tokenId);
@@ -107,7 +87,27 @@ export class TokenReadService extends TokenBaseService {
     }
   }
 
-  public async getSegmentsByTokenId(tokenId: number): Promise<SegmentReadDto[]> {
+  public async getParentIds(tokenId: number, confirmed: boolean): Promise<number[]> {
+    try {
+      const parentIds: number[] = await this.tokenInstance.getParentIds(tokenId, confirmed);
+      return parentIds.map((parentId: number) => Number(parentId));
+    } catch (err) {
+      this.handleError(err);
+      return Promise.reject(err);
+    }
+  }
+
+  public async getChildIds(tokenId: number, confirmed: boolean): Promise<number[]> {
+    try {
+      const childIds: number[] = await this.tokenInstance.getChildIds(tokenId, confirmed);
+      return childIds.map((childId: number) => Number(childId));
+    } catch (err) {
+      this.handleError(err);
+      return Promise.reject(err);
+    }
+  }
+
+  public async getSegments(tokenId: number): Promise<SegmentReadDto[]> {
     const segments: SegmentReadDto[] = await this.segmentService.fetchAllSegments();
     return segments.filter(
       (segment: SegmentReadDto) =>

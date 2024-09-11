@@ -10,14 +10,14 @@ import { Module } from '@nestjs/common';
 
 import { ConfigurationModule } from 'src/configuration/configuration.module';
 import { SharedModule } from '../shared/shared.module';
-import { TokenRestController } from './token.controller';
-import { TokenBaseService } from './token-base.services';
-import { TokenCreateService } from './token-create.service';
-import { TokenReadService } from './token-read.service';
-import { TokenUpdateService } from './token-update.service';
-import { TokenDeleteService } from './token-delete.service';
+import { TokenRestController } from './controller/token.controller';
+import { TokenBaseService } from './service/token-base.services';
+import { TokenCreateService } from './service/token-create.service';
+import { TokenReadService } from './service/token-read.service';
+import { TokenUpdateService } from './service/token-update.service';
+import { TokenDeleteService } from './service/token-delete.service';
 import { SegmentService } from '../segment/segment.service';
-import { EventService } from './event.service';
+import { EventService } from './service/event.service';
 
 @Module({
   imports: [ConfigurationModule, SharedModule],

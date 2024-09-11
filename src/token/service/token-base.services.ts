@@ -14,7 +14,7 @@ import { ConfigurationService } from 'src/configuration/configuration.service';
 
 @Injectable()
 export class TokenBaseService {
-  private readonly logger = new Logger(BlockchainService.name);
+  protected readonly logger = new Logger(BlockchainService.name);
   protected tokenInstance: Contract;
 
   constructor(

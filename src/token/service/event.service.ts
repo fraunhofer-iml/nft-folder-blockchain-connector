@@ -7,7 +7,7 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Contract, EventLog } from 'ethers';
+import { Contract, EventLog, Interface, LogDescription, TransactionReceipt } from 'ethers';
 
 import { BlockchainService } from 'src/shared/blockchain.service';
 import { ConfigurationService } from 'src/configuration/configuration.service';
@@ -114,5 +114,26 @@ export class EventService {
           blockNumber: events[events.length - 1].blockNumber,
           transactionHash: events[events.length - 1].transactionHash,
         };
+  }
+
+  public decodeLogs(
+    contractInterface: Interface,
+    transactionReceipt: TransactionReceipt,
+    eventNames: string[],
+  ): LogDescription[] {
+    const decodedLogs: LogDescription[] = transactionReceipt.logs
+      .map((encodedLog: any) => {
+        const decodedLog = contractInterface.parseLog(encodedLog);
+        return eventNames.includes(decodedLog.name) ? decodedLog : null;
+      })
+      .filter((decodedLog: any) => {
+        return decodedLog !== null && decodedLog !== undefined;
+      });
+
+    if (decodedLogs.length === 0) {
+      throw new Error(`No event found in transaction receipt logs. Event names: ${eventNames.join(', ')}`);
+    }
+
+    return decodedLogs;
   }
 }

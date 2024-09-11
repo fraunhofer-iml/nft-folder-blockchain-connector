@@ -21,7 +21,7 @@ export class TokenDeleteService extends TokenBaseService {
     super(blockchainService, configurationService);
   }
 
-  public async burnTokenByTokenId(tokenId: number): Promise<void> {
+  public async burnToken(tokenId: number): Promise<void> {
     try {
       await this.burnTokenOnBlockchain(tokenId);
       await this.blockchainService.waitForTheNextBlock();

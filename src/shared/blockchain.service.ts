@@ -79,7 +79,7 @@ export class BlockchainService {
   }
 
   public handleError(error: any, contractAddress: string): void {
-    this.logger.error(error);
+    this.logger.warn(error);
 
     const contractInstance: Contract = this.contractInstances[contractAddress];
 
