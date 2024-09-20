@@ -22,7 +22,7 @@ export default class TokenCreateDto {
   metadata: TokenMetadataDto;
 
   @ApiProperty()
-  additionalInformation: string;
+  additionalData: string;
 
   @ApiProperty({ type: [Number] })
   parentIds: number[];
@@ -31,13 +31,13 @@ export default class TokenCreateDto {
     remoteId: string = '',
     asset: TokenAssetDto = new TokenAssetDto('', ''),
     metadata: TokenMetadataDto = new TokenMetadataDto('', ''),
-    additionalInformation: string = '',
+    additionalData: string = '',
     parentIds: number[],
   ) {
     this.remoteId = remoteId;
     this.asset = asset;
     this.metadata = metadata;
-    this.additionalInformation = additionalInformation;
+    this.additionalData = additionalData;
     this.parentIds = parentIds;
   }
 }

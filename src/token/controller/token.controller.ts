@@ -156,10 +156,7 @@ export class TokenRestController {
     type: TokenUpdateDto,
     description: 'Contains the new properties of the Token',
   })
-  public async updateTokenByTokenId(
-    @Param('tokenId') tokenId: string,
-    @Body() dto: TokenUpdateDto,
-  ): Promise<TokenReadDto> {
+  public async updateToken(@Param('tokenId') tokenId: string, @Body() dto: TokenUpdateDto): Promise<TokenReadDto> {
     const parsedTokenId = this.parseId(tokenId);
     return this.tokenUpdateService.updateToken(parsedTokenId, dto);
   }

@@ -55,16 +55,15 @@ export class TokenReadService extends TokenBaseService {
 
   public async getToken(tokenId: number): Promise<TokenReadDto> {
     try {
-      const remoteId: string = await this.tokenInstance.getRemoteIdByTokenId(tokenId);
       const token = await this.tokenInstance.getToken(tokenId);
       const ownerAddress: string = await this.tokenInstance.ownerOf(tokenId);
       const tokenInformation: TokenInformation = await this.eventInformationService.fetchTokenInformation(tokenId);
 
       return new TokenReadDto(
-        remoteId,
-        new TokenAssetDto(token.assetUri, token.assetHash),
-        new TokenMetadataDto(token.metadataUri, token.metadataHash),
-        token.additionalInformation,
+        token.remoteId,
+        new TokenAssetDto(token.asset.uri, token.asset.hash),
+        new TokenMetadataDto(token.metadata.uri, token.metadata.hash),
+        token.additionalData,
         token.node.exists
           ? new TokenHierarchyDto(
               token.node.active,

@@ -47,7 +47,7 @@ export class TokenUpdateService extends TokenBaseService {
       this.getValue(tokenUpdateDto.assetHash),
       this.getValue(tokenUpdateDto.metadataUri),
       this.getValue(tokenUpdateDto.metadataHash),
-      this.getValue(tokenUpdateDto.additionalInformation),
+      this.getValue(tokenUpdateDto.additionalData),
     );
   }
 

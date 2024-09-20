@@ -39,7 +39,7 @@ export default class TokenReadDto extends TokenCreateDto {
     remoteId: string,
     asset: TokenAssetDto,
     metadata: TokenMetadataDto,
-    additionalInformation: string,
+    additionalData: string,
     hierarchy: TokenHierarchyDto,
     ownerAddress: string,
     minterAddress: string,
@@ -48,7 +48,7 @@ export default class TokenReadDto extends TokenCreateDto {
     tokenId: number,
     tokenAddress: string,
   ) {
-    super(remoteId, asset, metadata, additionalInformation, undefined); // parentIds not needed here
+    super(remoteId, asset, metadata, additionalData, undefined); // parentIds not needed here
     this.hierarchy = hierarchy;
     this.ownerAddress = ownerAddress;
     this.minterAddress = minterAddress;

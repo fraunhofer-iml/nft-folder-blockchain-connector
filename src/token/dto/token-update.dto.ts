@@ -22,5 +22,5 @@ export default class TokenUpdateDto {
   metadataHash?: string;
 
   @ApiProperty()
-  additionalInformation?: string;
+  additionalData?: string;
 }

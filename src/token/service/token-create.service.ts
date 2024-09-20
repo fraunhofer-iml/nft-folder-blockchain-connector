@@ -40,7 +40,7 @@ export class TokenCreateService extends TokenBaseService {
             dto.metadata.uri,
             dto.metadata.hash,
             dto.remoteId,
-            dto.additionalInformation,
+            dto.additionalData,
             dto.parentIds,
           )
         : await this.tokenInstance.mintToken(
@@ -50,7 +50,7 @@ export class TokenCreateService extends TokenBaseService {
             dto.metadata.uri,
             dto.metadata.hash,
             dto.remoteId,
-            dto.additionalInformation,
+            dto.additionalData,
           );
 
       await this.blockchainService.waitForTheNextBlock();
@@ -87,7 +87,7 @@ export class TokenCreateService extends TokenBaseService {
     const remoteId = decodedLogs[0].args[2];
     const tokenAssetDto = new TokenAssetDto(decodedLogs[0].args[3], decodedLogs[0].args[4]);
     const tokenMetadataDto = new TokenMetadataDto(decodedLogs[0].args[5], decodedLogs[0].args[6]);
-    const additionalInformation = decodedLogs[0].args[7];
+    const additionalData = decodedLogs[0].args[7];
     const tokenHierarchyDto = decodedLogs[1]
       ? new TokenHierarchyDto(
           true,
@@ -108,7 +108,7 @@ export class TokenCreateService extends TokenBaseService {
       remoteId,
       tokenAssetDto,
       tokenMetadataDto,
-      additionalInformation,
+      additionalData,
       tokenHierarchyDto,
       ownerAddress,
       minterAddress,

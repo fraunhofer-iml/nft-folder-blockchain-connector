@@ -57,7 +57,7 @@ export class EventService {
   }
 
   private async fetchLastUpdatedOn(tokenId: number): Promise<string> {
-    const eventNames = ['AssetUriSet', 'AssetHashSet', 'MetadataUriSet', 'MetadataHashSet', 'AdditionalInformationSet'];
+    const eventNames = ['AssetUriSet', 'AssetHashSet', 'MetadataUriSet', 'MetadataHashSet', 'AdditionalDataSet'];
     const eventInformationPromises: Promise<EventInformation>[] = eventNames.map((event) =>
       this.fetchEventInformationFromLastEvent(tokenId, event),
     );
@@ -96,8 +96,8 @@ export class EventService {
       filter = this.tokenContract.filters.MetadataHashSet(null, null, null, null, tokenId);
     }
 
-    if (event === 'AdditionalInformationSet') {
-      filter = this.tokenContract.filters.AdditionalInformationSet(null, null, null, null, tokenId);
+    if (event === 'AdditionalDataSet') {
+      filter = this.tokenContract.filters.AdditionalDataSet(null, null, null, null, tokenId);
     }
 
     return (await this.tokenContract.queryFilter(filter)) as EventLog[];
