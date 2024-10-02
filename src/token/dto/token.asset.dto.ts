@@ -8,7 +8,7 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 
-export default class TokenAssetDto {
+export class TokenAssetDto {
   @ApiProperty()
   uri: string;
 

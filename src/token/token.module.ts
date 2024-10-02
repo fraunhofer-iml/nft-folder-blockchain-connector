@@ -31,5 +31,6 @@ import { EventService } from './service/event.service';
     EventService,
     SegmentService,
   ],
+  exports: [TokenCreateService, TokenReadService, TokenUpdateService, TokenDeleteService],
 })
 export class TokenModule {}

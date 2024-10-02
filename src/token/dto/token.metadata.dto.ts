@@ -8,7 +8,7 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 
-export default class TokenMetadataDto {
+export class TokenMetadataDto {
   @ApiProperty()
   uri: string;
 

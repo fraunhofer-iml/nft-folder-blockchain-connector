@@ -13,8 +13,8 @@ import { TokenBaseService } from './token-base.services';
 import { BlockchainService } from 'src/shared/blockchain.service';
 import { ConfigurationService } from 'src/configuration/configuration.service';
 import { TokenReadService } from './token-read.service';
-import TokenReadDto from '../dto/token-read.dto';
-import TokenUpdateDto from '../dto/token-update.dto';
+import { TokenReadDto } from '../dto/token-read.dto';
+import { TokenUpdateDto } from '../dto/token-update.dto';
 import { EventService } from './event.service';
 
 @Injectable()

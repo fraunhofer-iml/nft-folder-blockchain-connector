@@ -15,5 +15,6 @@ import { DataIntegrityStringService } from './service/data-integrity-string.serv
 @Module({
   controllers: [DataIntegrityController],
   providers: [DataIntegrityFileService, DataIntegrityStringService],
+  exports: [DataIntegrityFileService, DataIntegrityStringService],
 })
 export class DataIntegrityModule {}

@@ -8,7 +8,7 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 
-export default class TokenHierarchyDto {
+export class TokenHierarchyDto {
   @ApiProperty()
   active: boolean;
 

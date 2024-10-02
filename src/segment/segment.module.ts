@@ -17,5 +17,6 @@ import { ConfigurationModule } from 'src/configuration/configuration.module';
   imports: [ConfigurationModule, SharedModule],
   controllers: [SegmentController],
   providers: [SegmentService],
+  exports: [SegmentService],
 })
 export class SegmentModule {}

@@ -12,11 +12,11 @@ import { Interface, JsonRpcProvider, LogDescription, TransactionReceipt, Transac
 import { TokenBaseService } from './token-base.services';
 import { BlockchainService } from 'src/shared/blockchain.service';
 import { ConfigurationService } from 'src/configuration/configuration.service';
-import TokenCreateDto from '../dto/token-create.dto';
-import TokenReadDto from '../dto/token-read.dto';
-import TokenAssetDto from '../dto/token.asset.dto';
-import TokenMetadataDto from '../dto/token.metadata.dto';
-import TokenHierarchyDto from '../dto/token.hierarchy.dto';
+import { TokenCreateDto } from '../dto/token-create.dto';
+import { TokenReadDto } from '../dto/token-read.dto';
+import { TokenAssetDto } from '../dto/token.asset.dto';
+import { TokenMetadataDto } from '../dto/token.metadata.dto';
+import { TokenHierarchyDto } from '../dto/token.hierarchy.dto';
 import { EventService } from './event.service';
 
 @Injectable()

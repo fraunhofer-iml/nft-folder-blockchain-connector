@@ -25,9 +25,9 @@ import { TokenCreateService } from '../service/token-create.service';
 import { TokenReadService } from '../service/token-read.service';
 import { TokenUpdateService } from '../service/token-update.service';
 import { TokenDeleteService } from '../service/token-delete.service';
-import TokenCreateDto from '../dto/token-create.dto';
-import TokenReadDto from '../dto/token-read.dto';
-import TokenUpdateDto from '../dto/token-update.dto';
+import { TokenCreateDto } from '../dto/token-create.dto';
+import { TokenReadDto } from '../dto/token-read.dto';
+import { TokenUpdateDto } from '../dto/token-update.dto';
 import { SegmentReadDto } from 'src/segment/dto/segment.read.dto';
 
 enum Status {

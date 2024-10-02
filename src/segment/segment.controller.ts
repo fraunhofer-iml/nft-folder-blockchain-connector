@@ -13,7 +13,7 @@ import { TransactionReceipt } from 'ethers';
 import { SegmentService } from './segment.service';
 import { SegmentCreateDto } from './dto/segment.create.dto';
 import { SegmentReadDto } from './dto/segment.read.dto';
-import TokenInformationDto from 'src/token/dto/token.information.dto';
+import { TokenInformationDto } from 'src/token/dto/token.information.dto';
 
 @Controller('segments')
 @ApiTags('Segments')

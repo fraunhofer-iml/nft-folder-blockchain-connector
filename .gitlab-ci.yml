@@ -17,9 +17,6 @@ variables:
   GIT_DEPTH: 0
   HUSKY: 0
   NPM_CI: npm ci --include dev --cache .npm --prefer-offline
-  DOCKER_REGISTRY_URI: '$BE_NEXUS_DOCKER_REGISTRY:$BE_NEXUS_DOCKER_REGISTRY_DEPLOY_PORT'
-  BLOCKCHAIN_CONNECTOR_IMAGE: '${DOCKER_REGISTRY_URI}/nft-folder/blockchain-connector'
-  OPENSHIFT_IMAGE: 'nexus.apps.sele.iml.fraunhofer.de:443/sele/cicdtools/openshift-cli-helm:latest'
 
 default:
   cache:
@@ -46,7 +43,7 @@ install-dependencies:
 ### test ###
 ############
 
-# Uncomment this job when adding or enabling new tests.
+# TODO-MP: Uncomment this job when adding or enabling new tests.
 .run-unit-tests:
   stage: test
   before_script:
@@ -138,39 +135,4 @@ create-npm-licenses-list:
 ### archive ###
 ###############
 
-build-docker-image:
-  stage: archive
-  image: nexus.blockchain-europe.iml.fraunhofer.de:5003/gitlab-runner/node_docker:latest
-  services:
-    - docker:dind
-  before_script:
-    - $NPM_CI
-    - npm run build
-    - docker login -u "$BE_NEXUS_USER" -p "$BE_NEXUS_PASS" "$DOCKER_REGISTRY_URI"
-  script:
-    - docker build --no-cache -t "${BLOCKCHAIN_CONNECTOR_IMAGE}:latest" .
-    - docker push "${BLOCKCHAIN_CONNECTOR_IMAGE}:latest"
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
-##############
-### deploy ###
-##############
-
-deploy-ecmr-to-okd:
-  stage: deploy
-  image: $OPENSHIFT_IMAGE
-  script:
-    - oc login --server="$BE_OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN" --insecure-skip-tls-verify
-    - sh ./helm/okd_deploy.sh -r ecmr
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d-ecmr+$/'
-
-deploy-sfbdc-to-okd:
-  stage: deploy
-  image: $OPENSHIFT_IMAGE
-  script:
-    - oc login --server="$BE_OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN" --insecure-skip-tls-verify
-    - sh ./helm/okd_deploy.sh -r sfbdc
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d-sfbdc+$/'
+### TODO-MP: Add job to archive the build artifacts.

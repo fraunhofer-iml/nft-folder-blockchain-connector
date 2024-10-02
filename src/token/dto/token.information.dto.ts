@@ -11,7 +11,7 @@ import { IsNotEmpty, IsNumberString } from 'class-validator';
 
 import { IsValidBlockchainAddress } from 'src/shared/validator/BlockchainAddressValidator';
 
-export default class TokenInformationDto {
+export class TokenInformationDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsValidBlockchainAddress()

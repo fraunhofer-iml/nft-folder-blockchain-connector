@@ -8,10 +8,10 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import TokenAssetDto from './token.asset.dto';
-import TokenMetadataDto from './token.metadata.dto';
+import { TokenAssetDto } from './token.asset.dto';
+import { TokenMetadataDto } from './token.metadata.dto';
 
-export default class TokenCreateDto {
+export class TokenCreateDto {
   @ApiProperty()
   remoteId: string;
 

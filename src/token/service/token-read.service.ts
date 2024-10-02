@@ -14,10 +14,10 @@ import { ConfigurationService } from 'src/configuration/configuration.service';
 import { EventService, TokenInformation } from './event.service';
 import { SegmentService } from 'src/segment/segment.service';
 import { SegmentReadDto } from 'src/segment/dto/segment.read.dto';
-import TokenReadDto from '../dto/token-read.dto';
-import TokenAssetDto from '../dto/token.asset.dto';
-import TokenMetadataDto from '../dto/token.metadata.dto';
-import TokenHierarchyDto from '../dto/token.hierarchy.dto';
+import { TokenReadDto } from '../dto/token-read.dto';
+import { TokenAssetDto } from '../dto/token.asset.dto';
+import { TokenMetadataDto } from '../dto/token.metadata.dto';
+import { TokenHierarchyDto } from '../dto/token.hierarchy.dto';
 
 @Injectable()
 export class TokenReadService extends TokenBaseService {
