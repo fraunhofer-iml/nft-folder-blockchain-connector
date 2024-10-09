@@ -1,10 +1,11 @@
+# directories
 .husky/
-.idea
-coverage
 helm/
 src/
 test/
 third-party-licenses/
+
+# files
 .env
 .env.example
 .eslintrc.json
@@ -12,7 +13,7 @@ third-party-licenses/
 .gitlab-ci.yml
 .prettierignore
 .prettierrc
-docker-commpose.yml
+docker-compose.yml
 Dockerfile
 license-header.js
 nest-cli.json

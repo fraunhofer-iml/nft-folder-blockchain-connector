@@ -9,8 +9,7 @@ stages:
   - test
   - analyze
   - license
-  - archive
-  - deploy
+  - publish
 
 variables:
   GITLAB_TAG: 'be'
@@ -132,7 +131,17 @@ create-npm-licenses-list:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 ###############
-### archive ###
+### publish ###
 ###############
 
-### TODO-MP: Add job to archive the build artifacts.
+publish-npm:
+  stage: publish
+  before_script:
+    - npm install husky --save-dev
+    - npm run build
+  script:
+    - echo "@nft-folder:registry=https://${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+    - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
+    - npm publish
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
