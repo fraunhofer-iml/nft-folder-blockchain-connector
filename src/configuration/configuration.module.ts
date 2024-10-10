@@ -9,7 +9,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ConfigurationService } from './configuration.service';
-import generalConfiguration from './configurations/general.configuration';
+import blockchainConfiguration from './configurations/blockchain.configuration';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import generalConfiguration from './configurations/general.configuration';
       envFilePath: ['.env'],
       isGlobal: true,
       cache: true,
-      load: [generalConfiguration],
+      load: [blockchainConfiguration],
     }),
   ],
   providers: [ConfigurationService],

@@ -102,7 +102,7 @@ export class TokenCreateService extends TokenBaseService {
     const createdOn = transactionTimestamp;
     const lastUpdatedOn = transactionTimestamp; // createdOn and lastUpdatedOn are the same when minting
     const tokenId = Number(decodedLogs[0].args[1]);
-    const tokenAddress = this.configurationService.getGeneralConfiguration().tokenAddress;
+    const tokenAddress = this.configurationService.getBlockchainConfiguration().tokenAddress;
 
     return new TokenReadDto(
       remoteId,

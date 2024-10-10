@@ -25,7 +25,7 @@ export class TokenBaseService {
   }
 
   private initializeTokenInstance(): void {
-    const { tokenAddress, tokenAbi } = this.configurationService.getGeneralConfiguration();
+    const { tokenAddress, tokenAbi } = this.configurationService.getBlockchainConfiguration();
     this.tokenInstance = this.blockchainService.getContractInstance(tokenAddress, tokenAbi);
   }
 

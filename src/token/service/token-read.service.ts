@@ -78,7 +78,7 @@ export class TokenReadService extends TokenBaseService {
         tokenInformation.createdOn,
         tokenInformation.lastUpdatedOn,
         tokenId,
-        this.configurationService.getGeneralConfiguration().tokenAddress,
+        this.configurationService.getBlockchainConfiguration().tokenAddress,
       );
     } catch (err) {
       this.handleError(err);

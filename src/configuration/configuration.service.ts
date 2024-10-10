@@ -7,14 +7,17 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { GENERAL_CONFIG_IDENTIFIER, GeneralConfiguration } from './configurations/general.configuration';
+import {
+  BLOCKCHAIN_CONFIGURATION_IDENTIFIER,
+  BlockchainConfiguration,
+} from './configurations/blockchain.configuration';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ConfigurationService {
   constructor(private readonly configService: ConfigService) {}
 
-  public getGeneralConfiguration(): GeneralConfiguration | undefined {
-    return this.configService.get<GeneralConfiguration>(GENERAL_CONFIG_IDENTIFIER);
+  public getBlockchainConfiguration(): BlockchainConfiguration | undefined {
+    return this.configService.get<BlockchainConfiguration>(BLOCKCHAIN_CONFIGURATION_IDENTIFIER);
   }
 }

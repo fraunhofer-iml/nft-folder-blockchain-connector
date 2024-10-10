@@ -32,8 +32,8 @@ export class EventService {
     private readonly blockchainService: BlockchainService,
   ) {
     this.tokenContract = this.blockchainService.getContractInstance(
-      this.configurationService.getGeneralConfiguration().tokenAddress,
-      this.configurationService.getGeneralConfiguration().tokenAbi,
+      this.configurationService.getBlockchainConfiguration().tokenAddress,
+      this.configurationService.getBlockchainConfiguration().tokenAbi,
     );
   }
 

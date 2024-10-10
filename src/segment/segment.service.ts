@@ -24,11 +24,11 @@ export class SegmentService {
     private readonly configurationService: ConfigurationService,
   ) {
     this.containerInstance = this.blockchainService.getContractInstance(
-      this.configurationService.getGeneralConfiguration().containerAddress,
-      this.configurationService.getGeneralConfiguration().containerAbi,
+      this.configurationService.getBlockchainConfiguration().containerAddress,
+      this.configurationService.getBlockchainConfiguration().containerAbi,
     );
 
-    this.segmentAbi = this.configurationService.getGeneralConfiguration().segmentAbi;
+    this.segmentAbi = this.configurationService.getBlockchainConfiguration().segmentAbi;
   }
 
   public async createSegment(name: string): Promise<TransactionReceipt> {

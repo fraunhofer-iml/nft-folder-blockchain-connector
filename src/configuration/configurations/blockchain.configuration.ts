@@ -8,9 +8,9 @@
 
 import { registerAs } from '@nestjs/config';
 
-export const GENERAL_CONFIG_IDENTIFIER = 'general';
+export const BLOCKCHAIN_CONFIGURATION_IDENTIFIER = 'blockchain-configuration';
 
-export interface GeneralConfiguration {
+export interface BlockchainConfiguration {
   privateKey: string;
   blockchainUrl: string;
   blockTime: number;
@@ -21,7 +21,7 @@ export interface GeneralConfiguration {
   tokenAbi: string;
 }
 
-export default registerAs(GENERAL_CONFIG_IDENTIFIER, () => ({
+export default registerAs(BLOCKCHAIN_CONFIGURATION_IDENTIFIER, () => ({
   privateKey: process.env.PRIVATE_KEY || '',
   blockchainUrl: process.env.BLOCKCHAIN_URL || '',
   blockTime: parseInt(process.env.BLOCK_TIME, 10) || 0,

@@ -33,7 +33,7 @@ export class BlockchainService {
   ) {
     // We need to wait for a transaction to be validated in a block, so we can get its logs
     // To be sure the transaction is validated, we wait a little bit longer (100ms)
-    this.blockTime = this.configurationService.getGeneralConfiguration().blockTime + 100;
+    this.blockTime = this.configurationService.getBlockchainConfiguration().blockTime + 100;
   }
 
   public returnSignerAddress(): string {
@@ -41,7 +41,7 @@ export class BlockchainService {
   }
 
   private returnSignerWallet(): Wallet {
-    return new Wallet(this.configurationService.getGeneralConfiguration().privateKey, this.provider);
+    return new Wallet(this.configurationService.getBlockchainConfiguration().privateKey, this.provider);
   }
 
   public getContractInstance(contractAddress: string, abi: any): Contract {
