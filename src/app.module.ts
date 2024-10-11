@@ -14,6 +14,11 @@ import { DataIntegrityModule } from './data-integrity/data-integrity.module';
 import { ConfigurationModule } from './configuration/configuration.module';
 
 @Module({
-  imports: [SegmentModule, TokenModule, DataIntegrityModule, ConfigurationModule],
+  imports: [
+    SegmentModule.getDynamicModule(),
+    TokenModule.getDynamicModule(),
+    DataIntegrityModule.getDynamicModule(),
+    ConfigurationModule,
+  ],
 })
 export class AppModule {}

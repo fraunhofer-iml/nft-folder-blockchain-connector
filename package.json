@@ -1,6 +1,6 @@
 {
   "name": "@nft-folder/blockchain-connector",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Blockchain Connector of the NFT Folder project",
   "main": "dist/index.js",
   "author": {

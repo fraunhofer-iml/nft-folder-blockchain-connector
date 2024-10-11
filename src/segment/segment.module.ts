@@ -6,17 +6,24 @@
  * SPDX-License-Identifier: OLFL-1.3
  */
 
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 
 import { SegmentController } from './segment.controller';
 import { SegmentService } from './segment.service';
 import { SharedModule } from '../shared/shared.module';
 import { ConfigurationModule } from 'src/configuration/configuration.module';
+import { areEndpointsEnabled } from 'src/shared/utils';
 
 @Module({
   imports: [ConfigurationModule, SharedModule],
-  controllers: [SegmentController],
   providers: [SegmentService],
   exports: [SegmentService],
 })
-export class SegmentModule {}
+export class SegmentModule {
+  static getDynamicModule(): DynamicModule {
+    return {
+      module: SegmentModule,
+      controllers: areEndpointsEnabled() ? [SegmentController] : [],
+    };
+  }
+}

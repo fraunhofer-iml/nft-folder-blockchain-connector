@@ -37,7 +37,7 @@ enum Status {
 
 @Controller('tokens')
 @ApiTags('Tokens')
-export class TokenRestController {
+export class TokenController {
   constructor(
     private readonly tokenCreateService: TokenCreateService,
     private readonly tokenReadService: TokenReadService,

@@ -6,15 +6,22 @@
  * SPDX-License-Identifier: OLFL-1.3
  */
 
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 
 import { DataIntegrityController } from './data-integrity.controller';
 import { DataIntegrityFileService } from './service/data-integrity-file.service';
 import { DataIntegrityStringService } from './service/data-integrity-string.service';
+import { areEndpointsEnabled } from 'src/shared/utils';
 
 @Module({
-  controllers: [DataIntegrityController],
   providers: [DataIntegrityFileService, DataIntegrityStringService],
   exports: [DataIntegrityFileService, DataIntegrityStringService],
 })
-export class DataIntegrityModule {}
+export class DataIntegrityModule {
+  static getDynamicModule(): DynamicModule {
+    return {
+      module: DataIntegrityModule,
+      controllers: areEndpointsEnabled() ? [DataIntegrityController] : [],
+    };
+  }
+}

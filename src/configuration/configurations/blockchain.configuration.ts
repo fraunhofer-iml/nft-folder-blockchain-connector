@@ -19,6 +19,7 @@ export interface BlockchainConfiguration {
   containerAbi: string;
   segmentAbi: string;
   tokenAbi: string;
+  endpointsEnabled: string;
 }
 
 export default registerAs(BLOCKCHAIN_CONFIGURATION_IDENTIFIER, () => ({
@@ -30,4 +31,5 @@ export default registerAs(BLOCKCHAIN_CONFIGURATION_IDENTIFIER, () => ({
   containerAbi: process.env.CONTAINER_ABI || '',
   segmentAbi: process.env.SEGMENT_ABI || '',
   tokenAbi: process.env.TOKEN_ABI || '',
+  endpointsEnabled: process.env.ENDPOINTS_ENABLED || 'false',
 }));
