@@ -28,8 +28,8 @@ export class EventService {
   private tokenContract: Contract;
 
   constructor(
-    private readonly configurationService: ConfigurationService,
     private readonly blockchainService: BlockchainService,
+    private readonly configurationService: ConfigurationService,
   ) {
     this.tokenContract = this.blockchainService.getContractInstance(
       this.configurationService.getBlockchainConfiguration().tokenAddress,
@@ -121,14 +121,16 @@ export class EventService {
     transactionReceipt: TransactionReceipt,
     eventNames: string[],
   ): LogDescription[] {
-    const decodedLogs: LogDescription[] = transactionReceipt.logs
-      .map((encodedLog: any) => {
-        const decodedLog = contractInterface.parseLog(encodedLog);
-        return eventNames.includes(decodedLog.name) ? decodedLog : null;
-      })
-      .filter((decodedLog: any) => {
-        return decodedLog !== null && decodedLog !== undefined;
-      });
+    const decodedLogs: LogDescription[] = transactionReceipt?.logs
+      ? transactionReceipt.logs
+          .map((encodedLog: any) => {
+            const decodedLog = contractInterface.parseLog(encodedLog);
+            return eventNames.includes(decodedLog.name) ? decodedLog : null;
+          })
+          .filter((decodedLog: any) => {
+            return decodedLog !== null && decodedLog !== undefined;
+          })
+      : [];
 
     if (decodedLogs.length === 0) {
       throw new Error(`No event found in transaction receipt logs. Event names: ${eventNames.join(', ')}`);

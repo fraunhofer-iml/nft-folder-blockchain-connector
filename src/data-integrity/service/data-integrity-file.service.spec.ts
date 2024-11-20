@@ -9,46 +9,45 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
 import * as crypto from 'crypto';
-import { DataIntegrityFileService } from './data-integrity-file.service';
+import { DataIntegrityService } from './data-integrity.service';
 
-const FILE_BUFFER = Buffer.from('test file content');
-const FILE_TO_HASH = { buffer: FILE_BUFFER } as Express.Multer.File;
-const ORIGINAL_HASH = crypto.createHash('sha256').update(FILE_BUFFER).digest('hex');
+const FILE_TO_HASH = Buffer.from('test file content');
+const ORIGINAL_HASH = crypto.createHash('sha256').update(new Uint8Array(FILE_TO_HASH)).digest('hex');
 
 describe('DataIntegrityFileService', () => {
-  let service: DataIntegrityFileService;
+  let service: DataIntegrityService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [DataIntegrityFileService],
+      providers: [DataIntegrityService],
     }).compile();
 
-    service = module.get<DataIntegrityFileService>(DataIntegrityFileService);
+    service = module.get<DataIntegrityService>(DataIntegrityService);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  describe('hashFile', () => {
+  describe('hashData', () => {
     it('should hash a file', async () => {
-      const hash = await service.hashFile(FILE_TO_HASH);
+      const hash = service.hashData(FILE_TO_HASH);
       expect(hash).toBe(ORIGINAL_HASH);
     });
 
-    it('should throw BadRequestException if file is not provided', async () => {
-      await expect(() => service.hashFile(null)).rejects.toThrow(BadRequestException);
+    it('should throw BadRequestException if data is not provided', async () => {
+      expect(() => service.hashData(null)).toThrow(BadRequestException);
     });
   });
 
-  describe('verifyFile', () => {
+  describe('verifyData', () => {
     it('should verify a file and be true', async () => {
-      const valid = await service.verifyFile(FILE_TO_HASH, ORIGINAL_HASH);
+      const valid = service.verifyData(FILE_TO_HASH, ORIGINAL_HASH);
       expect(valid).toBeTruthy();
     });
 
     it('should verify a file and be false', async () => {
-      const valid = await service.verifyFile(
+      const valid = service.verifyData(
         FILE_TO_HASH,
         'f234c2f76c58916ec258f246851bea091d14d4247a2fc3e18694461b1816e13b',
       );
@@ -56,23 +55,19 @@ describe('DataIntegrityFileService', () => {
     });
 
     it('should throw BadRequestException if file and original hash are not provided', async () => {
-      await expect(() => service.verifyFile(null, null)).rejects.toThrow(
-        'The file to hash and its original hash must be provided',
-      );
+      expect(() => service.verifyData(null, null)).toThrow('The data to hash and its original hash must be provided');
     });
 
     it('should throw BadRequestException if original hash is not provided', async () => {
-      await expect(() => service.verifyFile(null, ORIGINAL_HASH)).rejects.toThrow('The file to hash must be provided');
+      expect(() => service.verifyData(null, ORIGINAL_HASH)).toThrow('The data to hash must be provided');
     });
 
     it('should throw BadRequestException if original hash is not provided', async () => {
-      await expect(() => service.verifyFile(FILE_TO_HASH, null)).rejects.toThrow('The original hash must be provided');
+      expect(() => service.verifyData(FILE_TO_HASH, null)).toThrow('The original hash must be provided');
     });
 
     it('should throw BadRequestException if original hash is not a valid SHA-256 hash', async () => {
-      await expect(() => service.verifyFile(FILE_TO_HASH, 'test')).rejects.toThrow(
-        'The original hash is not a valid SHA-256 hash',
-      );
+      expect(() => service.verifyData(FILE_TO_HASH, 'test')).toThrow('The original hash is not a valid SHA-256 hash');
     });
   });
 });

@@ -13,7 +13,7 @@ import { BlockchainService } from 'src/shared/blockchain.service';
 import { ConfigurationService } from 'src/configuration/configuration.service';
 
 @Injectable()
-export class TokenDeleteService extends TokenBaseService {
+export class TokenBurnService extends TokenBaseService {
   constructor(
     protected readonly blockchainService: BlockchainService,
     protected readonly configurationService: ConfigurationService,
@@ -23,17 +23,13 @@ export class TokenDeleteService extends TokenBaseService {
 
   public async burnToken(tokenId: number): Promise<void> {
     try {
-      await this.burnTokenOnBlockchain(tokenId);
+      await this.tokenInstance.burn(tokenId);
       await this.blockchainService.waitForTheNextBlock();
       await this.verifyTokenBurn(tokenId);
     } catch (err) {
       this.handleError(err);
       return Promise.reject(err);
     }
-  }
-
-  private async burnTokenOnBlockchain(tokenId: number): Promise<void> {
-    await this.tokenInstance.burn(tokenId);
   }
 
   private async verifyTokenBurn(tokenId: number): Promise<void> {

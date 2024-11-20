@@ -6,19 +6,24 @@
  * SPDX-License-Identifier: OLFL-1.3
  */
 
-import { Body, Controller, HttpCode, HttpStatus, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { DataIntegrityFileService } from './service/data-integrity-file.service';
-import { DataIntegrityStringService } from './service/data-integrity-string.service';
+import { DataIntegrityService } from './service/data-integrity.service';
 
 @Controller('data-integrities')
 @ApiTags('Data Integrities')
 export class DataIntegrityController {
-  constructor(
-    private readonly dataIntegrityFileService: DataIntegrityFileService,
-    private readonly dataIntegrityStringService: DataIntegrityStringService,
-  ) {}
+  constructor(private readonly dataIntegrityService: DataIntegrityService) {}
 
   @Post('files/hash')
   @HttpCode(HttpStatus.OK)
@@ -37,8 +42,13 @@ export class DataIntegrityController {
     },
   })
   @UseInterceptors(FileInterceptor('fileToHash'))
-  hashFile(@UploadedFile() fileToHash: Express.Multer.File): Promise<string> {
-    return this.dataIntegrityFileService.hashFile(fileToHash);
+  hashFile(@UploadedFile() fileToHash: Express.Multer.File): string {
+    if (!fileToHash) {
+      throw new BadRequestException('A file must be provided');
+    }
+
+    const dataToHash = fileToHash.buffer;
+    return this.dataIntegrityService.hashData(dataToHash);
   }
 
   @Post('files/verify')
@@ -67,7 +77,12 @@ export class DataIntegrityController {
     @UploadedFile() fileToHash: Express.Multer.File,
     @Body() body: { originalHash: string },
   ): Promise<boolean> {
-    return this.dataIntegrityFileService.verifyFile(fileToHash, body.originalHash);
+    if (!fileToHash) {
+      throw new BadRequestException('A file must be provided');
+    }
+
+    const dataToHash = fileToHash.buffer;
+    return this.dataIntegrityService.verifyData(dataToHash, body.originalHash);
   }
 
   @Post('strings/hash')
@@ -84,8 +99,13 @@ export class DataIntegrityController {
       },
     },
   })
-  hashString(@Body() body: { stringToHash: string }): Promise<string> {
-    return this.dataIntegrityStringService.hashString(body.stringToHash);
+  hashString(@Body() body: { stringToHash: string }): string {
+    if (!body.stringToHash) {
+      throw new BadRequestException('A string must be provided');
+    }
+
+    const dataToHash = Buffer.from(body.stringToHash);
+    return this.dataIntegrityService.hashData(dataToHash);
   }
 
   @Post('strings/verify')
@@ -107,8 +127,12 @@ export class DataIntegrityController {
       },
     },
   })
-  @UseInterceptors(FileInterceptor('fileToHash'))
   async verifyString(@Body() body: { stringToHash: string; originalHash: string }): Promise<boolean> {
-    return this.dataIntegrityStringService.verifyString(body.stringToHash, body.originalHash);
+    if (!body.stringToHash) {
+      throw new BadRequestException('A string must be provided');
+    }
+
+    const dataToHash = Buffer.from(body.stringToHash);
+    return this.dataIntegrityService.verifyData(dataToHash, body.originalHash);
   }
 }

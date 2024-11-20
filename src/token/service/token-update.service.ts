@@ -21,8 +21,8 @@ import { EventService } from './event.service';
 export class TokenUpdateService extends TokenBaseService {
   constructor(
     protected readonly blockchainService: BlockchainService,
-    protected readonly eventService: EventService,
     protected readonly configurationService: ConfigurationService,
+    protected readonly eventService: EventService,
     private readonly tokenReadService: TokenReadService,
     @Inject('EthersProvider') protected readonly ethersProvider: JsonRpcProvider,
   ) {
@@ -31,24 +31,22 @@ export class TokenUpdateService extends TokenBaseService {
 
   public async updateToken(tokenId: number, tokenUpdateDto: TokenUpdateDto): Promise<TokenReadDto> {
     try {
-      await this.updateTokenOnBlockchain(tokenId, tokenUpdateDto);
+      await this.tokenInstance.updateToken(
+        tokenId,
+        this.getValue(tokenUpdateDto.assetUri),
+        this.getValue(tokenUpdateDto.assetHash),
+        this.getValue(tokenUpdateDto.metadataUri),
+        this.getValue(tokenUpdateDto.metadataHash),
+        this.getValue(tokenUpdateDto.additionalData),
+      );
+
       await this.blockchainService.waitForTheNextBlock();
+
       return this.tokenReadService.getToken(tokenId);
     } catch (err) {
       this.handleError(err);
       return Promise.reject(err);
     }
-  }
-
-  private async updateTokenOnBlockchain(tokenId: number, tokenUpdateDto: TokenUpdateDto): Promise<void> {
-    await this.tokenInstance.updateToken(
-      tokenId,
-      this.getValue(tokenUpdateDto.assetUri),
-      this.getValue(tokenUpdateDto.assetHash),
-      this.getValue(tokenUpdateDto.metadataUri),
-      this.getValue(tokenUpdateDto.metadataHash),
-      this.getValue(tokenUpdateDto.additionalData),
-    );
   }
 
   private getValue(field: string): string {
@@ -66,9 +64,11 @@ export class TokenUpdateService extends TokenBaseService {
 
       const contractInterface = new Interface(this.tokenInstance.interface.fragments);
       const decodedLogs: LogDescription[] = this.eventService.decodeLogs(contractInterface, transactionReceipt, [
-        'ChildConfirmed',
+        'ChildOfParentConfirmed',
       ]);
-      this.logger.log(`Parent '${tokenId}' confirmed Child '${childId}' | ${decodedLogs?.[0]?.args}`);
+      this.logger.log(
+        `Parent '${tokenId}' confirmed Child '${childId}' | ChildOfParentConfirmed: ${decodedLogs?.[0]?.args}`,
+      );
     } catch (err) {
       this.handleError(err);
       throw err;

@@ -12,10 +12,10 @@ import { ConfigurationModule } from 'src/configuration/configuration.module';
 import { SharedModule } from '../shared/shared.module';
 import { TokenController } from './controller/token.controller';
 import { TokenBaseService } from './service/token-base.services';
-import { TokenCreateService } from './service/token-create.service';
+import { TokenMintService } from './service/token-mint.service';
 import { TokenReadService } from './service/token-read.service';
 import { TokenUpdateService } from './service/token-update.service';
-import { TokenDeleteService } from './service/token-delete.service';
+import { TokenBurnService } from './service/token-burn.service';
 import { SegmentService } from '../segment/segment.service';
 import { EventService } from './service/event.service';
 import { areEndpointsEnabled } from 'src/shared/utils';
@@ -24,14 +24,14 @@ import { areEndpointsEnabled } from 'src/shared/utils';
   imports: [ConfigurationModule, SharedModule],
   providers: [
     TokenBaseService,
-    TokenCreateService,
+    TokenMintService,
     TokenReadService,
     TokenUpdateService,
-    TokenDeleteService,
+    TokenBurnService,
     EventService,
     SegmentService,
   ],
-  exports: [TokenCreateService, TokenReadService, TokenUpdateService, TokenDeleteService],
+  exports: [TokenMintService, TokenReadService, TokenUpdateService, TokenBurnService],
 })
 export class TokenModule {
   static getDynamicModule(): DynamicModule {

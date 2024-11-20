@@ -10,10 +10,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { TokenAssetDto } from './token.asset.dto';
 import { TokenMetadataDto } from './token.metadata.dto';
-import { TokenCreateDto } from './token-create.dto';
+import { TokenMintDto } from './token-mint.dto';
 import { TokenHierarchyDto } from './token.hierarchy.dto';
 
-export class TokenReadDto extends TokenCreateDto {
+export class TokenReadDto extends TokenMintDto {
   @ApiProperty()
   hierarchy: TokenHierarchyDto;
 

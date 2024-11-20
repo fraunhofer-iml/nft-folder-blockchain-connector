@@ -12,7 +12,7 @@ import { Interface, JsonRpcProvider, LogDescription, TransactionReceipt, Transac
 import { TokenBaseService } from './token-base.services';
 import { BlockchainService } from 'src/shared/blockchain.service';
 import { ConfigurationService } from 'src/configuration/configuration.service';
-import { TokenCreateDto } from '../dto/token-create.dto';
+import { TokenMintDto } from '../dto/token-mint.dto';
 import { TokenReadDto } from '../dto/token-read.dto';
 import { TokenAssetDto } from '../dto/token.asset.dto';
 import { TokenMetadataDto } from '../dto/token.metadata.dto';
@@ -20,7 +20,7 @@ import { TokenHierarchyDto } from '../dto/token.hierarchy.dto';
 import { EventService } from './event.service';
 
 @Injectable()
-export class TokenCreateService extends TokenBaseService {
+export class TokenMintService extends TokenBaseService {
   constructor(
     protected readonly blockchainService: BlockchainService,
     protected readonly configurationService: ConfigurationService,
@@ -30,7 +30,7 @@ export class TokenCreateService extends TokenBaseService {
     super(blockchainService, configurationService);
   }
 
-  public async createToken(dto: TokenCreateDto, appendToHierarchy: boolean): Promise<TokenReadDto> {
+  public async mintToken(dto: TokenMintDto, appendToHierarchy: boolean): Promise<TokenReadDto> {
     try {
       const transactionResponse: TransactionResponse = appendToHierarchy
         ? await this.tokenInstance.mintTokenAndAppendToHierarchy(
@@ -60,27 +60,30 @@ export class TokenCreateService extends TokenBaseService {
       const transactionReceipt: TransactionReceipt = await this.ethersProvider.getTransactionReceipt(
         transactionResponse.hash,
       );
-      return this.createDto(transactionReceipt);
+      const decodedLogs: LogDescription[] = this.decodeLogs(transactionReceipt);
+      const transactionTimestamp: string = await this.fetchTransactionTimestampForReceipt(transactionReceipt);
+      return this.assembleDto(decodedLogs, transactionTimestamp);
     } catch (err) {
       this.handleError(err);
       throw err;
     }
   }
 
-  private async createDto(transactionReceipt: TransactionReceipt): Promise<TokenReadDto> {
+  private decodeLogs(transactionReceipt: TransactionReceipt): LogDescription[] {
     const contractInterface = new Interface(this.tokenInstance.interface.fragments);
     const decodedLogs: LogDescription[] = this.eventService.decodeLogs(contractInterface, transactionReceipt, [
       'TokenMinted',
-      'TokenAppendedToHierarchy',
+      'NodeAppendedToHierarchy',
     ]);
     this.logger.log(
-      `Token '${decodedLogs?.[0]?.args[1]}' was minted | ${decodedLogs?.[0]?.args} | ${decodedLogs?.[1]?.args}`,
+      `Token '${decodedLogs?.[0]?.args[1]}' was minted | TokenMinted: ${decodedLogs?.[0]?.args} | NodeAppendedToHierarchy: ${decodedLogs?.[1]?.args}`,
     );
 
-    const transactionTimestamp: string = await this.blockchainService.fetchTransactionTimestamp(
-      transactionReceipt.hash,
-    );
-    return this.assembleDto(decodedLogs, transactionTimestamp);
+    return decodedLogs;
+  }
+
+  private async fetchTransactionTimestampForReceipt(transactionReceipt: TransactionReceipt): Promise<string> {
+    return this.blockchainService.fetchTransactionTimestamp(transactionReceipt.hash);
   }
 
   private assembleDto(decodedLogs: LogDescription[], transactionTimestamp: string): TokenReadDto {
@@ -91,8 +94,6 @@ export class TokenCreateService extends TokenBaseService {
     const tokenHierarchyDto = decodedLogs[1]
       ? new TokenHierarchyDto(
           true,
-          null,
-          null,
           [],
           decodedLogs[1].args[1].map((id: string) => Number(id)),
         )

@@ -11,7 +11,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { TokenAssetDto } from './token.asset.dto';
 import { TokenMetadataDto } from './token.metadata.dto';
 
-export class TokenCreateDto {
+export class TokenMintDto {
   @ApiProperty()
   remoteId: string;
 

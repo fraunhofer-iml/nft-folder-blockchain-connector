@@ -21,11 +21,11 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
-import { TokenCreateService } from '../service/token-create.service';
+import { TokenMintService } from '../service/token-mint.service';
 import { TokenReadService } from '../service/token-read.service';
 import { TokenUpdateService } from '../service/token-update.service';
-import { TokenDeleteService } from '../service/token-delete.service';
-import { TokenCreateDto } from '../dto/token-create.dto';
+import { TokenBurnService } from '../service/token-burn.service';
+import { TokenMintDto } from '../dto/token-mint.dto';
 import { TokenReadDto } from '../dto/token-read.dto';
 import { TokenUpdateDto } from '../dto/token-update.dto';
 import { SegmentReadDto } from 'src/segment/dto/segment.read.dto';
@@ -39,16 +39,16 @@ enum Status {
 @ApiTags('Tokens')
 export class TokenController {
   constructor(
-    private readonly tokenCreateService: TokenCreateService,
+    private readonly tokenMintService: TokenMintService,
     private readonly tokenReadService: TokenReadService,
     private readonly tokenUpdateService: TokenUpdateService,
-    private readonly tokenDeleteService: TokenDeleteService,
+    private readonly tokenBurnService: TokenBurnService,
   ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiBody({
-    type: TokenCreateDto,
+    type: TokenMintDto,
     description: 'Contains all relevant information for the creation of a token',
   })
   @ApiQuery({
@@ -57,11 +57,11 @@ export class TokenController {
     required: true,
     description: 'Whether the token should be appended to a hierarchy or not',
   })
-  public async createToken(
-    @Body() dto: TokenCreateDto,
+  public async mintToken(
+    @Body() dto: TokenMintDto,
     @Query('appendToHierarchy') appendToHierarchy: string,
   ): Promise<TokenReadDto> {
-    return this.tokenCreateService.createToken(dto, appendToHierarchy === 'true');
+    return this.tokenMintService.mintToken(dto, appendToHierarchy === 'true');
   }
 
   @Get()
@@ -189,9 +189,9 @@ export class TokenController {
     required: true,
     description: 'The id of the Token to be burned',
   })
-  public async deleteToken(@Param('tokenId') tokenId: string): Promise<void> {
+  public async burnToken(@Param('tokenId') tokenId: string): Promise<void> {
     const parsedTokenId = this.parseId(tokenId);
-    return this.tokenDeleteService.burnToken(parsedTokenId);
+    return this.tokenBurnService.burnToken(parsedTokenId);
   }
 
   private parseId(tokenId: string) {

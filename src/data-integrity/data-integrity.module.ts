@@ -9,13 +9,12 @@
 import { DynamicModule, Module } from '@nestjs/common';
 
 import { DataIntegrityController } from './data-integrity.controller';
-import { DataIntegrityFileService } from './service/data-integrity-file.service';
-import { DataIntegrityStringService } from './service/data-integrity-string.service';
 import { areEndpointsEnabled } from 'src/shared/utils';
+import { DataIntegrityService } from './service/data-integrity.service';
 
 @Module({
-  providers: [DataIntegrityFileService, DataIntegrityStringService],
-  exports: [DataIntegrityFileService, DataIntegrityStringService],
+  providers: [DataIntegrityService],
+  exports: [DataIntegrityService],
 })
 export class DataIntegrityModule {
   static getDynamicModule(): DynamicModule {

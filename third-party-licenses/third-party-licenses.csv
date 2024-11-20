@@ -114,7 +114,7 @@
 "@nestjs/schematics@10.1.2","MIT","https://github.com/nestjs/schematics"
 "@nestjs/swagger@7.4.0","MIT","https://github.com/nestjs/swagger"
 "@nestjs/testing@10.3.10","MIT","https://github.com/nestjs/nest"
-"@nft-folder/blockchain-connector@1.0.2","OLFL-1.3","git+https://gitlab.cc-asp.fraunhofer.de/silicon-economy/base/blockchainbroker/ethereum/projects/nft-folder/blockchain-connector"
+"@nft-folder/blockchain-connector@1.1.0","OLFL-1.3","git+https://gitlab.cc-asp.fraunhofer.de/silicon-economy/base/blockchainbroker/ethereum/projects/nft-folder/blockchain-connector"
 "@noble/curves@1.2.0","MIT","https://github.com/paulmillr/noble-curves"
 "@noble/hashes@1.1.2","MIT","https://github.com/paulmillr/noble-hashes"
 "@noble/hashes@1.3.2","MIT","https://github.com/paulmillr/noble-hashes"

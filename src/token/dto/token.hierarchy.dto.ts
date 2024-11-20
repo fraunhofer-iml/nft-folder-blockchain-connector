@@ -13,21 +13,13 @@ export class TokenHierarchyDto {
   active: boolean;
 
   @ApiProperty()
-  predecessorId: number;
-
-  @ApiProperty()
-  successorId: number;
-
-  @ApiProperty()
   childIds: number[];
 
   @ApiProperty()
   parentIds: number[];
 
-  constructor(active: boolean, predecessorId: number, successorId: number, childIds: number[], parentIds: number[]) {
+  constructor(active: boolean, childIds: number[], parentIds: number[]) {
     this.active = active;
-    this.predecessorId = predecessorId;
-    this.successorId = successorId;
     this.childIds = childIds;
     this.parentIds = parentIds;
   }

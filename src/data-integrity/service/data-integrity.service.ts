@@ -10,21 +10,22 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
 
 @Injectable()
-export abstract class DataIntegrityService {
-  abstract getBuffer(data: any): Buffer;
-
-  hashData(data: any): string {
-    const buffer = this.getBuffer(data);
-    return this.hashBuffer(buffer);
-  }
-
-  verifyData(data: any, originalHash: string, name: string): boolean {
-    if (!data && !originalHash) {
-      throw new BadRequestException(`The ${name} to hash and its original hash must be provided`);
+export class DataIntegrityService {
+  public hashData(dataToHash: Buffer): string {
+    if (!dataToHash) {
+      throw new BadRequestException('Data must be provided');
     }
 
-    if (!data) {
-      throw new BadRequestException(`The ${name} to hash must be provided`);
+    return this.hashBuffer(dataToHash);
+  }
+
+  public verifyData(dataToVerify: Buffer, originalHash: string): boolean {
+    if (!dataToVerify && !originalHash) {
+      throw new BadRequestException(`The data to hash and its original hash must be provided`);
+    }
+
+    if (!dataToVerify) {
+      throw new BadRequestException(`The data to hash must be provided`);
     }
 
     if (!originalHash) {
@@ -35,14 +36,13 @@ export abstract class DataIntegrityService {
       throw new BadRequestException('The original hash is not a valid SHA-256 hash');
     }
 
-    const buffer = this.getBuffer(data);
-    const currentHash = this.hashBuffer(buffer);
+    const currentHash = this.hashBuffer(dataToVerify);
     return currentHash === originalHash;
   }
 
   private hashBuffer(buffer: Buffer): string {
     const hash = crypto.createHash('sha256');
-    hash.update(buffer);
+    hash.update(new Uint8Array(buffer));
     return hash.digest('hex');
   }
 
