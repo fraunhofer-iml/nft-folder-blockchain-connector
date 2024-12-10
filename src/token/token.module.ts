@@ -11,7 +11,6 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigurationModule } from 'src/configuration/configuration.module';
 import { SharedModule } from '../shared/shared.module';
 import { TokenController } from './controller/token.controller';
-import { TokenBaseService } from './service/token-base.services';
 import { TokenMintService } from './service/token-mint.service';
 import { TokenReadService } from './service/token-read.service';
 import { TokenUpdateService } from './service/token-update.service';
@@ -22,15 +21,7 @@ import { areEndpointsEnabled } from 'src/shared/utils';
 
 @Module({
   imports: [ConfigurationModule, SharedModule],
-  providers: [
-    TokenBaseService,
-    TokenMintService,
-    TokenReadService,
-    TokenUpdateService,
-    TokenBurnService,
-    EventService,
-    SegmentService,
-  ],
+  providers: [TokenMintService, TokenReadService, TokenUpdateService, TokenBurnService, EventService, SegmentService],
   exports: [TokenMintService, TokenReadService, TokenUpdateService, TokenBurnService],
 })
 export class TokenModule {

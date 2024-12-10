@@ -1,6 +1,6 @@
 {
   "name": "@nft-folder/blockchain-connector",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Blockchain Connector of the NFT Folder project",
   "main": "dist/index.js",
   "author": {
@@ -32,7 +32,6 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "token-import": "sed -i '/^TOKEN_ABI=/d' .env && echo \"TOKEN_ABI='$(xclip -selection clipboard -o)'\" >> .env",
     "eslint:check": "npx eslint \"{src,helm,test}/**/*.ts\"",
     "eslint:fix": "npx eslint --fix \"{src,helm,test}/**/*.ts\"",
     "prettier:check": "npx prettier --check 'src/**/*' 'test/**/*' ./*.*",

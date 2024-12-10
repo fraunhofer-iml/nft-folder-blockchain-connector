@@ -13,7 +13,7 @@ import { BlockchainService } from 'src/shared/blockchain.service';
 import { ConfigurationService } from 'src/configuration/configuration.service';
 
 @Injectable()
-export class TokenBaseService {
+export abstract class TokenBaseService {
   protected readonly logger = new Logger(BlockchainService.name);
   protected tokenInstance: Contract;
 
