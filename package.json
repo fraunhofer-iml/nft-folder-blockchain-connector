@@ -1,6 +1,6 @@
 {
   "name": "@nft-folder/blockchain-connector",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Blockchain Connector of the NFT Folder project",
   "main": "dist/index.js",
   "author": {
@@ -53,7 +53,6 @@
     "@nestjs/microservices": "^10.3.3",
     "@nestjs/platform-express": "^10.3.3",
     "@nestjs/swagger": "^7.3.0",
-    "@truffle/hdwallet-provider": "^2.1.15",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "ethers": "^6.13.1",
