@@ -11,6 +11,7 @@ import { Contract, EventLog, Interface, LogDescription, TransactionReceipt } fro
 
 import { BlockchainService } from 'src/shared/blockchain.service';
 import { ConfigurationService } from 'src/configuration/configuration.service';
+import { TransferEventDto } from '../dto/transfer-event.dto';
 
 interface EventInformation {
   blockNumber: number;
@@ -42,6 +43,21 @@ export class EventService {
     const createdOn: string = await this.fetchCreatedOn(tokenId);
     const lastUpdatedOn: string = await this.fetchLastUpdatedOn(tokenId);
     return { minterAddress, createdOn, lastUpdatedOn };
+  }
+
+  public async fetchTransferEvents(tokenId: number): Promise<TransferEventDto[]> {
+    const events: EventLog[] = await this.getAllPastEvents('Transfer', tokenId);
+    return Promise.all(
+      events.map(async (event: EventLog): Promise<TransferEventDto> => {
+        return new TransferEventDto(
+          tokenId,
+          //At this point, slice is used to display the sender address and the new owner address in the correct format from the event topics that come back from the blockchain.
+          `0x${event.topics[1].slice(26, 66)}`,
+          `0x${event.topics[2].slice(26, 66)}`,
+          await this.blockchainService.fetchTransactionTimestamp(event.transactionHash),
+        );
+      }),
+    );
   }
 
   private async fetchMinterAddress(tokenId: number): Promise<string> {

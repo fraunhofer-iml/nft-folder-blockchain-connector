@@ -12,10 +12,19 @@ export const NOT_FOUND_CUSTOM_ERRORS: string[] = [
   'RemoteIdDoesNotExist',
   'TokenDoesNotExist',
   'TokenDoesNotExistInSegment',
+  'ERC721NonexistentToken',
 ];
 export const ALREADY_EXISTS_CUSTOM_ERRORS: string[] = ['RemoteIdExists', 'TokenExistsInSegment'];
 export const NOT_ALLOWED_CUSTOM_ERRORS: string[] = [
   'SenderIsNotContainer',
   'SenderIsNotSegment',
   'OwnableUnauthorizedAccount',
+  'ERC721InsufficientApproval',
+  'ERC721InvalidOwner',
+  'ERC721IncorrectOwner',
+  'ERC721InvalidSender',
+  'ERC721InvalidReceiver',
+  'ERC721InsufficientApproval',
+  'ERC721InvalidApprover',
+  'ERC721InvalidOperator',
 ];

@@ -29,6 +29,18 @@ export class TokenUpdateService extends TokenBaseService {
     super(blockchainService, configurationService);
   }
 
+  public async transferToken(tokenId: number, receiverAddress: string): Promise<TokenReadDto> {
+    const ownAddress: string = this.blockchainService.returnSignerAddress();
+    try {
+      await this.tokenInstance.safeTransferFrom(ownAddress, receiverAddress, tokenId);
+      await this.blockchainService.waitForTheNextBlock();
+      return this.tokenReadService.getToken(tokenId);
+    } catch (err) {
+      this.handleError(err);
+      return Promise.reject(err);
+    }
+  }
+
   public async updateToken(tokenId: number, tokenUpdateDto: TokenUpdateDto): Promise<TokenReadDto> {
     try {
       await this.tokenInstance.updateToken(

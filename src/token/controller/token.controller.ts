@@ -29,6 +29,8 @@ import { TokenMintDto } from '../dto/token-mint.dto';
 import { TokenReadDto } from '../dto/token-read.dto';
 import { TokenUpdateDto } from '../dto/token-update.dto';
 import { SegmentReadDto } from 'src/segment/dto/segment.read.dto';
+import { TokenTransferDto } from '../dto/token-transfer.dto';
+import { TransferEventDto } from '../dto/transfer-event.dto';
 
 enum Status {
   Confirmed = 'confirmed',
@@ -89,6 +91,19 @@ export class TokenController {
     return this.tokenReadService.getToken(parsedTokenId);
   }
 
+  @Get(':tokenId/events/transfers')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'tokenId',
+    type: Number,
+    required: true,
+    description: 'The id of the token whose transfer events are to be returned.',
+  })
+  public async getTokenTransferEvents(@Param('tokenId') tokenId: string): Promise<TransferEventDto[]> {
+    const parsedTokenId: number = this.parseId(tokenId);
+    return this.tokenReadService.getTokenTransferEvents(parsedTokenId);
+  }
+
   @Get(':tokenId/parents')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
@@ -142,6 +157,26 @@ export class TokenController {
   public async getSegments(@Param('tokenId') tokenId: string): Promise<SegmentReadDto[]> {
     const parsedTokenId = this.parseId(tokenId);
     return this.tokenReadService.getSegments(parsedTokenId);
+  }
+
+  @Patch(':tokenId/owners')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'tokenId',
+    type: Number,
+    required: true,
+    description: 'The id of the token to be transferred',
+  })
+  @ApiBody({
+    type: TokenTransferDto,
+    description: 'The address of the new owner of the token',
+  })
+  public async transferToken(
+    @Param('tokenId') tokenId: string,
+    @Body() receiverTransferDto: TokenTransferDto,
+  ): Promise<TokenReadDto> {
+    const parsedTokenId: number = this.parseId(tokenId);
+    return this.tokenUpdateService.transferToken(parsedTokenId, receiverTransferDto.newOwnerAddress);
   }
 
   @Patch(':tokenId')

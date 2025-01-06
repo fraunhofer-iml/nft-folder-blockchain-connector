@@ -18,6 +18,7 @@ import { TokenReadDto } from '../dto/token-read.dto';
 import { TokenAssetDto } from '../dto/token.asset.dto';
 import { TokenMetadataDto } from '../dto/token.metadata.dto';
 import { TokenHierarchyDto } from '../dto/token.hierarchy.dto';
+import { TransferEventDto } from '../dto/transfer-event.dto';
 
 @Injectable()
 export class TokenReadService extends TokenBaseService {
@@ -102,6 +103,10 @@ export class TokenReadService extends TokenBaseService {
       this.handleError(err);
       return Promise.reject(err);
     }
+  }
+
+  public getTokenTransferEvents(tokenId: number): Promise<TransferEventDto[]> {
+    return this.eventInformationService.fetchTransferEvents(tokenId);
   }
 
   public async getSegments(tokenId: number): Promise<SegmentReadDto[]> {
