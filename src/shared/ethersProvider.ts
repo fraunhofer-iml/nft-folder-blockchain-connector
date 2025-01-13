@@ -6,13 +6,13 @@
  * SPDX-License-Identifier: OLFL-1.3
  */
 
-import { ConfigService } from '@nestjs/config';
 import { JsonRpcProvider } from 'ethers';
+import { ConfigurationService } from 'src/configuration/configuration.service';
 
 export const EthersProvider = {
   provide: 'EthersProvider',
-  useFactory: async (apiConfigService: ConfigService) => {
-    return new JsonRpcProvider(apiConfigService.get<string>('BLOCKCHAIN_URL'));
+  useFactory: async (configurationService: ConfigurationService) => {
+    return new JsonRpcProvider(configurationService.getBlockchainConfiguration().blockchainUrl);
   },
-  inject: [ConfigService],
+  inject: [ConfigurationService],
 };

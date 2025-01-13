@@ -76,7 +76,11 @@ export class TokenMintService extends TokenBaseService {
       'NodeAppendedToHierarchy',
     ]);
     this.logger.log(
-      `Token '${decodedLogs?.[0]?.args[1]}' was minted | TokenMinted: ${decodedLogs?.[0]?.args} | NodeAppendedToHierarchy: ${decodedLogs?.[1]?.args}`,
+      `### Token Minted ###
+       TxId: ${transactionReceipt.hash}
+       Token '${decodedLogs?.[0]?.args[1]}' minted
+       TokenMinted: ${decodedLogs?.[0]?.args}
+       NodeAppendedToHierarchy: ${decodedLogs?.[1]?.args}`,
     );
 
     return decodedLogs;

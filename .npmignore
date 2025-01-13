@@ -1,6 +1,5 @@
 # directories
 .husky/
-helm/
 src/
 test/
 third-party-licenses/

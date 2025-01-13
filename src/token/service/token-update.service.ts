@@ -79,7 +79,10 @@ export class TokenUpdateService extends TokenBaseService {
         'ChildOfParentConfirmed',
       ]);
       this.logger.log(
-        `Parent '${tokenId}' confirmed Child '${childId}' | ChildOfParentConfirmed: ${decodedLogs?.[0]?.args}`,
+        `### Child confirmed ###
+        TxId: ${transactionReceipt.hash}
+        Parent '${tokenId}' confirmed Child '${childId}'
+        ChildOfParentConfirmed: ${decodedLogs?.[0]?.args}`,
       );
     } catch (err) {
       this.handleError(err);

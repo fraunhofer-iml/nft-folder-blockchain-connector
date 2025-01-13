@@ -6,23 +6,38 @@
  * SPDX-License-Identifier: OLFL-1.3
  */
 
+import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ConfigurationService } from './configuration/configuration.service';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+async function setUpSwagger(app: INestApplication, swaggerPath: string) {
   const config = new DocumentBuilder()
     .setTitle('Blockchain Connector')
     .setDescription('This web API provides endpoints to manage Segments and Tokens.')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-  app.useGlobalPipes(new ValidationPipe());
-  await app.listen(4000);
+  SwaggerModule.setup(swaggerPath, app, document);
 }
 
-bootstrap();
+async function bootstrap() {
+  const app: INestApplication = await NestFactory.create(AppModule);
+  const blockchainConfiguration = app.get(ConfigurationService).getBlockchainConfiguration();
+
+  setUpSwagger(app, blockchainConfiguration.swaggerPath);
+
+  app.useGlobalPipes(new ValidationPipe());
+  app.useLogger(blockchainConfiguration.logLevels);
+
+  await app.listen(blockchainConfiguration.port);
+
+  const url = `http://localhost:${blockchainConfiguration.port}/${blockchainConfiguration.swaggerPath}`;
+  Logger.log(`🔗 Blockchain Connector API available at: ${url}`);
+}
+
+bootstrap().catch((error) => {
+  Logger.error('❌ Error starting Blockchain Connector', error);
+  process.exit(1);
+});

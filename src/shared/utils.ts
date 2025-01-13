@@ -8,8 +8,8 @@
 
 export function areEndpointsEnabled(): boolean {
   return (
-    process.env.ENDPOINTS_ENABLED &&
-    typeof process.env.ENDPOINTS_ENABLED === 'string' &&
-    process.env.ENDPOINTS_ENABLED.toLowerCase() === 'true'
+    process.env.BCC_ENDPOINTS_ENABLED &&
+    typeof process.env.BCC_ENDPOINTS_ENABLED === 'string' &&
+    process.env.BCC_ENDPOINTS_ENABLED.toLowerCase() === 'true'
   );
 }

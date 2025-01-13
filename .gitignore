@@ -2,8 +2,8 @@
 .idea
 .vscode
 
-# Created by https://www.toptal.com/developers/gitignore/api/git,node,linux,helm
-# Edit at https://www.toptal.com/developers/gitignore?templates=git,node,linux,helm
+# Created by https://www.toptal.com/developers/gitignore/api/git,node,linux
+# Edit at https://www.toptal.com/developers/gitignore?templates=git,node,linux
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:
@@ -19,10 +19,6 @@
 *_BASE_*.txt
 *_LOCAL_*.txt
 *_REMOTE_*.txt
-
-### Helm ###
-# Chart dependencies
-**/charts/*.tgz
 
 ### Linux ###
 *~
@@ -179,4 +175,4 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
-# End of https://www.toptal.com/developers/gitignore/api/git,node,linux,helm
+# End of https://www.toptal.com/developers/gitignore/api/git,node,linux
