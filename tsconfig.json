@@ -4,8 +4,8 @@
     "baseUrl": "./",
     "declaration": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "esModuleInterop": true,
+    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
     "module": "NodeNext",
@@ -16,13 +16,13 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "outDir": "./dist",
+    "removeComments": true,
     "resolveJsonModule": true,
-    "sourceMap": true,
     "skipLibCheck": true,
+    "sourceMap": true,
     "strict": true,
     "strictBindCallApply": false,
     "strictNullChecks": false,
-    "target": "ESNext",
-    "removeComments": true
+    "target": "ESNext"
   }
 }

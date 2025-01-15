@@ -1,9 +1,9 @@
-/**
- * Copyright Open Logistics Foundation
+/*
+ * Copyright Fraunhofer Institute for Material Flow and Logistics
  *
- * Licensed under the Open Logistics Foundation License 1.3.
+ * Licensed under the Apache License, Version 2.0 (the "License").
  * For details on the licensing terms, see the LICENSE file.
- * SPDX-License-Identifier: OLFL-1.3
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { Injectable } from '@nestjs/common';
@@ -62,8 +62,8 @@ export class TokenReadService extends TokenBaseService {
 
       return new TokenReadDto(
         token.remoteId,
-        new TokenAssetDto(token.asset.uri, token.asset.hash),
-        new TokenMetadataDto(token.metadata.uri, token.metadata.hash),
+        new TokenAssetDto(token.tokenData.asset.uri, token.tokenData.asset.hash),
+        new TokenMetadataDto(token.tokenData.metadata.uri, token.tokenData.metadata.hash),
         token.additionalData,
         token.node.exists
           ? new TokenHierarchyDto(

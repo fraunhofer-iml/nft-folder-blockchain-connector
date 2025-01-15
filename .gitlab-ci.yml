@@ -8,13 +8,11 @@ stages:
   - build
   - test
   - analyze
-  - license
   - publish
 
 variables:
   GITLAB_TAG: 'be'
   GIT_DEPTH: 0
-  HUSKY: 0
   NPM_CI: npm ci --include dev --cache .npm --prefer-offline
 
 default:
@@ -65,7 +63,7 @@ run-eslint:
   before_script:
     - $NPM_CI
   script:
-    - npm run eslint:check
+    - npm run eslint-check
   rules:
     - when: on_success
 
@@ -74,7 +72,7 @@ run-prettier:
   before_script:
     - $NPM_CI
   script:
-    - npm run prettier:check
+    - npm run prettier-check
   rules:
     - when: on_success
 
@@ -92,52 +90,12 @@ run-sonar-scanner:
   allow_failure: true
 
 ###############
-### license ###
-###############
-
-create-npm-licenses-list:
-  stage: license
-  variables:
-    LICENSES_LIST: 'npm-licenses-list.csv'
-    LICENSES_OVERRIDES: 'third-party-licenses/npm-licenses-overrides.txt'
-    EXCLUDED_PACKAGES: ''
-  before_script:
-    - $NPM_CI
-    - >
-      if [ -e ${LICENSES_OVERRIDES} ]; then
-        EXCLUDED_PACKAGES=$(cat ${LICENSES_OVERRIDES});
-      fi
-  script:
-    - >
-      npx license-checker
-      --unknown
-      --csv
-      --excludePackages "${EXCLUDED_PACKAGES}"
-      --onlyAllow "${NPM_LICENSE_CHECKER_WHITELIST}"
-      --out "${LICENSES_LIST}"
-    - >
-      if [ ${EXCLUDED_PACKAGES} ]; then
-        echo -e "\n\nManually overridden packages excluded from the licenses check:\n${EXCLUDED_PACKAGES}" >> ${LICENSES_LIST};
-      fi
-    - cat "${LICENSES_LIST}"
-  artifacts:
-    name: 'npm-licenses-list'
-    expose_as: 'NPM Licenses List'
-    expire_in: 1 hour
-    paths:
-      - $LICENSES_LIST
-  rules:
-    - if: $CI_MERGE_REQUEST_IID
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
-###############
 ### publish ###
 ###############
 
 publish-npm:
   stage: publish
   before_script:
-    - npm install husky --save-dev
     - npm run build
   script:
     - echo "@nft-folder:registry=https://${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc

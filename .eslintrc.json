@@ -1,34 +1,21 @@
 {
   "env": {
     "es2024": true,
-    "node": true,
-    "jest": true
+    "jest": true,
+    "node": true
   },
-  "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-    "prettier"
-  ],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "prettier"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
-    "project": "tsconfig.json",
+    "project": "./tsconfig.json",
     "sourceType": "module"
   },
-  "plugins": [
-    "@typescript-eslint/eslint-plugin",
-    "license-header",
-    "prettier"
-  ],
+  "plugins": ["@typescript-eslint", "license-header", "prettier"],
+  "root": true,
   "rules": {
     "@typescript-eslint/no-explicit-any": "off",
-    "license-header/header": [
-      "error",
-      "license-header.js"
-    ],
-    "prettier/prettier": [
-      "error"
-    ]
-  },
-  "root": true
+    "license-header/header": ["error", "LICENSE-HEADER"],
+    "prettier/prettier": ["error"]
+  }
 }

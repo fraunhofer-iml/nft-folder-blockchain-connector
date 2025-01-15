@@ -1,9 +1,9 @@
-/**
- * Copyright Open Logistics Foundation
+/*
+ * Copyright Fraunhofer Institute for Material Flow and Logistics
  *
- * Licensed under the Open Logistics Foundation License 1.3.
+ * Licensed under the Apache License, Version 2.0 (the "License").
  * For details on the licensing terms, see the LICENSE file.
- * SPDX-License-Identifier: OLFL-1.3
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { Injectable } from '@nestjs/common';
@@ -73,20 +73,8 @@ export class EventService {
   }
 
   private async fetchLastUpdatedOn(tokenId: number): Promise<string> {
-    const eventNames = ['AssetUriSet', 'AssetHashSet', 'MetadataUriSet', 'MetadataHashSet', 'AdditionalDataSet'];
-    const eventInformationPromises: Promise<EventInformation>[] = eventNames.map((event) =>
-      this.fetchEventInformationFromLastEvent(tokenId, event),
-    );
-    const eventInformation: EventInformation[] = await Promise.all(eventInformationPromises);
-
-    const eventInformationWithHighestBlockNumber = eventInformation.reduce(
-      (highest, current) => (current && current.blockNumber > highest.blockNumber ? current : highest),
-      { blockNumber: -1, transactionHash: '' },
-    );
-
-    return await this.blockchainService.fetchTransactionTimestamp(
-      eventInformationWithHighestBlockNumber.transactionHash,
-    );
+    const eventInformation: EventInformation = await this.fetchEventInformationFromLastEvent(tokenId, 'TokenUpdate');
+    return await this.blockchainService.fetchTransactionTimestamp(eventInformation.transactionHash);
   }
 
   private async getAllPastEvents(event: string, tokenId: number): Promise<EventLog[]> {
@@ -96,24 +84,8 @@ export class EventService {
       filter = this.tokenContract.filters.Transfer(null, null, tokenId);
     }
 
-    if (event === 'AssetUriSet') {
-      filter = this.tokenContract.filters.AssetUriSet(null, null, null, null, tokenId);
-    }
-
-    if (event === 'AssetHashSet') {
-      filter = this.tokenContract.filters.AssetHashSet(null, null, null, null, tokenId);
-    }
-
-    if (event === 'MetadataUriSet') {
-      filter = this.tokenContract.filters.MetadataUriSet(null, null, null, null, tokenId);
-    }
-
-    if (event === 'MetadataHashSet') {
-      filter = this.tokenContract.filters.MetadataHashSet(null, null, null, null, tokenId);
-    }
-
-    if (event === 'AdditionalDataSet') {
-      filter = this.tokenContract.filters.AdditionalDataSet(null, null, null, null, tokenId);
+    if (event === 'TokenUpdate') {
+      filter = this.tokenContract.filters.TokenUpdate(null, null, tokenId);
     }
 
     return (await this.tokenContract.queryFilter(filter)) as EventLog[];

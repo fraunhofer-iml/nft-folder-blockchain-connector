@@ -5,16 +5,3 @@
  * For details on the licensing terms, see the LICENSE file.
  * SPDX-License-Identifier: Apache-2.0
  */
-
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
-
-export class SegmentCreateDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  name: string;
-
-  constructor(name: string) {
-    this.name = name;
-  }
-}
