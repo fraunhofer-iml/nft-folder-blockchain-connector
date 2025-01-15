@@ -16,7 +16,7 @@
     "url": "https://github.com/fraunhofer-iml/nft-folder-blockchain-connector"
   },
   "scripts": {
-    "build": "nest build",
+    "build": "npx nest build",
     "clean": "rm -rf coverage/ dist/",
     "clean-install": "npm run clean; npm install",
     "create-library": "npm run clean-install && npm run build && npm pack",
