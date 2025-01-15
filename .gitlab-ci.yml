@@ -17,9 +17,7 @@ variables:
 
 default:
   cache:
-    key:
-      files:
-        - package-lock.json
+    key: '$CI_COMMIT_REF_SLUG'
     paths:
       - .npm
   image: node:20-alpine3.19
