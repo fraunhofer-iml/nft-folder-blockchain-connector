@@ -96,6 +96,7 @@ run-sonar-scanner:
 publish-npm:
   stage: publish
   before_script:
+    - npm install
     - npm run build
   script:
     - echo "@nft-folder:registry=https://${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
