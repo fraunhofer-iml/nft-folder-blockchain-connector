@@ -35,21 +35,21 @@ export class TokenMintService extends TokenBaseService {
       const transactionResponse: TransactionResponse = appendToHierarchy
         ? await this.tokenInstance.mintTokenAndAppendToHierarchy(
             this.blockchainService.returnSignerAddress(),
+            dto.remoteId,
             dto.asset.uri,
             dto.asset.hash,
             dto.metadata.uri,
             dto.metadata.hash,
-            dto.remoteId,
             dto.additionalData,
             dto.parentIds,
           )
         : await this.tokenInstance.mintToken(
             this.blockchainService.returnSignerAddress(),
+            dto.remoteId,
             dto.asset.uri,
             dto.asset.hash,
             dto.metadata.uri,
             dto.metadata.hash,
-            dto.remoteId,
             dto.additionalData,
           );
 
@@ -78,7 +78,7 @@ export class TokenMintService extends TokenBaseService {
     this.logger.log(
       `### Token Minted ###
        TxId: ${transactionReceipt.hash}
-       Token '${decodedLogs?.[0]?.args[1]}' minted
+       Token ${decodedLogs?.[0]?.args[1]} minted
        TokenMinted: ${decodedLogs?.[0]?.args}
        NodeAppendedToHierarchy: ${decodedLogs?.[1]?.args}`,
     );

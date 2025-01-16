@@ -64,7 +64,7 @@ export class TokenReadService extends TokenBaseService {
         token.remoteId,
         new TokenAssetDto(token.tokenData.asset.uri, token.tokenData.asset.hash),
         new TokenMetadataDto(token.tokenData.metadata.uri, token.tokenData.metadata.hash),
-        token.additionalData,
+        token.tokenData.additionalData,
         token.node.exists
           ? new TokenHierarchyDto(
               token.node.active,

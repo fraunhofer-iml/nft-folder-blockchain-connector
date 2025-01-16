@@ -1,19 +1,33 @@
 {
-  "name": "@nft-folder/blockchain-connector",
-  "version": "1.5.0",
-  "description": "Blockchain Connector of the NFT Folder project",
-  "main": "dist/index.js",
-  "author": {
-    "name": "Fraunhofer Institute for Material Flow and Logistics",
-    "url": "https://www.iml.fraunhofer.de/en.html"
-  },
+  "name": "@fraunhofer-iml/nft-folder-blockchain-connector",
+  "version": "1.5.1",
+  "description": "A NestJS-based blockchain connector that communicates with specific smart contracts from the NFT Folder project.",
+  "keywords": [
+    "fraunhofer",
+    "blockchain",
+    "smart contracts",
+    "nft",
+    "ethereum",
+    "connector",
+    "nestjs"
+  ],
+  "homepage": "https://github.com/fraunhofer-iml/nft-folder-blockchain-connector",
+  "bugs": "https://github.com/fraunhofer-iml/nft-folder-blockchain-connector/issues",
   "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/fraunhofer-iml/nft-folder-blockchain-connector/issues"
-  },
+  "contributors": [
+    {
+      "name": "Lukas Grieger",
+      "email": "lukas.grieger@iml.fraunhofer.de"
+    },
+    {
+      "name": "Michael Pichura",
+      "email": "michael.pichura@iml.fraunhofer.de"
+    }
+  ],
+  "main": "./dist/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fraunhofer-iml/nft-folder-blockchain-connector"
+    "url": "git+https://github.com/fraunhofer-iml/nft-folder-blockchain-connector.git"
   },
   "scripts": {
     "build": "nest build",
@@ -71,33 +85,5 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      ".*\\.module\\.ts$",
-      ".*\\.abi\\.ts$",
-      "/main\\.ts$",
-      "/entity/config.object\\.ts$",
-      "/api.config.service\\.ts$",
-      "/web3.service\\.ts$",
-      "/blockchain.service\\.ts$",
-      "/event.service\\.ts$"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
   }
 }

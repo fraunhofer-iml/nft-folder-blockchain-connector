@@ -1,7 +1,7 @@
 # directories
+abi/
 src/
 test/
-third-party-licenses/
 
 # files
 .env
@@ -11,9 +11,8 @@ third-party-licenses/
 .gitlab-ci.yml
 .prettierignore
 .prettierrc
-docker-compose.yml
 Dockerfile
-license-header.js
+LICENSE-HEADER
 nest-cli.json
 package-lock.json
 sonar.properties

@@ -113,7 +113,7 @@ export class EventService {
       ? transactionReceipt.logs
           .map((encodedLog: any) => {
             const decodedLog = contractInterface.parseLog(encodedLog);
-            return eventNames.includes(decodedLog.name) ? decodedLog : null;
+            return decodedLog ? (eventNames.includes(decodedLog.name) ? decodedLog : null) : null;
           })
           .filter((decodedLog: any) => {
             return decodedLog !== null && decodedLog !== undefined;
