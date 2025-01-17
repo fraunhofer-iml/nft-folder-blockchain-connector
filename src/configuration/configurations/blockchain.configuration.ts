@@ -35,12 +35,12 @@ export default registerAs(BLOCKCHAIN_CONFIGURATION_IDENTIFIER, () => ({
   endpointsEnabled: process.env.BCC_ENDPOINTS_ENABLED || 'false',
   blockchainUrl: process.env.BCC_BLOCKCHAIN_URL || '',
   blockTime: parseInt(process.env.BCC_BLOCK_TIME, 10) || 0,
-  privateKey: process.env.BCC_PRIVATE_KEY || '',
+  privateKey: process.env.BCC_PRIVATE_KEY || '0x0000000000000000000000000000000000000000000000000000000000000001',
   containerAddress: process.env.BCC_CONTAINER_ADDRESS || '0x0',
   tokenAddress: process.env.BCC_TOKEN_ADDRESS || '0x0',
-  containerAbi: readAbiFile(process.env.BCC_CONTAINER_ABI_PATH),
-  segmentAbi: readAbiFile(process.env.BCC_SEGMENT_ABI_PATH),
-  tokenAbi: readAbiFile(process.env.BCC_TOKEN_ABI_PATH),
+  containerAbi: readAbiFile(process.env.BCC_CONTAINER_ABI_PATH || 'dummy-container.abi.json'),
+  segmentAbi: readAbiFile(process.env.BCC_SEGMENT_ABI_PATH || 'dummy-segment.abi.json'),
+  tokenAbi: readAbiFile(process.env.BCC_TOKEN_ABI_PATH || 'dummy-token.abi.json'),
 }));
 
 const logger = new Logger('BlockchainConfiguration');
@@ -50,7 +50,10 @@ function readAbiFile(filePath: string): string {
     const absolutePath = path.resolve(process.cwd(), filePath);
     return fs.readFileSync(absolutePath, 'utf8');
   } catch (error) {
-    logger.error(`Failed to read the ABI file at ${filePath}. Using [] as the ABI for this smart contract.\n`, error);
+    logger.warn(
+      `Failed to read the ABI file at '${filePath}'. Instead, using empty ABI for this smart contract.`,
+      error,
+    );
     return '[]';
   }
 }
