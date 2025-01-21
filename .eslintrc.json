@@ -15,7 +15,7 @@
   "root": true,
   "rules": {
     "@typescript-eslint/no-explicit-any": "off",
-    "license-header/header": ["error", "LICENSE-HEADER"],
+    "license-header/header": ["error", ".license-header"],
     "prettier/prettier": ["error"]
   }
 }

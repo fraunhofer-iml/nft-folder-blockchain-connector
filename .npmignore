@@ -9,10 +9,9 @@ test/
 .eslintrc.json
 .gitignore
 .gitlab-ci.yml
-.prettierignore
+.license-header
 .prettierrc
 Dockerfile
-LICENSE-HEADER
 nest-cli.json
 package-lock.json
 sonar.properties
