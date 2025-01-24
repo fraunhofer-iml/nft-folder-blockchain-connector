@@ -1,0 +1,31 @@
+# Copyright Fraunhofer Institute for Material Flow and Logistics
+#
+# Licensed under the Apache License, Version 2.0 (the "License").
+# For details on the licensing terms, see the LICENSE file.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Main Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  NODE_VERSION: '22'
+  NPM_CACHE: 'npm'
+
+jobs:
+  analyze:
+    name: Analyze Codebase
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: ${{ env.NPM_CACHE }}
+      - run: npm ci --include dev
+      - run: npm run eslint-check
+      - run: npm run prettier-check
