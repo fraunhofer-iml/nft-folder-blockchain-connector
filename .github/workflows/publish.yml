@@ -4,13 +4,12 @@
 # For details on the licensing terms, see the LICENSE file.
 # SPDX-License-Identifier: Apache-2.0
 
-name: Main Workflow
+name: Publish Workflow
 
 on:
   release:
     types:
       - created
-  pull_request:
 
 env:
   NODE_VERSION: '22'
