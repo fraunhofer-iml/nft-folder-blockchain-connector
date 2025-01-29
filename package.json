@@ -1,6 +1,6 @@
 {
   "name": "@fraunhofer-iml/nft-folder-blockchain-connector",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "A NestJS-based blockchain connector that communicates with specific smart contracts from the NFT Folder project.",
   "keywords": [
     "fraunhofer",
