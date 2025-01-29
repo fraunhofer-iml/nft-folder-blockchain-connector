@@ -1,0 +1,21 @@
+{
+  "env": {
+    "es2024": true,
+    "jest": true,
+    "node": true
+  },
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "prettier"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "project": "./tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint", "license-header", "prettier"],
+  "root": true,
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
+    "license-header/header": ["error", ".license-header"],
+    "prettier/prettier": ["error"]
+  }
+}

@@ -1,0 +1,19 @@
+# directories
+abi/
+src/
+test/
+
+# files
+.env
+.env.example
+.eslintrc.json
+.gitignore
+.gitlab-ci.yml
+.license-header
+.prettierrc
+Dockerfile
+nest-cli.json
+package-lock.json
+sonar.properties
+tsconfig.build.json
+tsconfig.json
